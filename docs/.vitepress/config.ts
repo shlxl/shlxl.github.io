@@ -22,7 +22,7 @@ const blogTheme = getThemeConfig({
   hotArticle: false,
   homeTags: false,
   // 隐藏“相关文章”中的日期，防止客户端与 SSR 相对时间不一致
-  recommend: { showDate: false }
+  recommend: { showDate: true }
 })
 
 export default defineConfig({
@@ -49,7 +49,10 @@ export default defineConfig({
     plugins: [faviconIcoFallback()],
     resolve: {
       alias: {
-        '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue')
+        '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
+        '@sugarat/theme/src/components/BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
+        '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
+        '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
       }
     }
   }
