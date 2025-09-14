@@ -6,7 +6,7 @@ import path from 'node:path'
 const deployBase = process.env.DEPLOY_BASE || '/'
 
 const blogTheme = getThemeConfig({
-  timeZone: 8,
+  timeZone: 0,
   author: '小凌',
   home: {
     name: '小凌',
