@@ -25,6 +25,9 @@ const blogTheme = getThemeConfig({
   search: true,
   hotArticle: false,
   homeTags: false,
+  recommend: {
+    showDate: false
+  },
   blog: {
     // 统一显示绝对时间（不再使用“x小时前”），并避免时区解析偏差
     formatShowDate: (date: any) => {
