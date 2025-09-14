@@ -94,23 +94,11 @@ const pages = computed(() => {
 const recent = computed(() => [...pages.value].sort((a,b) => +new Date(b.meta.date) - +new Date(a.meta.date)))
 const recentLimit = ref(5)
 const recentToShow = computed(() => recent.value.slice(0, recentLimit.value))
-const tags = ref(['全部','野蛮人','德鲁伊','刺客','亚马逊','巫师','圣骑士','死灵法师'])
+const tags = ref(['全部','野蛮人','德鲁伊','猎法者','亚马逊','巫师','圣骑士','死灵法师'])
 const active = ref('全部')
-// 关键词同义映射，保证“刺客/猎法者”均能匹配到 Assassin；其余职业做常见别称兜底
-const aliasMap: Record<string, string[]> = {
-  '刺客': ['刺客','猎法者','Assassin'],
-  '野蛮人': ['野蛮人','Barbarian'],
-  '德鲁伊': ['德鲁伊','Druid'],
-  '亚马逊': ['亚马逊','Amazon'],
-  '巫师': ['巫师','法师','Sorceress'],
-  '圣骑士': ['圣骑士','骑士','Paladin'],
-  '死灵法师': ['死灵法师','死灵','Necromancer']
-}
-const filtered = computed(() => {
-  if (active.value === '全部') return pages.value
-  const keys = aliasMap[active.value] || [active.value]
-  return pages.value.filter((p) => keys.some(k => String(p.meta.title || '').includes(k)))
-})
+const filtered = computed(() => active.value === '全部'
+  ? pages.value
+  : pages.value.filter((p) => String(p.meta.title || '').includes(active.value)))
 const fmt = (d) => `${String(d).replace(/-/g,'/').slice(0,16)}`
 
 const cards = computed(() => {
