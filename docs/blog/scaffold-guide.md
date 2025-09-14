@@ -109,3 +109,10 @@ GitHub Actions 会自动构建并发布到根域：`https://<你的用户名>.gi
 
 - 作品集脚手架（`new:work`）：一条命令生成卡片并可选生成封面
 - PR 预览：每个 Pull Request 自动构建预览链接
+
+## 附录：时间与时区说明（已更新）
+
+- 站点已改为显示“绝对时间”，格式为 `yyyy/MM/dd HH:mm`（不再展示“x 小时前”）。
+- 统一使用 +8 时区（Asia/Shanghai）构建与显示，避免本地与 CI 的偏差。
+- 建议在文章 frontmatter 使用斜杠日期：`yyyy/MM/dd HH:mm:ss`。
+- 脚手架 `new:post` 会自动按 +8 时区生成上述格式的日期。
