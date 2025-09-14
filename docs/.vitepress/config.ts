@@ -43,6 +43,10 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }]
   ],
   themeConfig: {
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/lxlcool3000' },
+      { icon: 'mail', link: 'mailto:coollxl92@gmail.com' }
+    ],
     nav: [
       { text: '首页', link: '/' },
       { text: '关于我', link: '/about/' },
