@@ -1,0 +1,113 @@
+<svg width="800" height="1800" viewBox="0 0 800 1800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="1800" fill="#282c34"/>
+
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="36" fill="#dda0dd" text-anchor="middle" font-weight="bold">亚马逊 Amazon</text>
+
+  <rect x="50" y="80" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="400" y="110" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">精通弓箭/标枪，大规模杀怪能力强 (奶牛关女王)。</tspan>
+    <tspan x="400" dy="25">PVP曾称霸，开荒非最优，对装备和操作要求高。</tspan>
+  </text>
+
+  <text x="70" y="190" font-family="Arial, sans-serif" font-size="24" fill="#00ccff" font-weight="bold">Solo开荒路线</text>
+  <line x1="70" y1="200" x2="250" y2="200" stroke="#00ccff" stroke-width="2"/>
+
+  <rect x="50" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">技能路线: 标枪流 (初期毒枪)</text>
+  <text x="60" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 初期: 投掷(1), 剧毒标枪(1)</tspan>
+    <tspan x="60" dy="20">- 提升: 充能一击(主加), 威力一击(前置)</tspan>
+    <tspan x="60" dy="20">  (18级解锁充能一击，对付Boss)</tspan>
+    <tspan x="60" dy="20">- 30级后: 闪电之怒(满,清场), 充能一击(满,单体)</tspan>
+  </text>
+
+  <rect x="410" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">属性分配:</text>
+  <text x="420" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 力量: 满足装备 (后期精神盾156)</tspan>
+    <tspan x="420" dy="20">- 敏捷: 提高命中 / 75%格挡 (盾挡流)</tspan>
+    <tspan x="420" dy="20">- 活力: 全加 (提高生命)</tspan>
+    <tspan x="420" dy="20">- 精力: 不加 (蓝靠偷取)</tspan>
+  </text>
+  <text x="420" y="360" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">装备与雇佣兵:</text>
+  <text x="420" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 开荒符文: 隐秘, 知识, 钢铁</tspan>
+    <tspan x="420" dy="20">- 佣兵: 祈祷光环 (回血), 眼光 (冥思光环)</tspan>
+  </text>
+
+  <text x="70" y="500" font-family="Arial, sans-serif" font-size="24" fill="#ff9900" font-weight="bold">组队合作优劣与玩法定位</text>
+  <line x1="70" y1="510" x2="400" y2="510" stroke="#ff9900" stroke-width="2"/>
+
+  <rect x="50" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队优势:</text>
+  <text x="60" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 范围清场: 电标奶牛关/高密图效率极高</tspan>
+    <tspan x="60" dy="20">- 单体爆发: 充能一击秒Boss/精英</tspan>
+    <tspan x="60" dy="20">- 控制/工具: 诱饵(吸引火力), 冰箭(控场)</tspan>
+  </text>
+
+  <rect x="410" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队劣势:</text>
+  <text x="420" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 生存脆弱，依赖装备</tspan>
+    <tspan x="420" dy="20">- 无光环/战嚎直接增益</tspan>
+    <tspan x="420" dy="20">- 闪电免疫怪乏力 (需队友破免)</tspan>
+  </text>
+
+  <text x="70" y="760" font-family="Arial, sans-serif" font-size="24" fill="#ff66b2" font-weight="bold">PVM刷图主流构筑</text>
+  <line x1="70" y1="770" x2="350" y2="770" stroke="#ff66b2" stroke-width="2"/>
+
+  <rect x="50" y="790" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="810" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">标枪电疗亚马逊 (Lightning Javazon):</text>
+  <text x="60" y="840" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">闪电之怒(清场)+充能一击(单体)。“奶牛场杀手”，效率高，与怪物数量正相关。</tspan>
+    <tspan x="60" dy="20">终极装备: 佣兵“无限”破免。</tspan>
+  </text>
+
+  <rect x="50" y="920" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="940" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">弓箭物理亚马逊 (Bowazon):</text>
+  <text x="60" y="970" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">多重箭(清杂)+导引箭(狙杀)。物理伤害，无免疫烦恼，但极度依赖高端装备。</tspan>
+    <tspan x="60" dy="20">装备: “信心”弓，高档符文甲。</tspan>
+  </text>
+
+  <text x="70" y="1070" font-family="Arial, sans-serif" font-size="24" fill="#66ff66" font-weight="bold">PVP常见Build与对策</text>
+  <line x1="70" y1="1080" x2="350" y2="1080" stroke="#66ff66" stroke-width="2"/>
+
+  <rect x="50" y="1100" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1120" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">弓箭亚马逊 (Bowazon) PVP:</text>
+  <text x="60" y="1150" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">高敏捷导引箭，高攻速连射风筝。输出高，射程远，但自身脆弱。</tspan>
+    <tspan x="60" dy="20">对策: 迅速接近，AOE压制走位。</tspan>
+  </text>
+
+  <rect x="50" y="1230" width="700" height="150" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1250" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">标枪亚马逊 PVP:</text>
+  <text x="60" y="1280" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 高伤贴身流 (充能一击): 高风险高回报。</tspan>
+    <tspan x="60" dy="20">  对策: 保持距离，堆闪电抗性/吸收。</tspan>
+    <tspan x="60" dy="20">- 瘟疫标枪放风筝: 高额持续毒伤。</tspan>
+    <tspan x="60" dy="20">  对策: 速喝解毒药水，堆毒抗，不贸然追击。</tspan>
+  </text>
+
+  <text x="70" y="1410" font-family="Arial, sans-serif" font-size="24" fill="#a0a8b3" font-weight="bold">MF路线与推荐区域</text>
+  <line x1="70" y1="1420" x2="350" y2="1420" stroke="#a0a8b3" stroke-width="2"/>
+
+  <rect x="50" y="1440" width="700" height="150" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1460" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">推荐区域:</text>
+  <text x="60" y="1490" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 秘密奶牛关 (标枪亚马逊天堂，闪电之怒链杀)</tspan>
+    <tspan x="60" dy="20">- 泰摩高地洞穴 (Pit, 85级区域，弓箭/有无限标枪高效)</tspan>
+    <tspan x="60" dy="20">- 混沌避难所 (Chaos Sanctuary, 需无限/破免应对闪免)</tspan>
+  </text>
+
+  <text x="400" y="1770" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">总结: 装备依赖高，操作有技巧，极限Farm角色</tspan>
+  <text x="400" y="1790" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">不适合新手，高阶玩家追求极限Farm效率的理想选择。</tspan>
+  </text>
+
+  <circle cx="700" cy="110" r="25" fill="#555"/>
+  <path d="M690 120 L710 120 L700 100 L690 120 Z" fill="#dda0dd"/>
+  <path d="M695 125 L705 125 L700 135 L695 125 Z" fill="#7fff00"/>
+
+</svg>

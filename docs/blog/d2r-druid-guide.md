@@ -4,7 +4,7 @@ date: 2025/09/14 17:20:00
 description: 多面手的全阶段指南：火开荒转风、加点与属性、装备与佣兵、组队定位、PVM/PVP打法、MF路线与成型搭配。
 tags: [D2R, Druid, 风德, Build]
 categories: [职业攻略]
-cover: /images/druid-cover.svg
+cover: /images/druid-cover.png
 recommend: 职业
 publish: true
 ---

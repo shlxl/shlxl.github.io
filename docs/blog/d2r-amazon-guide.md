@@ -4,7 +4,7 @@ date: 2025/09/14 18:00:00
 description: 标枪电疗与弓物两大核心流派：开荒加点、属性分配、装备与佣兵、组队定位、PVM/PVP打法、MF路线与阶段装备配置。
 tags: [D2R, Amazon, Javazon, Bowazon]
 categories: [职业攻略]
-cover: /images/amazon-cover.svg
+cover: /images/amazon-cover.png
 recommend: 职业
 publish: true
 ---
@@ -90,4 +90,3 @@ publish: true
 ## 小结
 
 亚马逊清图能力在装备成型后极其亮眼：电标以速度席卷怪群，弓亚远程风筝安全通杀。成长过程对装备与技巧要求较高，但对追求极限 Farm 与远程风格的玩家而言，她是奶牛场、85 区域等内容的理想刷宝角色。
-

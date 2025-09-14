@@ -4,7 +4,7 @@ date: 2025/09/14 18:20:00
 description: 开荒与MF女王：冰火双修与单系极限（冰/电/火），加点、属性、装备与佣兵、组队定位、PVM/PVP打法与MF路线全攻略。
 tags: [D2R, Sorceress, Blizzard, Lightning]
 categories: [职业攻略]
-cover: /images/sorceress-cover.svg
+cover: /images/sorceress-cover.png
 recommend: 职业
 publish: true
 ---
@@ -102,4 +102,3 @@ publish: true
 ## 小结
 
 巫师凭借传送带来的极致机动与强大范围输出，在 MF 领域长年称王。从新赛季“传送手”，到装备成型后的效率担当，法师几乎贯穿游戏全阶段的最优解。她也要求更高走位与操作，但回报是无以伦比的速度与财富。若你追求极致效率与风驰体验，元素女王绝不会让你失望。
-

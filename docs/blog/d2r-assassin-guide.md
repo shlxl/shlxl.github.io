@@ -4,7 +4,7 @@ date: 2025/09/14 17:40:00
 description: 陷阱开荒与马赛克武学两大流派全解：加点、属性、装备与佣兵、组队定位、PVM/PVP打法、MF路线与阶段搭配。
 tags: [D2R, Assassin, Trapsin, Mosaic]
 categories: [职业攻略]
-cover: /images/assassin-cover.svg
+cover: /images/assassin-cover.png
 recommend: 职业
 publish: true
 ---
@@ -95,4 +95,3 @@ publish: true
 ## 小结
 
 刺客是“上手容易、精通见功力”的职业：陷阱流安全、廉价、稳通关；武学流在“马赛克”加持下有顶级爆发，但对操作与装备要求更高。无论哪种路径，一个经验丰富的刺客都能凭借灵活多变的技能组合，在团队中贡献控制与火力，成为暗影中的致命利刃。
-

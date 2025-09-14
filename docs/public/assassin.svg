@@ -1,0 +1,111 @@
+<svg width="800" height="1800" viewBox="0 0 800 1800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="1800" fill="#282c34"/>
+
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="36" fill="#8b008b" text-anchor="middle" font-weight="bold">刺客 Assassin</text>
+
+  <rect x="50" y="80" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="400" y="110" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">双爪近战/陷阱远程，独特连招蓄力与陷阱机制。</tspan>
+    <tspan x="400" dy="25">陷阱安全高效，武学操作乐趣高，“马赛克”使武学崛起。</tspan>
+  </text>
+
+  <text x="70" y="190" font-family="Arial, sans-serif" font-size="24" fill="#00ccff" font-weight="bold">Solo开荒路线</text>
+  <line x1="70" y1="200" x2="250" y2="200" stroke="#00ccff" stroke-width="2"/>
+
+  <rect x="50" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">技能路线: 陷阱系 (安全高效)</text>
+  <text x="60" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 1-24级: 火焰爆震(1), 雷光守卫(满,灵魂技能)</tspan>
+    <tspan x="60" dy="20">  亡者守卫(10+点,清场)</tspan>
+    <tspan x="60" dy="20">- 暗影系: 魔影斗篷(1), 暗影战士/宗师(1)</tspan>
+    <tspan x="60" dy="20">  心灵爆震(1,眩晕控怪)</tspan>
+  </text>
+
+  <rect x="410" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">属性分配:</text>
+  <text x="420" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 力量: 符合装备要求 (约100)</tspan>
+    <tspan x="420" dy="20">- 敏捷: 双爪/盾牌格挡所需</tspan>
+    <tspan x="420" dy="20">- 活力: 全加 (提高生命)</tspan>
+    <tspan x="420" dy="20">- 精力: 不加 (陷阱伤害不影响)</tspan>
+  </text>
+  <text x="420" y="360" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">装备与雇佣兵:</text>
+  <text x="420" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 武器: +陷阱技能魔法爪 (主手), 精神剑盾 (副手)</tspan>
+    <tspan x="420" dy="20">- 护甲: 隐秘, 知识, 烟雾</tspan>
+    <tspan x="420" dy="20">- 佣兵: 噩梦防御型 (圣冰), 眼光 (冥思), 背信</tspan>
+  </text>
+
+  <text x="70" y="500" font-family="Arial, sans-serif" font-size="24" fill="#ff9900" font-weight="bold">组队合作优劣与玩法定位</text>
+  <line x1="70" y1="510" x2="400" y2="510" stroke="#ff9900" stroke-width="2"/>
+
+  <rect x="50" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队优势:</text>
+  <text x="60" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 范围火力支援: 亡者守卫连锁清场</tspan>
+    <tspan x="60" dy="20">- 控场与减益: 魔影斗篷(致盲), 心灵爆震(眩晕/转友)</tspan>
+    <tspan x="60" dy="20">- 影子与陷阱战术: 吸引火力，封锁地形</tspan>
+  </text>
+
+  <rect x="410" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队劣势:</text>
+  <text x="420" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 爆发伤害略不足</tspan>
+    <tspan x="420" dy="20">- 自身较脆，需队友掩护</tspan>
+  </text>
+
+  <text x="70" y="760" font-family="Arial, sans-serif" font-size="24" fill="#ff66b2" font-weight="bold">PVM刷图主流构筑</text>
+  <line x1="70" y1="770" x2="350" y2="770" stroke="#ff66b2" stroke-width="2"/>
+
+  <rect x="50" y="790" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="810" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">陷阱刺客 (Trapsin):</text>
+  <text x="60" y="840" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">雷光守卫+亡者守卫核心。刷图安全高效 (女伯爵, 尼拉塞克)。</tspan>
+    <tspan x="60" dy="20">应对免疫: 亡者守卫物伤，破免符，佣兵无限，火焰爆震。</tspan>
+  </text>
+
+  <rect x="50" y="920" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="940" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">武学刺客 (Martial Arts Assassin - 马赛克):</text>
+  <text x="60" y="970" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">双“马赛克”蓄力不消散，凤凰攻击+龙爪三系爆发。高近身爆发。</tspan>
+    <tspan x="60" dy="20">缺点: 需贴身战斗，操作压力大。清场速度不逊顶尖。</tspan>
+  </text>
+
+  <text x="70" y="1070" font-family="Arial, sans-serif" font-size="24" fill="#66ff66" font-weight="bold">PVP常见Build与对策</text>
+  <line x1="70" y1="1080" x2="350" y2="1080" stroke="#66ff66" stroke-width="2"/>
+
+  <rect x="50" y="1100" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1120" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">陷阱刺客 (Trap Assassin) PVP:</text>
+  <text x="60" y="1150" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">“炮台+控制”，雷光守卫火力网，心灵爆震“MB锁”。</tspan>
+    <tspan x="60" dy="20">对策: 走位躲锁，提高闪电抗性/吸收，创造反击。</tspan>
+  </text>
+
+  <rect x="50" y="1230" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1250" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">幽灵刺客 (Ghost Assassin) PVP:</text>
+  <text x="60" y="1280" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">“影舞”流派 (副手“混沌”旋风斩)，心灵爆震+旋风斩连招。</tspan>
+    <tspan x="60" dy="20">对策: 圣骑士盾击打断，法系高频传送拉开距离。</tspan>
+  </text>
+
+  <text x="70" y="1380" font-family="Arial, sans-serif" font-size="24" fill="#a0a8b3" font-weight="bold">MF路线与推荐区域</text>
+  <line x1="70" y1="1390" x2="350" y2="1390" stroke="#a0a8b3" stroke-width="2"/>
+
+  <rect x="50" y="1410" width="700" height="150" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1430" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">推荐区域:</text>
+  <text x="60" y="1460" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 女伯爵 (Countess): 安全高效刷符文</tspan>
+    <tspan x="60" dy="20">- 尼拉塞克 (Nihlathak): 上佳人选 (魔影斗篷+亡者守卫防尸爆)</tspan>
+    <tspan x="60" dy="20">- Uber崔斯特姆 (Kicksin单挑三魔王获取火炬)</tspan>
+  </text>
+
+  <text x="400" y="1770" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">总结: 上手易精通难，功能多样，贡献控制和火力</tspan>
+  <text x="400" y="1790" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">陷阱流新手友好，武学流技术挑战。灵活多变。</tspan>
+  </text>
+
+  <circle cx="700" cy="110" r="25" fill="#555"/>
+  <path d="M690 120 L710 120 L700 100 L690 120 Z" fill="#8b008b"/>
+  <path d="M695 125 L705 125 L700 135 L695 125 Z" fill="#00ffff"/>
+
+</svg>

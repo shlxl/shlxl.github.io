@@ -4,7 +4,7 @@ date: 2025/09/14 18:40:00
 description: 开荒圣火 → 飞锤成型，攻守兼备的团队中坚：加点、属性、装备与佣兵、组队定位、PVM/PVP、MF路线与阶段配装全指南。
 tags: [D2R, Paladin, Hammerdin, Smiter]
 categories: [职业攻略]
-cover: /images/paladin-cover.svg
+cover: /images/paladin-cover.png
 recommend: 职业
 publish: true
 ---
@@ -94,4 +94,3 @@ publish: true
 ## 小结
 
 圣骑士几乎没有明显短板：既能带队披荆斩棘，也能独自攻坚最强 Boss。开荒圣火、成型飞锤、极致单体 Smiter——攻守与团队价值兼备的“神圣化身”，当之无愧的版本答案之一。
-

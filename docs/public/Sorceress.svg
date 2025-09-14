@@ -1,0 +1,120 @@
+<svg width="800" height="1800" viewBox="0 0 800 1800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="1800" fill="#282c34"/>
+
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="36" fill="#87ceeb" text-anchor="middle" font-weight="bold">巫师 Sorceress</text>
+
+  <rect x="50" y="80" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="400" y="110" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">三系元素魔法大师，拥有独一无二的传送。</tspan>
+    <tspan x="400" dy="25">开荒推进和MF女王，高机动性，受欢迎。</tspan>
+  </text>
+
+  <text x="70" y="190" font-family="Arial, sans-serif" font-size="24" fill="#00ccff" font-weight="bold">Solo开荒路线</text>
+  <line x1="70" y1="200" x2="250" y2="200" stroke="#00ccff" stroke-width="2"/>
+
+  <rect x="50" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">技能路线: 冰火双修 (经典安全)</text>
+  <text x="60" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 1-24级 (火系开局): 火球(满), 火焰弹(协同)</tspan>
+    <tspan x="60" dy="20">  温暖(1), 静态力场(1), 传送(18级)</tspan>
+    <tspan x="60" dy="20">- 24级以后 (冰火双修): 冰封球(满), 冰冷支配(高)</tspan>
+    <tspan x="60" dy="20">  火球(满), 火焰弹/陨石(多余点数)</tspan>
+  </text>
+
+  <rect x="410" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">属性分配:</text>
+  <text x="420" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 力量: 满足装备 (精神盾156)</tspan>
+    <tspan x="420" dy="20">- 敏捷: 不加</tspan>
+    <tspan x="420" dy="20">- 精力: 酌情少许 (后期靠装备)</tspan>
+    <tspan x="420" dy="20">- 活力: 全加 (提高生命)</tspan>
+  </text>
+  <text x="420" y="360" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">装备与雇佣兵:</text>
+  <text x="420" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 符文之语: 叶子, 隐秘, 知识, 精神剑盾</tspan>
+    <tspan x="420" dy="20">- 佣兵: 噩梦防御/进攻型, 眼光 (冥思)</tspan>
+  </text>
+
+  <text x="70" y="500" font-family="Arial, sans-serif" font-size="24" fill="#ff9900" font-weight="bold">组队合作优劣与玩法定位</text>
+  <line x1="70" y1="510" x2="400" y2="510" stroke="#ff9900" stroke-width="2"/>
+
+  <rect x="50" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队优势:</text>
+  <text x="60" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 毁灭性输出: 冰/火/电AOE主力</tspan>
+    <tspan x="60" dy="20">- 传送带队: “开飞机”提高效率</tspan>
+    <tspan x="60" dy="20">- 能量护盾: 可客串“半个坦克”</tspan>
+  </text>
+
+  <rect x="410" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队劣势:</text>
+  <text x="420" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 生存脆弱: 极易被秒，需队友保护</tspan>
+    <tspan x="420" dy="20">- 元素免疫: 需队友/佣兵处理免疫怪</tspan>
+  </text>
+
+  <text x="70" y="760" font-family="Arial, sans-serif" font-size="24" fill="#ff66b2" font-weight="bold">PVM刷图主流构筑</text>
+  <line x1="70" y1="770" x2="350" y2="770" stroke="#ff66b2" stroke-width="2"/>
+
+  <rect x="50" y="790" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="810" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">冰火双修巫师 (Meteorb):</text>
+  <text x="60" y="840" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">无绝对克星，应对地狱免疫怪从容，适合通关/全场景MF。</tspan>
+  </text>
+
+  <rect x="50" y="900" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="920" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">纯冰巫师 (Blizzard Sorceress):</text>
+  <text x="60" y="950" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">输出极高，MF效率高，冰冻减速。无法处理冰免怪 (路线固定)。</tspan>
+  </text>
+
+  <rect x="50" y="1010" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1030" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">纯电巫师 (Lightning Sorceress):</text>
+  <text x="60" y="1060" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">理论伤害上限最高，清屏快。伤害波动大，极度依赖顶级装备。</tspan>
+  </text>
+
+  <rect x="50" y="1120" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1140" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">纯火巫师 (Fire Sorceress):</text>
+  <text x="60" y="1170" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">高爆发，但火免怪多，Farm地图受限。需破免符和无限支持。</tspan>
+  </text>
+
+  <text x="70" y="1250" font-family="Arial, sans-serif" font-size="24" fill="#66ff66" font-weight="bold">PVP常见Build与对策</text>
+  <line x1="70" y1="1260" x2="350" y2="1260" stroke="#66ff66" stroke-width="2"/>
+
+  <rect x="50" y="1280" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1300" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">冰系巫师 PVP (暴风雪法师):</text>
+  <text x="60" y="1330" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">减速高爆发，远距离压制。自身脆弱，需预判走位。</tspan>
+    <tspan x="60" dy="20">对策: 高速移动躲冰，堆冰抗/防冻/冰吸，伺机近身。</tspan>
+  </text>
+
+  <rect x="50" y="1410" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1430" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">电系巫师 PVP (新星/闪电法师):</text>
+  <text x="60" y="1460" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">配合能量护盾，瞬移贴脸新星爆发。一轮未倒则危险。</tspan>
+    <tspan x="60" dy="20">对策: 拉开距离，堆电抗/电吸，保持移动，破盾反攻。</tspan>
+  </text>
+
+  <text x="70" y="1560" font-family="Arial, sans-serif" font-size="24" fill="#a0a8b3" font-weight="bold">MF路线与推荐区域</text>
+  <line x1="70" y1="1570" x2="350" y2="1570" stroke="#a0a8b3" stroke-width="2"/>
+
+  <rect x="50" y="1590" width="700" height="150" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1610" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">MF之王:</text>
+  <text x="60" y="1640" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 安达利尔 & 墨菲斯托 (纯冰经典卡位MF)</tspan>
+    <tspan x="60" dy="20">- 古代通道 (纯冰法天堂，85级区域无冰免)</tspan>
+    <tspan x="60" dy="20">- 全地图/Terror Zones (无限电法，效率最高)</tspan>
+  </text>
+
+  <text x="400" y="1770" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">总结: 极致刷宝效率，风驰电掣</tspan>
+  <text x="400" y="1790" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">团队传送手，个人MF主力。脆弱但机动性强，操作要求高。</tspan>
+  </text>
+
+  <circle cx="700" cy="110" r="25" fill="#555"/>
+  <path d="M690 120 L710 120 L700 100 L690 120 Z" fill="#87ceeb"/>
+  <path d="M695 125 L705 125 L700 135 L695 125 Z" fill="#ff4500"/>
+
+</svg>

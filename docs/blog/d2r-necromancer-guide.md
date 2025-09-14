@@ -4,7 +4,7 @@ date: 2025/09/14 19:00:00
 description: 召唤/白骨/毒三形态：新手友好的纯召开荒、组队诅咒与尸爆清场、PVM/PVP要点、MF路线与阶段装备配置。
 tags: [D2R, Necromancer, Summoner, Bone, Poison]
 categories: [职业攻略]
-cover: /images/necromancer-cover.svg
+cover: /images/necromancer-cover.png
 recommend: 职业
 publish: true
 ---
@@ -95,4 +95,3 @@ publish: true
 ## 小结
 
 死灵法师兼具控场与支援：开荒期靠骷髅稳步推进，新手也能轻松通关；成型后以 CE 横扫高密地图，或以毒新星极速清图，是团队与 Solo 都极具价值的“掌控生死者”。
-
