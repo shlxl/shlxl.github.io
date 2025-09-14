@@ -1,25 +1,22 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { ElButton } from 'element-plus'
-import { useRouter, withBase } from 'vitepress'
-import { useArticles, useCleanUrls, useHotArticleConfig, useShowHotArticle } from '@sugarat/theme/src/composables/config/blog'
-import { wrapperCleanUrls } from '@sugarat/theme/src/utils/client'
-import { fireSVG } from '@sugarat/theme/src/constants/svg'
+import { useRouter, withBase, useData } from 'vitepress'
 
 const absFormat = (date: any) => String(date || '').replace(/-/g, '/').slice(0, 16)
+const { site } = useData()
+const blog = computed(() => (site.value.themeConfig as any)?.blog || {})
+const pages = computed(() => blog.value.pagesData || [])
+const show = computed(() => blog.value?.hotArticle !== false)
 
-const hotArticle = useHotArticleConfig()
-const show = useShowHotArticle()
+const title = computed(() => blog.value?.hotArticle?.title || '精选文章')
+const nextText = computed(() => blog.value?.hotArticle?.nextText || '下一组')
+const pageSize = computed(() => blog.value?.hotArticle?.pageSize || 9)
+const empty = computed(() => blog.value?.hotArticle?.empty ?? '暂无精选文章')
 
-const title = computed(() => hotArticle.value?.title || `${fireSVG} 精选文章`)
-const nextText = computed(() => hotArticle.value?.nextText || '下一组')
-const pageSize = computed(() => hotArticle.value?.pageSize || 9)
-const empty = computed(() => hotArticle.value?.empty ?? '暂无精选文章')
-
-const docs = useArticles()
 const recommendList = computed(() => {
-  const data = docs.value.filter(v => v.meta.sticky)
-  data.sort((a, b) => b.meta.sticky! - a.meta.sticky!)
+  const data = pages.value.filter((v: any) => v.meta.sticky)
+  data.sort((a: any, b: any) => b.meta.sticky - a.meta.sticky)
   return [...data]
 })
 
@@ -31,11 +28,10 @@ function changePage() {
   currentPage.value = newIdx + 1
 }
 
-const cleanUrls = useCleanUrls()
 const currentWikiData = computed(() => {
   const startIdx = (currentPage.value - 1) * pageSize.value
   const endIdx = startIdx + pageSize.value
-  return recommendList.value.slice(startIdx, endIdx).map(v => ({ ...v, route: wrapperCleanUrls(cleanUrls, v.route) }))
+  return recommendList.value.slice(startIdx, endIdx)
 })
 const showChangeBtn = computed(() => recommendList.value.length > pageSize.value)
 </script>
@@ -66,4 +62,3 @@ const showChangeBtn = computed(() => recommendList.value.length > pageSize.value
 <style lang="scss" scoped>
 /* rely on theme classes for styling */
 </style>
-

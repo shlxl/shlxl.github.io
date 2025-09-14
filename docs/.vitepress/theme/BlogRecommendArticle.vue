@@ -1,78 +1,41 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vitepress'
+import { useRoute, useRouter, withBase, useData } from 'vitepress'
 import { ElButton } from 'element-plus'
-import { wrapperCleanUrls } from '@sugarat/theme/src/utils/client'
-import { useArticles, useCleanUrls, useRecommendConfig, useShowRecommend } from '@sugarat/theme/src/composables/config/blog'
-import { recommendSVG } from '@sugarat/theme/src/constants/svg'
-import type { Theme } from '@sugarat/theme/src/composables/config/index'
 
 const absFormat = (date: any) => String(date || '').replace(/-/g, '/').slice(0, 16)
 
-const recommend = useRecommendConfig()
-const show = useShowRecommend()
+const { site } = useData()
+const blog = computed(() => (site.value.themeConfig as any)?.blog || {})
+const show = computed(() => blog.value?.recommend !== false)
 
-const sidebarStyle = computed(() => recommend.value?.style ?? 'sidebar')
-const showDate = computed(() => recommend.value?.showDate ?? true)
-const showNum = computed(() => recommend.value?.showNum ?? true)
+const sidebarStyle = computed(() => blog.value?.recommend?.style ?? 'sidebar')
+const showDate = computed(() => blog.value?.recommend?.showDate ?? true)
+const showNum = computed(() => blog.value?.recommend?.showNum ?? true)
 
-const title = computed(() => recommend.value?.title ?? (`<span class="svg-icon">${recommendSVG}</span>` + '相关文章'))
-const pageSize = computed(() => recommend.value?.pageSize || 9)
-const nextText = computed(() => recommend.value?.nextText || '下一页')
-const emptyText = computed(() => recommend.value?.empty ?? '暂无相关文章')
+const title = computed(() => blog.value?.recommend?.title ?? '相关文章')
+const pageSize = computed(() => blog.value?.recommend?.pageSize || 9)
+const nextText = computed(() => blog.value?.recommend?.nextText || '下一页')
+const emptyText = computed(() => blog.value?.recommend?.empty ?? '暂无相关文章')
 
-const docs = useArticles()
+const pages = computed(() => blog.value.pagesData || [])
 const route = useRoute()
-
-function getRecommendCategory(page?: Theme.PageData): string[] {
-  if (!page) return []
-  const { meta } = page
-  if (Array.isArray(meta.recommend)) return meta.recommend.filter(v => typeof v === 'string') as string[]
-  if (typeof meta.recommend === 'string') return [meta.recommend]
-  return []
-}
-function getRecommendValue(page?: Theme.PageData) {
-  return Array.isArray(page?.meta?.recommend) ? page!.meta.recommend[page!.meta.recommend.length - 1] : page?.meta.recommend
-}
-function hasIntersection(arr1: any[], arr2: any[]) { return arr1.some(item => arr2.includes(item)) }
-
-const recommendList = computed(() => {
-  const paths = decodeURIComponent(route.path).split('/')
-  const currentPage = docs.value.find(v => isCurrentDoc(v.route))
-  const currentRecommendCategory = getRecommendCategory(currentPage)
-  const origin = docs.value
-    .map(v => ({ ...v, route: withBasePath(v.route) }))
-    .filter((v) => {
-      if (currentRecommendCategory.length) return hasIntersection(currentRecommendCategory, getRecommendCategory(v))
-      return v.route.split('/').length === paths.length && v.route.startsWith(paths.slice(0, paths.length - 1).join('/'))
-    })
-    .filter(v => !!v.meta.title)
-    .filter(v => (recommend.value?.showSelf ?? true) || v.route !== decodeURIComponent(route.path).replace(/.html$/, ''))
-    .filter(v => v.meta.recommend !== false)
-    .filter(v => recommend.value?.filter?.(v) ?? true)
-
-  const topList = origin.filter((v) => typeof getRecommendValue(v) === 'number')
-  topList.sort((a, b) => Number(getRecommendValue(a)) - Number(getRecommendValue(b)))
-  const normalList = origin.filter(v => typeof getRecommendValue(v) !== 'number')
-  let compareFn = (a: any, b: any) => +new Date(b.meta.date) - +new Date(a.meta.date)
-  const sortMode = recommend.value?.sort ?? 'date'
-  if (sortMode === 'filename') {
-    compareFn = (a: any, b: any) => {
-      const aName = a.route.split('/').pop()!
-      const bName = b.route.split('/').pop()!
-      return aName.localeCompare(bName)
-    }
-  } else if (typeof sortMode === 'function') {
-    compareFn = sortMode
-  }
-  normalList.sort(compareFn)
-  return topList.concat(normalList)
-})
-
 function isCurrentDoc(value: string) {
   const path = decodeURIComponent(route.path).replace(/.html$/, '')
   return [value, value.replace(/index$/, '')].includes(path)
 }
+
+const recommendList = computed(() => {
+  const currentDir = decodeURIComponent(route.path).split('/').slice(0, -1).join('/')
+  const origin = pages.value
+    .map((v: any) => ({ ...v }))
+    .filter((v: any) => !!v.meta.title)
+    .filter((v: any) => v.route !== decodeURIComponent(route.path).replace(/.html$/, ''))
+    .filter((v: any) => v.route.startsWith(currentDir))
+
+  origin.sort((a: any, b: any) => +new Date(b.meta.date) - +new Date(a.meta.date))
+  return origin
+})
 
 const currentPage = ref(1)
 function changePage() {
@@ -85,15 +48,12 @@ const endIdx = computed(() => startIdx.value + pageSize.value)
 const currentWikiData = computed(() => recommendList.value.slice(startIdx.value, endIdx.value))
 const showChangeBtn = computed(() => recommendList.value.length > pageSize.value)
 
-const cleanUrls = useCleanUrls()
 const router = useRouter()
-function withBasePath(link: string) { return wrapperCleanUrls(cleanUrls, link) }
 function handleLinkClick(link: string) { router.go(link) }
 
 onMounted(() => {
   const currentPageIndex = recommendList.value.findIndex(v => isCurrentDoc(v.route))
-  if (currentPageIndex === -1) return
-  currentPage.value = Math.floor(currentPageIndex / pageSize.value) + 1
+  if (currentPageIndex !== -1) currentPage.value = Math.floor(currentPageIndex / pageSize.value) + 1
 })
 </script>
 
@@ -107,7 +67,7 @@ onMounted(() => {
       <li v-for="(v, idx) in currentWikiData" :key="v.route">
         <i v-if="showNum" class="num">{{ startIdx + idx + 1 }}</i>
         <div class="des">
-          <a class="title" :class="{ current: isCurrentDoc(v.route) }" :href="withBasePath(v.route)" @click.prevent="handleLinkClick(withBasePath(v.route))">
+          <a class="title" :class="{ current: isCurrentDoc(v.route) }" :href="withBase(v.route)" @click.prevent="handleLinkClick(withBase(v.route))">
             <span>{{ v.meta.title }}</span>
           </a>
           <div v-if="showDate" class="suffix">
@@ -123,4 +83,3 @@ onMounted(() => {
 <style lang="scss" scoped>
 /* rely on theme styling via class names */
 </style>
-
