@@ -112,3 +112,10 @@ html.dark {
   flex-wrap: wrap;
 }
 
+/* 作品集封面图（可选） */
+.xl-card .xl-cover {
+  width: 100%;
+  border-radius: var(--xl-radius);
+  border: 1px solid var(--vp-c-divider);
+  margin-bottom: 12px;
+}

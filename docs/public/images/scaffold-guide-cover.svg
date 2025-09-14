@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Scaffold guide cover">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="24" fill="url(#g1)"/>
+  <circle cx="1040" cy="140" r="220" fill="url(#g2)"/>
+  <g fill="#fff">
+    <text x="80" y="180" font-size="48" font-weight="700">内容脚手架</text>
+    <text x="80" y="240" font-size="32" opacity=".95">new:post · 一条命令生成文章</text>
+    <text x="80" y="300" font-size="22" opacity=".9">Frontmatter · Cover · Push</text>
+  </g>
+</svg>
+
