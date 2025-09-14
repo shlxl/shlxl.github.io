@@ -82,7 +82,7 @@ description: 汇总已发布的职业攻略（之一～之七），统一入口�
 - 系列推荐：文章均带 `recommend: 职业`，侧栏/底部会自动串联相关文章。
 - 目录与样式：标题与封面风格统一；若需导出为 PDF 或 RSS，我可以补构建脚本。
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useData, withBase } from 'vitepress'
 
