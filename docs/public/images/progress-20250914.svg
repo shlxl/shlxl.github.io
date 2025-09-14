@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Progress memo cover">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="24" fill="url(#g1)"/>
+  <circle cx="1020" cy="120" r="220" fill="url(#g2)"/>
+  <g fill="#fff">
+    <text x="80" y="180" font-size="44" font-weight="700">进展备忘录</text>
+    <text x="80" y="240" font-size="28" opacity=".95">时间一致性 · 组件覆盖 · 部署</text>
+  </g>
+</svg>
+
