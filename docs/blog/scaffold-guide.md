@@ -6,7 +6,7 @@ tags: [脚手架, 自动化, 博客, 作品集]
 categories: [文档]
 cover: /images/scaffold-guide-cover.svg
 top: 1
-publish: true
+publish: false
 ---
 
 本文基于内置脚手架命令，整合「新增博客文章」「新增作品集内容」与「预览发布」的完整流程，建议收藏备用。

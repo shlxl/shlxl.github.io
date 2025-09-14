@@ -5,7 +5,7 @@ description: 从技能加点、装备选择到实战流程，快速上手亡灵�
 tags: [D2R, Necromancer, Build]
 categories: [游戏]
 cover: /images/d2r-cover.svg
-publish: true
+publish: false
 ---
 
 这里是一篇示例文章，演示 frontmatter 的常用字段，并确保会出现在自动文章列表中。
