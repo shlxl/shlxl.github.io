@@ -34,23 +34,30 @@ function parseArgs(argv) {
 }
 
 function pad(n) { return String(n).padStart(2, '0') }
-function formatDate(d = new Date()) {
-  const yyyy = d.getFullYear()
-  const MM = pad(d.getMonth() + 1)
-  const dd = pad(d.getDate())
-  const hh = pad(d.getHours())
-  const mm = pad(d.getMinutes())
-  const ss = pad(d.getSeconds())
-  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`
+function getTZParts(d = new Date(), timeZone = 'Asia/Shanghai') {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  })
+  // en-CA gives YYYY-MM-DD, then time HH:MM:SS
+  const parts = fmt.formatToParts(d).reduce((acc, p) => (acc[p.type] = p.value, acc), {})
+  return {
+    yyyy: parts.year,
+    MM: parts.month,
+    dd: parts.day,
+    hh: parts.hour,
+    mm: parts.minute,
+    ss: parts.second
+  }
 }
-
-function formatStamp(d = new Date()) {
-  const yyyy = d.getFullYear()
-  const MM = pad(d.getMonth() + 1)
-  const dd = pad(d.getDate())
-  const hh = pad(d.getHours())
-  const mm = pad(d.getMinutes())
-  const ss = pad(d.getSeconds())
+function formatDate(d = new Date(), timeZone = 'Asia/Shanghai') {
+  const { yyyy, MM, dd, hh, mm, ss } = getTZParts(d, timeZone)
+  return `${yyyy}/${MM}/${dd} ${hh}:${mm}:${ss}`
+}
+function formatStamp(d = new Date(), timeZone = 'Asia/Shanghai') {
+  const { yyyy, MM, dd, hh, mm, ss } = getTZParts(d, timeZone)
   return `${yyyy}${MM}${dd}-${hh}${mm}${ss}`
 }
 
@@ -171,4 +178,3 @@ main().catch((e) => {
   console.error(e)
   process.exit(1)
 })
-
