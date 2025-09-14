@@ -49,10 +49,21 @@ const showTime = computed(() => String(props.date || '').replace(/-/g, '/').slic
 .description-html { font-size: 14px; }
 .badge-list { font-size: 13px; color: var(--badge-font-color); margin-top: 8px; }
 .badge-list .split:not(:last-child)::after { content: ''; display: inline-block; width: 1px; height: 8px; margin: 0 10px; background-color: #4e5969; }
-.cover-img { width: 120px; height: 80px; margin-left: 24px; border-radius: 2px; background-repeat: no-repeat; background-size: contain; background-position: center; }
+.cover-img {
+  width: 200px;
+  height: 120px;
+  margin-left: 24px;
+  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top center;
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);
+}
+@media (min-width: 960px) {
+  .cover-img { width: 260px; height: 156px; }
+}
 .pin { position: absolute; overflow: hidden; width: 30px; height: 30px; top: -4px; left: -4px; opacity: 0.5; }
 .blog-item:hover .pin { opacity: 1; }
 .pin::before { content: ''; position: absolute; width: 120%; height: 30px; background-image: linear-gradient(45deg, var(--blog-theme-color), var(--blog-theme-color)); transform: rotate(-45deg) translateY(-20px); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 10px rgba(0,0,0,0.23); }
 @media screen and (max-width: 500px) { .cover-img { width: 100px; height: 60px; } }
 </style>
-

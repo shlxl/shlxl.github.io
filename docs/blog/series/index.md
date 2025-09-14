@@ -138,7 +138,14 @@ const cardsToShow = computed(() => cards.value.slice(0, cardsLimit.value))
 @media (min-width: 960px) { .series-cards { grid-template-columns: repeat(3,1fr); } }
 .card { display: flex; flex-direction: column; border: 1px solid var(--vp-c-divider); border-radius: 12px; background: var(--vp-c-bg); text-decoration: none; color: inherit; box-shadow: 0 6px 18px rgba(0,0,0,.06); overflow: hidden; transition: transform .2s ease, box-shadow .2s ease; }
 .card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(79,70,229,.18); border-color: var(--vp-c-brand-1); }
-.card .cover { width: 100%; padding-top: 62%; background-size: cover; background-position: top center; }
+.card .cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-color: var(--vp-c-bg-soft);
+}
 .card .body { padding: 12px; }
 .card .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
 .card .meta { font-size: 12px; color: var(--vp-c-text-3); margin-bottom: 6px; }
