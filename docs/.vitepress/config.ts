@@ -24,7 +24,23 @@ const blogTheme = getThemeConfig({
   ],
   search: true,
   hotArticle: false,
-  homeTags: false
+  homeTags: false,
+  blog: {
+    // 统一显示绝对时间（不再使用“x小时前”），并避免时区解析偏差
+    formatShowDate: (date: any) => {
+      if (typeof date === 'string') {
+        const s = date.replace(/-/g, '/')
+        return s.slice(0, 16)
+      }
+      const d = new Date(date)
+      const yyyy = d.getFullYear()
+      const MM = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      const hh = String(d.getHours()).padStart(2, '0')
+      const mm = String(d.getMinutes()).padStart(2, '0')
+      return `${yyyy}/${MM}/${dd} ${hh}:${mm}`
+    }
+  }
 })
 
 export default defineConfig({
