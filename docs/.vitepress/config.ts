@@ -21,7 +21,14 @@ const blogTheme = getThemeConfig({
   search: true,
   hotArticle: false,
   homeTags: false,
-  recommend: { showDate: true }
+  recommend: { showDate: true },
+  // 职业攻略 RSS，仅收录 recommend=职业 的文章
+  RSS: {
+    title: 'D2R 职业攻略系列',
+    baseUrl: 'https://lxlcool3000.github.io',
+    copyright: '© 小凌',
+    filter: (page) => page?.meta?.recommend === '职业' && page?.meta?.publish !== false
+  }
 })
 
 export default defineConfig({

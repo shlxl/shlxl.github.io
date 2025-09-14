@@ -7,6 +7,37 @@ description: 汇总已发布的职业攻略（之一～之七），统一入口�
 
 > 统一入口：按发布顺序整理职业攻略，保持同款版式与封面。时间展示均为绝对时间（yyyy/MM/dd HH:mm）。
 
+## 最近更新（自动）
+
+<div class="series-recent">
+  <ul>
+    <li v-for="p in recent" :key="p.route">
+      <a :href="withBase(p.route)">{{ p.meta.title }}</a>
+      <span class="date">{{ fmt(p.meta.date) }}</span>
+    </li>
+  </ul>
+</div>
+
+## 按职业筛选（自动）
+
+<div class="series-filter">
+  <button
+    v-for="t in tags"
+    :key="t"
+    :class="['chip', { active: active === t }]"
+    @click="active = t"
+  >{{ t }}</button>
+</div>
+
+<div class="series-list">
+  <ul>
+    <li v-for="p in filtered" :key="p.route">
+      <a :href="withBase(p.route)">{{ p.meta.title }}</a>
+      <span class="date">{{ fmt(p.meta.date) }}</span>
+    </li>
+  </ul>
+</div>
+
 ## 已发布
 
 1. 野蛮人 - 战场的怒吼（之一）
@@ -42,3 +73,32 @@ description: 汇总已发布的职业攻略（之一～之七），统一入口�
 - 系列推荐：文章均带 `recommend: 职业`，侧栏/底部会自动串联相关文章。
 - 目录与样式：标题与封面风格统一；若需导出为 PDF 或 RSS，我可以补构建脚本。
 
+<script setup>
+import { computed, ref } from 'vue'
+import { useData, withBase } from 'vitepress'
+
+const { site } = useData()
+const pages = computed(() => {
+  const all = (site.value.themeConfig?.blog?.pagesData || [])
+  return all.filter((p) => p?.meta?.recommend === '职业' && p?.meta?.publish !== false)
+})
+const recent = computed(() => [...pages.value].sort((a,b) => +new Date(b.meta.date) - +new Date(a.meta.date)).slice(0, 5))
+const tags = ref(['全部','野蛮人','德鲁伊','刺客','亚马逊','巫师','圣骑士','死灵法师'])
+const active = ref('全部')
+const filtered = computed(() => active.value === '全部' ? pages.value : pages.value.filter((p) => `${p.meta.title}`.includes(active.value)))
+const fmt = (d) => `${String(d).replace(/-/g,'/').slice(0,16)}`
+</script>
+
+<style scoped>
+.series-recent ul,
+.series-list ul { list-style: none; padding: 0; margin: 0; }
+.series-recent li,
+.series-list li { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--vp-c-divider); }
+.series-recent a,
+.series-list a { color: var(--vp-c-text-1); text-decoration: none; }
+.series-recent .date,
+.series-list .date { color: var(--vp-c-text-2); font-size: 12px; margin-left: 12px; white-space: nowrap; }
+.series-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 8px; }
+.chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); cursor: pointer; }
+.chip.active { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+</style>
