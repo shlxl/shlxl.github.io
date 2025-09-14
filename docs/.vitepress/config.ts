@@ -3,14 +3,10 @@ import { getThemeConfig } from '@sugarat/theme/node'
 import fs from 'node:fs'
 import path from 'node:path'
 
-// On GitHub Pages (project site), Actions will set this env
-// to ensure correct asset paths like "/<repo>/..."
 const deployBase = process.env.DEPLOY_BASE || '/'
 
 const blogTheme = getThemeConfig({
-  // 统一时区，避免本地与 CI (UTC) 的时间偏差
   timeZone: 8,
-  // 基础主题配置（@sugarat/theme）
   author: '小凌',
   home: {
     name: '小凌',
@@ -25,25 +21,8 @@ const blogTheme = getThemeConfig({
   search: true,
   hotArticle: false,
   homeTags: false,
-  recommend: {
-    showDate: false
-  },
-  blog: {
-    // 统一显示绝对时间（不再使用“x小时前”），并避免时区解析偏差
-    formatShowDate: (date: any) => {
-      if (typeof date === 'string') {
-        const s = date.replace(/-/g, '/')
-        return s.slice(0, 16)
-      }
-      const d = new Date(date)
-      const yyyy = d.getFullYear()
-      const MM = String(d.getMonth() + 1).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      const hh = String(d.getHours()).padStart(2, '0')
-      const mm = String(d.getMinutes()).padStart(2, '0')
-      return `${yyyy}/${MM}/${dd} ${hh}:${mm}`
-    }
-  }
+  // 隐藏“相关文章”中的日期，防止客户端与 SSR 相对时间不一致
+  recommend: { showDate: false }
 })
 
 export default defineConfig({
@@ -66,12 +45,10 @@ export default defineConfig({
     ],
     outline: { label: '本页导航', level: 'deep' }
   },
-  vite: {
-    plugins: [faviconIcoFallback()]
-  }
+  vite: { plugins: [faviconIcoFallback()] }
 })
 
-// dev 下将 /favicon.ico 映射为 /favicon.svg，避免 404 噪声
+// 开发时将 /favicon.ico 映射为 SVG，避免控制台 404 噪声
 function faviconIcoFallback() {
   let svg: string | null = null
   return {
@@ -88,12 +65,11 @@ function faviconIcoFallback() {
             res.setHeader('Content-Type', 'image/svg+xml')
             res.end(svg)
             return
-          } catch (e) {
-            // 读取失败则继续交给下一中间件（返回 404）
-          }
+          } catch {}
         }
         next()
       })
     }
   }
 }
+
