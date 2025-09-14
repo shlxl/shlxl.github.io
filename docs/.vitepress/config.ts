@@ -8,6 +8,8 @@ import path from 'node:path'
 const deployBase = process.env.DEPLOY_BASE || '/'
 
 const blogTheme = getThemeConfig({
+  // 统一时区，避免本地与 CI (UTC) 的时间偏差
+  timeZone: 8,
   // 基础主题配置（@sugarat/theme）
   author: '小凌',
   home: {
