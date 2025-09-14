@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Blog guide cover">
+  <defs>
+    <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="24" fill="url(#gb)"/>
+  <circle cx="1100" cy="80" r="180" fill="url(#ga)"/>
+  <g fill="#fff">
+    <text x="80" y="180" font-size="48" font-weight="700">写作指南</text>
+    <text x="80" y="240" font-size="32" opacity=".95">Add Blog Post</text>
+    <text x="80" y="300" font-size="22" opacity=".9">Frontmatter · Cover · Publish</text>
+  </g>
+</svg>
+

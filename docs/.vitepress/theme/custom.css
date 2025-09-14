@@ -1,0 +1,114 @@
+:root {
+  /* 品牌与辅助色 */
+  --vp-c-brand-1: #4F46E5; /* indigo */
+  --vp-c-brand-2: #6366F1;
+  --vp-c-brand-3: #4338CA;
+  --xl-accent: #F59E0B; /* amber */
+
+  /* 卡片与阴影 */
+  --xl-radius: 14px;
+  --xl-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+html.dark {
+  --vp-c-brand-1: #818CF8;
+  --vp-c-brand-2: #A5B4FC;
+  --vp-c-brand-3: #6366F1;
+  --xl-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* 首页 Hero */
+.xl-hero {
+  text-align: center;
+  padding: 64px 16px 24px;
+}
+.xl-avatar {
+  margin: 0 auto 16px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  background: radial-gradient(120px 120px at 30% 30%, var(--vp-c-brand-2), var(--vp-c-brand-3));
+  box-shadow: var(--xl-shadow);
+}
+.xl-hero h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+.xl-hero .xl-bio {
+  font-size: 16px;
+  color: var(--vp-c-text-2);
+  margin-bottom: 12px;
+}
+.xl-hero .xl-sub {
+  font-size: 14px;
+  color: var(--vp-c-text-3);
+  margin-bottom: 18px;
+}
+.xl-socials {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.xl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+  line-height: 1;
+}
+.xl-chip:hover {
+  border-color: var(--vp-c-brand-1);
+}
+.xl-chip a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 作品集卡片 */
+.xl-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .xl-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .xl-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.xl-card {
+  border-radius: var(--xl-radius);
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  box-shadow: var(--xl-shadow);
+  padding: 16px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.xl-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 10px 28px rgba(79, 70, 229, .18);
+}
+.xl-card h3 {
+  margin: 8px 0;
+}
+.xl-card p {
+  margin: 6px 0 12px;
+  color: var(--vp-c-text-2);
+}
+.xl-card .xl-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
