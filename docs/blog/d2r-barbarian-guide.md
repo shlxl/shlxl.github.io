@@ -4,7 +4,7 @@ date: 2025/09/14 17:00:00
 description: 近战之王的全阶段指南：开荒加点、属性分配、装备与佣兵、PVM/PVP思路、MF路线与成型装备配置。
 tags: [D2R, Barbarian, 旋风斩, Build]
 categories: [职业攻略]
-cover: /images/barbarian-cover.svg
+cover: /images/barbarian-cover.png
 recommend: 职业
 publish: true
 ---
