@@ -46,7 +46,7 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback()],
+    plugins: [faviconIcoFallback(), overrideSugaratComponents()],
     resolve: {
       alias: {
         '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
@@ -79,6 +79,27 @@ function faviconIcoFallback() {
         }
         next()
       })
+    }
+  }
+}
+
+function overrideSugaratComponents() {
+  const map: Record<string, string> = {
+    'BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
+    'BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
+    'BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
+    'BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
+  }
+  return {
+    name: 'xl-override-sugarat-components',
+    enforce: 'pre',
+    resolveId(source: string, importer?: string) {
+      if (!importer) return null
+      const imp = importer.replace(/\\/g, '/')
+      if (!imp.includes('/node_modules/@sugarat/theme/src/components/')) return null
+      const base = source.replace(/.*\//, '')
+      if (map[base]) return map[base]
+      return null
     }
   }
 }
