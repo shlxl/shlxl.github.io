@@ -1,6 +1,6 @@
 ---
 title: D2R Necromancer 入门与进阶指南
-date: 2025-01-05 10:00:00
+date: 2025/09/14 09:00:00
 description: 从技能加点、装备选择到实战流程，快速上手亡灵法师。
 tags: [D2R, Necromancer, Build]
 categories: [游戏]
@@ -25,4 +25,3 @@ publish: true
 4. 对 Boss 使用 Decrepify，保持安全距离输出。
 
 > 提示：封面图位于 `docs/public/images/d2r-cover.svg`，可按需替换实际图片。
-
