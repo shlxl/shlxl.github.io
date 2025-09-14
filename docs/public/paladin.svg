@@ -1,0 +1,122 @@
+<svg width="800" height="1800" viewBox="0 0 800 1800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="1800" fill="#282c34"/>
+
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="36" fill="#ffd700" text-anchor="middle" font-weight="bold">圣骑士 Paladin</text>
+
+  <rect x="50" y="80" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="400" y="110" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">攻守兼备，团队核心，拥有强大光环与战技增益。</tspan>
+    <tspan x="400" dy="25">PVM刷图之王(Hammerdin)，PVP/Boss战出色，全面且不可或缺。</tspan>
+  </text>
+
+  <text x="70" y="190" font-family="Arial, sans-serif" font-size="24" fill="#00ccff" font-weight="bold">Solo开荒路线</text>
+  <line x1="70" y1="200" x2="250" y2="200" stroke="#00ccff" stroke-width="2"/>
+
+  <rect x="50" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">技能路线: 圣火骑士 → 祝福之锤</text>
+  <text x="60" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 1-18级 (圣火): 牺牲(1), 圣火(主加), 抵抗火焰(协同)</tspan>
+    <tspan x="60" dy="20">- 18-24级 (转型): 祝福之锤(满), 祝福瞄准(协同)</tspan>
+    <tspan x="60" dy="20">  专注光环, 圣盾(1)</tspan>
+    <tspan x="60" dy="20">- 24级以后: 祝福之锤(满), 祝福瞄准(满)</tspan>
+    <tspan x="60" dy="20">  活力(协同), 专注光环(高), 圣盾(适当)</tspan>
+    <tspan x="60" dy="20">  救赎(1,辅助)</tspan>
+  </text>
+
+  <rect x="410" y="220" width="340" height="250" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">属性分配:</text>
+  <text x="420" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 力量: 150-160 (穿戴圣骑盾/重甲)</tspan>
+    <tspan x="420" dy="20">- 敏捷: 75%格挡 (或满足装备)</tspan>
+    <tspan x="420" dy="20">- 活力: 全加 (提高生命)</tspan>
+    <tspan x="420" dy="20">- 精力: 不加</tspan>
+  </text>
+  <text x="420" y="360" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">装备与雇佣兵:</text>
+  <text x="420" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 开荒符文: 隐秘, 知识, 精神剑盾</tspan>
+    <tspan x="420" dy="20">- 佣兵: 噩梦防御型 (圣冰光环), 眼光 (冥思)</tspan>
+  </text>
+
+  <text x="70" y="500" font-family="Arial, sans-serif" font-size="24" fill="#ff9900" font-weight="bold">组队合作优劣与玩法定位</text>
+  <line x1="70" y1="510" x2="400" y2="510" stroke="#ff9900" stroke-width="2"/>
+
+  <rect x="50" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队优势:</text>
+  <text x="60" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 多样光环: 狂热, 力量, 救赎, 信念(降抗)</tspan>
+    <tspan x="60" dy="20">- 输出与坦度: Hammerdin顶尖AOE, Smiter最强坦克</tspan>
+  </text>
+
+  <rect x="410" y="530" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="550" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队劣势:</text>
+  <text x="420" y="580" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 几乎无明显弱点</tspan>
+    <tspan x="420" dy="20">- 锤子轨迹特殊 (螺旋锤)，狭窄地形需走位</tspan>
+  </text>
+
+  <text x="70" y="760" font-family="Arial, sans-serif" font-size="24" fill="#ff66b2" font-weight="bold">PVM刷图主流构筑</text>
+  <line x1="70" y1="770" x2="350" y2="770" stroke="#ff66b2" stroke-width="2"/>
+
+  <rect x="50" y="790" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="810" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">祝福之锤圣骑士 (Hammerdin):</text>
+  <text x="60" y="840" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">PVM效率之王，魔法伤害，通刷所有场景。</tspan>
+    <tspan x="60" dy="20">缺点: 狭窄地形有命中盲区。</tspan>
+  </text>
+
+  <rect x="50" y="900" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="920" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">天堂之拳圣骑士 (FoHdin):</text>
+  <text x="60" y="950" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">针对恶魔/不死，混沌避难所等效率高，但Farm路线受限。</tspan>
+  </text>
+
+  <rect x="50" y="1010" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1030" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">盾击圣骑士 (Smiter):</text>
+  <text x="60" y="1060" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">单体Boss杀手 (Uber)，100%命中，高压碎性打击。无AOE。</tspan>
+  </text>
+
+  <rect x="50" y="1120" width="700" height="100" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1140" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">狂热狂击圣骑士 (Zealot):</text>
+  <text x="60" y="1170" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">高速近战物理输出，打击感好。地狱效率和安全性不如Hammerdin。</tspan>
+  </text>
+
+  <text x="70" y="1250" font-family="Arial, sans-serif" font-size="24" fill="#66ff66" font-weight="bold">PVP常见Build与对策</text>
+  <line x1="70" y1="1260" x2="350" y2="1260" stroke="#66ff66" stroke-width="2"/>
+
+  <rect x="50" y="1280" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1300" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">祝福之锤圣骑士 (Hammerdin) PVP:</text>
+  <text x="60" y="1330" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">近乎无解，高伤魔法锤+高机动+高防御。预判走位，无天敌。</tspan>
+    <tspan x="60" dy="20">对策: 走位躲锤，利用地形，堆魔法伤害减免。</tspan>
+  </text>
+
+  <rect x="50" y="1410" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1430" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">盾击圣骑士 (Smiter) PVP:</text>
+  <text x="60" y="1460" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">近战王者，攻速快，必中，压制近战。高防高格挡。</tspan>
+    <tspan x="60" dy="20">对策: “放风筝”，保持距离，用减速/致盲，切忌硬拼。</tspan>
+  </text>
+
+  <text x="70" y="1560" font-family="Arial, sans-serif" font-size="24" fill="#a0a8b3" font-weight="bold">MF路线与推荐区域</text>
+  <line x1="70" y1="1570" x2="350" y2="1570" stroke="#a0a8b3" stroke-width="2"/>
+
+  <rect x="50" y="1590" width="700" height="150" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="1610" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">MF刷宝效率最高:</text>
+  <text x="60" y="1640" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 所有85级区域 (混沌避难所, 世界之石要塞, 洞穴, 古代通道)</tspan>
+    <tspan x="60" dy="20">- 崔凡克议会 (高阶符文, 金币)</tspan>
+    <tspan x="60" dy="20">- 地狱火炬任务 (Uber Tristram, Smiter首选)</tspan>
+  </text>
+
+  <text x="400" y="1770" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">总结: 全能且上限极高</text>
+  <text x="400" y="1790" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">PVM/PVP表现出色，初期光环辅助，后期飞锤横扫。</tspan>
+  </text>
+
+  <circle cx="700" cy="110" r="25" fill="#555"/>
+  <path d="M690 120 L710 120 L700 100 L690 120 Z" fill="#ffd700"/>
+  <path d="M695 125 L705 125 L700 135 L695 125 Z" fill="#0000ff"/>
+
+</svg>

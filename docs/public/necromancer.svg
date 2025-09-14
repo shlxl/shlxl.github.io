@@ -1,0 +1,90 @@
+<svg width="800" height="1200" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="800" height="1200" fill="#282c34"/>
+
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="36" fill="#00ff00" text-anchor="middle" font-weight="bold">死灵法师 Necromancer</text>
+
+  <rect x="50" y="80" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="400" y="110" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">掌控生命与死亡，召唤亡者大军，施放骨系、毒系法术，诅咒削弱敌人。</tspan>
+    <tspan x="400" dy="25">开荒安全，成型PVM/辅助出色，新手友好。</tspan>
+  </text>
+
+  <text x="70" y="190" font-family="Arial, sans-serif" font-size="24" fill="#00ccff" font-weight="bold">Solo开荒路线</text>
+  <line x1="70" y1="200" x2="250" y2="200" stroke="#00ccff" stroke-width="2"/>
+
+  <rect x="50" y="220" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">技能路线: 纯召唤 (鱼骨死灵)</text>
+  <text x="60" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 1-12级: 牙(1) → 骷髅复苏(满)</tspan>
+    <tspan x="60" dy="20">- 12-24级: 骷髅复苏(满), 支配骷髅, 黏土石魔(1)</tspan>
+    <tspan x="60" dy="20">  伤害加深(1), 尸体爆炸(18级)</tspan>
+    <tspan x="60" dy="20">- 24级后: 支配骷髅(满), 尸体爆炸(满)</tspan>
+    <tspan x="60" dy="20">  支配石魔/召唤抵抗, 衰老(24级)</tspan>
+  </text>
+
+  <rect x="410" y="220" width="340" height="200" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="240" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">属性分配:</text>
+  <text x="420" y="270" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 力量: 满足装备 (精神盾156)</tspan>
+    <tspan x="420" dy="20">- 敏捷: 不加 (除非格挡流)</tspan>
+    <tspan x="420" dy="20">- 活力: 全加 (提高生命)</tspan>
+    <tspan x="420" dy="20">- 精力: 不加 (蓝靠装备)</tspan>
+  </text>
+  <text x="420" y="360" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">装备与雇佣兵:</text>
+  <text x="420" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 符文之语: 隐秘, 知识</tspan>
+    <tspan x="420" dy="20">- 佣兵: 噩梦进攻型 (力量光环), 眼光 (冥思光环)</tspan>
+  </text>
+
+  <text x="70" y="460" font-family="Arial, sans-serif" font-size="24" fill="#ff9900" font-weight="bold">组队合作优劣与玩法定位</text>
+  <line x1="70" y1="470" x2="400" y2="470" stroke="#ff9900" stroke-width="2"/>
+
+  <rect x="50" y="490" width="340" height="180" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="510" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队优势:</text>
+  <text x="60" y="540" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">- 强力诅咒: 伤害加深, 降低抵抗, 衰老</tspan>
+    <tspan x="60" dy="20">- 骷髅前排: 吸引伤害, 保护队友</tspan>
+    <tspan x="60" dy="20">- 尸爆清场: 连锁反应, 瞬间清怪</tspan>
+  </text>
+
+  <rect x="410" y="490" width="340" height="180" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="420" y="510" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">组队劣势:</text>
+  <text x="420" y="540" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="420" dy="0">- 节奏较慢: 需先制造尸体</tspan>
+    <tspan x="420" dy="20">- 召唤物干扰: 战场混乱, 阻碍走位 (需管理)</tspan>
+  </text>
+
+  <text x="70" y="700" font-family="Arial, sans-serif" font-size="24" fill="#ff66b2" font-weight="bold">PVM刷图主流构筑</text>
+  <line x1="70" y1="710" x2="350" y2="710" stroke="#ff66b2" stroke-width="2"/>
+
+  <rect x="50" y="730" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="750" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">纯召死灵 (Summoner/Fishymancer):</text>
+  <text x="60" y="780" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">骷髅大军+伤害加深+尸体爆炸。极其安全，装备要求低，通刷所有地图。</tspan>
+    <tspan x="60" dy="20">“谜团”传送后效率质变。</tspan>
+  </text>
+
+  <rect x="50" y="860" width="700" height="80" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="880" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">白骨死灵 (Bonemancer):</text>
+  <text x="60" y="910" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">骨矛+骨魂。魔法伤害，无免疫问题，但伤害上限略低。</tspan>
+  </text>
+
+  <rect x="50" y="950" width="700" height="120" fill="#3a3f4b" rx="10" ry="10"/>
+  <text x="60" y="970" font-family="Arial, sans-serif" font-size="18" fill="#e0e0e0" font-weight="bold">毒素死灵 (Poisonmancer):</text>
+  <text x="60" y="1000" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">
+    <tspan x="60" dy="0">剧毒新星。清屏速度极快 (奶牛关, 85级区域)。缺点是毒伤需时间，装备要求高。</tspan>
+    <tspan x="60" dy="20">破免护符+降低抵抗后几乎无视免疫。</tspan>
+  </text>
+
+  <text x="400" y="1120" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" text-anchor="middle" font-weight="bold">总结: 兼具控场与支援，全能型角色</text>
+  <text x="400" y="1160" font-family="Arial, sans-serif" font-size="20" fill="#a0a8b3" text-anchor="middle">
+    <tspan x="400" dy="0">开荒稳健，后期强大，新手友好。</tspan>
+    <tspan x="400" dy="25">喜欢稳扎稳打、掌控全场的玩家的极佳选择。</tspan>
+  </text>
+
+  <circle cx="700" cy="110" r="25" fill="#555"/>
+  <path d="M690 120 L710 120 L700 100 L690 120 Z" fill="#00ff00"/>
+  <path d="M695 125 L705 125 L700 135 L695 125 Z" fill="#ff0000"/>
+
+</svg>
