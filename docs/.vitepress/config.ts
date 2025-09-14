@@ -21,7 +21,6 @@ const blogTheme = getThemeConfig({
   search: true,
   hotArticle: false,
   homeTags: false,
-  // 隐藏“相关文章”中的日期，防止客户端与 SSR 相对时间不一致
   recommend: { showDate: true }
 })
 
@@ -58,7 +57,6 @@ export default defineConfig({
   }
 })
 
-// 开发时将 /favicon.ico 映射为 SVG，避免控制台 404 噪声
 function faviconIcoFallback() {
   let svg: string | null = null
   return {
@@ -103,3 +101,4 @@ function overrideSugaratComponents() {
     }
   }
 }
+

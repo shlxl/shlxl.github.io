@@ -9,7 +9,8 @@ const blog = computed(() => (site.value.themeConfig as any)?.blog || {})
 const pages = computed(() => blog.value.pagesData || [])
 const show = computed(() => blog.value?.hotArticle !== false)
 
-const title = computed(() => blog.value?.hotArticle?.title || '精选文章')
+const fireSVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c1 3 4 4 4 8a4 4 0 1 1-8 0c0-1.5.5-3 2-5-4 2-6 6-6 9a8 8 0 1 0 16 0c0-5-4-7-8-12z"/></svg>'
+const title = computed(() => blog.value?.hotArticle?.title || `${fireSVG} 精选文章`)
 const nextText = computed(() => blog.value?.hotArticle?.nextText || '下一组')
 const pageSize = computed(() => blog.value?.hotArticle?.pageSize || 9)
 const empty = computed(() => blog.value?.hotArticle?.empty ?? '暂无精选文章')

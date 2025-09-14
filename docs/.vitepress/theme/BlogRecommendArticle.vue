@@ -13,7 +13,8 @@ const sidebarStyle = computed(() => blog.value?.recommend?.style ?? 'sidebar')
 const showDate = computed(() => blog.value?.recommend?.showDate ?? true)
 const showNum = computed(() => blog.value?.recommend?.showNum ?? true)
 
-const title = computed(() => blog.value?.recommend?.title ?? '相关文章')
+const recSVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>'
+const title = computed(() => blog.value?.recommend?.title ?? `${recSVG} 相关文章`)
 const pageSize = computed(() => blog.value?.recommend?.pageSize || 9)
 const nextText = computed(() => blog.value?.recommend?.nextText || '下一页')
 const emptyText = computed(() => blog.value?.recommend?.empty ?? '暂无相关文章')
@@ -26,15 +27,35 @@ function isCurrentDoc(value: string) {
 }
 
 const recommendList = computed(() => {
-  const currentDir = decodeURIComponent(route.path).split('/').slice(0, -1).join('/')
-  const origin = pages.value
-    .map((v: any) => ({ ...v }))
-    .filter((v: any) => !!v.meta.title)
-    .filter((v: any) => v.route !== decodeURIComponent(route.path).replace(/.html$/, ''))
-    .filter((v: any) => v.route.startsWith(currentDir))
+  const path = decodeURIComponent(route.path).replace(/\.html$/, '')
+  const current = pages.value.find((p: any) => [p.route, `${p.route}`.replace(/index$/, '')].includes(path))
+  const currentCats: string[] = Array.isArray(current?.meta?.recommend)
+    ? (current!.meta!.recommend as any[]).filter(v => typeof v === 'string')
+    : (typeof current?.meta?.recommend === 'string' ? [current!.meta!.recommend] : [])
 
-  origin.sort((a: any, b: any) => +new Date(b.meta.date) - +new Date(a.meta.date))
-  return origin
+  const list = pages.value
+    .filter((v: any) => v.route.startsWith('/blog/'))
+    .filter((v: any) => v.route !== path)
+    .filter((v: any) => !!v.meta.title && !v.meta.hidden)
+
+  // 如果有推荐分类，优先按分类挑选
+  const catMatch = currentCats.length
+    ? list.filter((v: any) => {
+        const cats = Array.isArray(v.meta.recommend)
+          ? (v.meta.recommend as any[]).filter((x) => typeof x === 'string')
+          : (typeof v.meta.recommend === 'string' ? [v.meta.recommend] : [])
+        return cats.some((c: string) => currentCats.includes(c))
+      })
+    : []
+
+  const pool = catMatch.length ? catMatch : list
+
+  // 置顶优先（数字越小越靠前），再按时间倒序
+  const withTop = pool.filter((v: any) => typeof v.meta.recommend === 'number')
+  withTop.sort((a: any, b: any) => Number(a.meta.recommend) - Number(b.meta.recommend))
+  const normal = pool.filter((v: any) => typeof v.meta.recommend !== 'number')
+  normal.sort((a: any, b: any) => +new Date(b.meta.date) - +new Date(a.meta.date))
+  return withTop.concat(normal)
 })
 
 const currentPage = ref(1)
