@@ -48,7 +48,8 @@ export default defineConfig({
       { text: '关于我', link: '/about/' },
       { text: '作品集', link: '/portfolio/' },
       { text: '博客', link: '/blog/' },
-      { text: '职业攻略', link: '/blog/series/' }
+      { text: '职业攻略', link: '/blog/series/' },
+      { text: 'RSS', link: '/rss/' }
     ],
     outline: { label: '本页导航', level: 'deep' }
   },

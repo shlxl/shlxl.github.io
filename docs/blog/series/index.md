@@ -11,11 +11,13 @@ description: 汇总已发布的职业攻略（之一～之七），统一入口�
 
 <div class="series-recent">
   <ul>
-    <li v-for="p in recent" :key="p.route">
+    <li v-for="p in recentToShow" :key="p.route">
       <a :href="withBase(p.route)">{{ p.meta.title }}</a>
       <span class="date">{{ fmt(p.meta.date) }}</span>
     </li>
   </ul>
+  <button v-if="recent.length > recentLimit" class="btn-more" @click="recentLimit += 5">显示更多</button>
+  <button v-else class="btn-more" disabled>已全部显示</button>
 </div>
 
 ## 按职业筛选（自动）
@@ -29,13 +31,20 @@ description: 汇总已发布的职业攻略（之一～之七），统一入口�
   >{{ t }}</button>
 </div>
 
-<div class="series-list">
-  <ul>
-    <li v-for="p in filtered" :key="p.route">
-      <a :href="withBase(p.route)">{{ p.meta.title }}</a>
-      <span class="date">{{ fmt(p.meta.date) }}</span>
-    </li>
-  </ul>
+<div class="series-cards">
+  <a class="card" v-for="p in cardsToShow" :key="p.route" :href="withBase(p.route)">
+    <div class="cover" v-if="p.meta.cover" :style="`background-image:url(${withBase(p.meta.cover)})`" />
+    <div class="body">
+      <div class="title">{{ p.meta.title }}</div>
+      <div class="meta">{{ fmt(p.meta.date) }}</div>
+      <div v-if="p.meta.descriptionHTML" class="desc" v-html="p.meta.descriptionHTML"></div>
+      <div v-else class="desc">{{ p.meta.description || '' }}</div>
+    </div>
+  </a>
+</div>
+<div class="series-pagination">
+  <button v-if="cards.length > cardsLimit" class="btn-more" @click="cardsLimit += 6">加载更多</button>
+  <button v-else class="btn-more" disabled>已全部显示</button>
 </div>
 
 ## 已发布
@@ -82,11 +91,20 @@ const pages = computed(() => {
   const all = (site.value.themeConfig?.blog?.pagesData || [])
   return all.filter((p) => p?.meta?.recommend === '职业' && p?.meta?.publish !== false)
 })
-const recent = computed(() => [...pages.value].sort((a,b) => +new Date(b.meta.date) - +new Date(a.meta.date)).slice(0, 5))
+const recent = computed(() => [...pages.value].sort((a,b) => +new Date(b.meta.date) - +new Date(a.meta.date)))
+const recentLimit = ref(5)
+const recentToShow = computed(() => recent.value.slice(0, recentLimit.value))
 const tags = ref(['全部','野蛮人','德鲁伊','刺客','亚马逊','巫师','圣骑士','死灵法师'])
 const active = ref('全部')
 const filtered = computed(() => active.value === '全部' ? pages.value : pages.value.filter((p) => `${p.meta.title}`.includes(active.value)))
 const fmt = (d) => `${String(d).replace(/-/g,'/').slice(0,16)}`
+
+const cards = computed(() => {
+  const data = [...filtered.value].sort((a,b) => +new Date(b.meta.date) - +new Date(a.meta.date))
+  return data
+})
+const cardsLimit = ref(12)
+const cardsToShow = computed(() => cards.value.slice(0, cardsLimit.value))
 </script>
 
 <style scoped>
@@ -101,4 +119,16 @@ const fmt = (d) => `${String(d).replace(/-/g,'/').slice(0,16)}`
 .series-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 8px; }
 .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); cursor: pointer; }
 .chip.active { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+.series-cards { display: grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap: 14px; margin-top: 10px; }
+@media (min-width: 640px) { .series-cards { grid-template-columns: repeat(2,1fr); } }
+@media (min-width: 960px) { .series-cards { grid-template-columns: repeat(3,1fr); } }
+.card { display: flex; flex-direction: column; border: 1px solid var(--vp-c-divider); border-radius: 12px; background: var(--vp-c-bg); text-decoration: none; color: inherit; box-shadow: 0 6px 18px rgba(0,0,0,.06); overflow: hidden; transition: transform .2s ease, box-shadow .2s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(79,70,229,.18); border-color: var(--vp-c-brand-1); }
+.card .cover { width: 100%; padding-top: 52%; background-size: cover; background-position: center; }
+.card .body { padding: 12px; }
+.card .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
+.card .meta { font-size: 12px; color: var(--vp-c-text-3); margin-bottom: 6px; }
+.card .desc { font-size: 13px; color: var(--vp-c-text-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.btn-more { margin-top: 10px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-soft); cursor: pointer; }
+.btn-more[disabled] { opacity: .5; cursor: not-allowed; }
 </style>
