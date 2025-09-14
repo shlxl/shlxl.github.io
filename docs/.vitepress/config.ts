@@ -40,7 +40,8 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '关于我', link: '/about/' },
       { text: '作品集', link: '/portfolio/' },
-      { text: '博客', link: '/blog/' }
+      { text: '博客', link: '/blog/' },
+      { text: '职业攻略', link: '/blog/series/' }
     ],
     outline: { label: '本页导航', level: 'deep' }
   },
@@ -101,4 +102,3 @@ function overrideSugaratComponents() {
     }
   }
 }
-
