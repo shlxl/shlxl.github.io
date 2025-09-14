@@ -1,3 +1,4 @@
+---
 title: 新增博客文章指南
 date: 2025-09-14 10:00:00
 description: 手把手带你新增一篇文章：命名、frontmatter、封面、预览与发布。
