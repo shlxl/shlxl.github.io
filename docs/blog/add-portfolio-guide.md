@@ -1,11 +1,10 @@
----
 title: 新增作品集内容指南
 date: 2025-09-14 10:10:00
 description: 用卡片网格快速添加项目，含封面、简介与链接示例。
 tags: [作品集, 指南, UI]
 categories: [文档]
 cover: /images/portfolio-guide-cover.svg
-publish: true
+publish: false
 ---
 
 本文介绍如何在「作品集」页面添加项目卡片，以及一些可选的扩展方式。
@@ -74,4 +73,3 @@ description: 组件库的设计原则、配色与暗色模式适配经验。
 - 本地：`npm run docs:dev`，访问 `/portfolio/`
 - 构建：`npm run docs:build`
 - 部署：推送到 `main`，GitHub Actions 会自动发布
-

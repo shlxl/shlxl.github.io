@@ -1,12 +1,10 @@
----
 title: 新增博客文章指南
 date: 2025-09-14 10:00:00
 description: 手把手带你新增一篇文章：命名、frontmatter、封面、预览与发布。
 tags: [写作指南, VitePress, Frontmatter]
 categories: [文档]
 cover: /images/blog-guide-cover.svg
-top: 1
-publish: true
+publish: false
 ---
 
 这篇指南教你如何在本站新增一篇博客文章，并让它自动出现在 `/blog/` 列表中（按时间倒序、支持置顶）。
@@ -61,4 +59,3 @@ top: 1
 ## 6. 进阶用法
 - 置顶：给某些文章设置 `top: 1 | 2 | 3 ...`
 - 页面大小：在 `docs/blog/index.md` 中通过 `blog.pageSize` 调整列表分页（默认 6）
-
