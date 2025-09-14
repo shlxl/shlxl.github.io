@@ -45,7 +45,14 @@ export default defineConfig({
     ],
     outline: { label: '本页导航', level: 'deep' }
   },
-  vite: { plugins: [faviconIcoFallback()] }
+  vite: {
+    plugins: [faviconIcoFallback()],
+    resolve: {
+      alias: {
+        '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue')
+      }
+    }
+  }
 })
 
 // 开发时将 /favicon.ico 映射为 SVG，避免控制台 404 噪声
@@ -72,4 +79,3 @@ function faviconIcoFallback() {
     }
   }
 }
-
