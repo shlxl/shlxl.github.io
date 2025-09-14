@@ -112,6 +112,11 @@ html.dark {
   flex-wrap: wrap;
 }
 
+/* 为避免时间渲染导致的水合差异，隐藏列表项底部信息条（含时间） */
+.blog-item .badge-list {
+  display: none !important;
+}
+
 /* 作品集封面图（可选） */
 .xl-card .xl-cover {
   width: 100%;
