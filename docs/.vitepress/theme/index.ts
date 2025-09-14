@@ -18,8 +18,14 @@ const xlTheme: VPTheme = {
       const mm = String(d.getMinutes()).padStart(2, '0')
       return `${yyyy}/${MM}/${dd} ${hh}:${mm}`
     }
-    const tc = siteData.value.themeConfig as any
-    tc.blog = { ...(tc.blog || {}), formatShowDate: absFormat }
+    const oldTC = siteData.value.themeConfig as any
+    siteData.value.themeConfig = {
+      ...oldTC,
+      blog: {
+        ...(oldTC?.blog || {}),
+        formatShowDate: absFormat,
+      },
+    } as any
   }
 }
 
