@@ -7,6 +7,7 @@ categories: [文档]
 cover: /images/scaffold-guide-cover.svg
 top: 1
 publish: true
+draft: false
 ---
 
 本文整合「新增博客文章」「维护作品集」「本地预览与发布」的完整流程，并补充一组实用的 Markdown 编辑技巧。本文已置顶（top: 1），将长期显示在列表首位。

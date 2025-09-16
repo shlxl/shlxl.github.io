@@ -5,8 +5,8 @@ publish: false
 
 <div class="xl-hero">
   <div class="xl-avatar" aria-label="avatar">凌</div>
-  <h1>小凌</h1>
-  <p class="xl-bio">记录与分享，让代码有温度</p>
+  <h1>小村居士</h1>
+  <p class="xl-bio">记录与分享，让生活有温度</p>
   <p class="xl-sub">Keep learning, keep creating.</p>
 
   <div class="xl-socials">
@@ -26,7 +26,7 @@ publish: false
 </div>
 
 <script setup>
-const wechatId = '48174520'
+const wechatId = '不能说了'
 function copyWechat () {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(wechatId)

@@ -7,6 +7,7 @@ categories: [职业攻略]
 cover: /images/amazon-cover.png
 recommend: 职业
 publish: true
+draft: false
 ---
 
 # 亚马逊 - 枪弓双绝女武神（D2R职业攻略系列之四）

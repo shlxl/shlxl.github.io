@@ -7,6 +7,7 @@ categories: [职业攻略]
 cover: /images/sorceress-cover.png
 recommend: 职业
 publish: true
+draft: false
 ---
 
 # 巫师 - 元素女王（D2R职业攻略系列之五）

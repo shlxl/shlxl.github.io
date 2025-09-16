@@ -7,6 +7,7 @@ categories: [职业攻略]
 cover: /images/barbarian-cover.png
 recommend: 职业
 publish: true
+draft: false
 ---
 
 # 野蛮人 - 战场的怒吼（D2R职业攻略系列之一）

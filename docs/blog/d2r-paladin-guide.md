@@ -7,6 +7,7 @@ categories: [职业攻略]
 cover: /images/paladin-cover.png
 recommend: 职业
 publish: true
+draft: false
 ---
 
 # 圣骑士 - 神圣的化身（D2R职业攻略系列之六）

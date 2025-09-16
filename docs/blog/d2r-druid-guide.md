@@ -7,6 +7,7 @@ categories: [职业攻略]
 cover: /images/druid-cover.png
 recommend: 职业
 publish: true
+draft: false
 ---
 
 # 德鲁伊：自然的守护者（D2R职业攻略系列之二）
