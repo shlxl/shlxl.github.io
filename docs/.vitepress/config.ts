@@ -1,9 +1,17 @@
 import { defineConfig } from 'vitepress'
-import { getThemeConfig } from '@sugarat/theme/node'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const deployBase = process.env.DEPLOY_BASE || '/'
+
+// @sugarat/theme-shared requires a positive concurrency value; some hosts
+// (including the Codex sandbox) report 0 CPUs, so guard with a sane default.
+const limit = Number(process.env.P_LIMT_MAX)
+if (!Number.isFinite(limit) || limit < 1) {
+  process.env.P_LIMT_MAX = '4'
+}
+
+const { getThemeConfig } = await import('@sugarat/theme/node')
 
 const blogTheme = getThemeConfig({
   timeZone: 0,
