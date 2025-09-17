@@ -3,7 +3,10 @@ title: 猎法者 - 暗影中的利刃（D2R职业攻略系列之三）
 date: 2025/09/14 17:40:00
 description: 陷阱开荒与马赛克武学两大流派全解：加点、属性、装备与佣兵、组队定位、PVM/PVP打法、MF路线与阶段搭配。
 tags: [D2R, Assassin, Trapsin, Mosaic]
-categories: [职业攻略]
+categories: [游戏攻略]
+aliases:
+  - /blog/d2r-assassin-guide.html
+  - /blog/d2r-assassin-guide
 cover: /images/assassin-cover.png
 recommend: 职业
 publish: true

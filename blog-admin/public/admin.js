@@ -3,9 +3,13 @@ const toast=(m,ok=true)=>{const t=$('#toast');t.textContent=m;t.style.borderColo
 let ALL_ITEMS=[], QUERY='';
 
 async function api(path, method='GET', data){
-  const opt = { method, headers:{ 'Content-Type':'application/json' } };
+  const opt = { method, headers: AdminAuth.authHeaders({ 'Content-Type':'application/json' }) };
   if(data) opt.body = JSON.stringify(data);
   const res = await fetch(path, opt);
+  if(res.status === 401){
+    AdminAuth.handleUnauthorized();
+    throw new Error('未授权或登录已过期');
+  }
   const json = await res.json().catch(()=>({ok:false, error:'Bad JSON'}));
   if(!json.ok){
     const err = new Error(json.error || '操作失败');
@@ -23,6 +27,33 @@ function matches(item, q){
     (item.tags||[]).join(' '),
     (item.categories||[]).join(' ')
   ].join(' ').toLowerCase().includes(s);
+}
+
+function syncColumnSelect(sectionList){
+  const select = $('#column');
+  if(!select) return;
+  const placeholder = select.dataset.placeholder || '选择栏目';
+  const current = select.value;
+  select.innerHTML = '';
+  const seen = new Set();
+
+  const placeholderOption = document.createElement('option');
+  placeholderOption.value = '';
+  placeholderOption.textContent = placeholder;
+  select.appendChild(placeholderOption);
+
+  (sectionList || []).forEach((item)=>{
+    const rawTitle = (item.title || '').trim() || String(item.rel || '').replace(/\/index\.md$/,'');
+    if(!rawTitle || seen.has(rawTitle)) return;
+    seen.add(rawTitle);
+    const option = document.createElement('option');
+    option.value = rawTitle;
+    option.textContent = item.publish ? rawTitle : `${rawTitle}（未上架）`;
+    if(rawTitle === current) option.selected = true;
+    select.appendChild(option);
+  });
+
+  if(current && !seen.has(current)) select.value = '';
 }
 
 function render(items){
@@ -72,6 +103,8 @@ function render(items){
       <button data-pact="open"   data-rel="${x.rel}">VS Code</button>
     </td>
   </tr>`).join('');
+
+  syncColumnSelect(sections);
 
   const idx = Object.fromEntries(data.map(x=>[x.rel,x]));
 
@@ -199,9 +232,26 @@ async function main(){
   $('#q').addEventListener('input', e=>{ QUERY = e.target.value || ''; render(ALL_ITEMS); loadTrash(); });
 
   $('#btn-create').addEventListener('click', async ()=>{
-    const p={ title:$('#title').value.trim(), desc:$('#desc').value.trim(), tags:$('#tags').value.trim(), cat:$('#cat').value.trim(), slug:$('#slug').value.trim(), cover:$('#cover').value.trim() };
+    const column = $('#column').value.trim();
+    const extraCat = $('#cat').value.trim();
+    const category = column || extraCat;
+    const p={
+      title:$('#title').value.trim(),
+      desc:$('#desc').value.trim(),
+      tags:$('#tags').value.trim(),
+      cat:category,
+      slug:$('#slug').value.trim(),
+      cover:$('#cover').value.trim()
+    };
     if(!p.title){ toast('请填写标题',false); return; }
-    try{ await api('/api/new-local','POST',p); toast('草稿已创建'); $('#slug').value=''; await refresh(); }
+    try{
+      await api('/api/new-local','POST',p);
+      toast('草稿已创建');
+      $('#slug').value='';
+      $('#column').value='';
+      $('#cat').value='';
+      await refresh();
+    }
     catch(e){ toast((e.detail?.err || e.detail?.out || e.message).slice(0,400), false); }
   });
 
@@ -210,6 +260,23 @@ async function main(){
   $('#btn-aliases').addEventListener('click', async ()=>{ try{ await api('/api/aliases','POST'); toast('别名已生成'); } catch(e){ toast((e.detail?.err || e.detail?.out || e.message).slice(0,400), false); } });
   $('#btn-deploy').addEventListener('click', async ()=>{ try{ await api('/api/deploy','POST'); toast('部署已执行'); } catch(e){ toast((e.detail?.err || e.detail?.out || e.message).slice(0,400), false); } });
 
-  await refresh(); await loadTrash();
+  if(AdminAuth.isAuthed()){
+    await refresh();
+    await loadTrash();
+  }
+  document.addEventListener('admin-auth-changed', async e=>{
+    if(e.detail?.authed){
+      await refresh();
+      await loadTrash();
+    }else{
+      ALL_ITEMS = [];
+      $('#tbl-drafts tbody').innerHTML = '';
+      $('#tbl-pubs tbody').innerHTML = '';
+      $('#tbl-archived tbody').innerHTML = '';
+      $('#tbl-sections tbody').innerHTML = '';
+      $('#tbl-pages tbody').innerHTML = '';
+      $('#tbl-trash tbody').innerHTML = '';
+    }
+  });
 }
 main();

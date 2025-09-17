@@ -22,12 +22,11 @@ const blogTheme = getThemeConfig({
   hotArticle: false,
   homeTags: false,
   recommend: { showDate: true },
-  // 职业攻略 RSS，仅收录 recommend=职业 的文章
   RSS: {
-    title: 'D2R 职业攻略系列',
+    title: '小凌的博客',
     baseUrl: 'https://lxlcool3000.github.io',
     copyright: '© 小凌',
-    filter: (page) => page?.meta?.recommend === '职业' && page?.meta?.publish !== false
+    filter: (page) => page?.meta?.publish !== false
   }
 })
 
@@ -52,7 +51,6 @@ export default defineConfig({
       { text: '关于我', link: '/about/' },
       { text: '作品集', link: '/portfolio/' },
       { text: '博客', link: '/blog/' },
-      { text: '职业攻略', link: '/blog/series/' },
       { text: 'RSS', link: '/rss/' }
     ],
     outline: { label: '本页导航', level: 'deep' }

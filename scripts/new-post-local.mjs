@@ -23,7 +23,8 @@ function createCoverSVG(title, outPath){ const svg=`<?xml version="1.0" encoding
   const date=formatDate();
   let slug=args.slug? String(args.slug): slugify(title); if(!slug) slug='post-'+Date.now();
   const tags=(args.tags? String(args.tags):'').split(',').map(s=>s.trim()).filter(Boolean);
-  const cat=args.cat||args.category||''; const desc=args.desc||'';
+  const cat=(args.cat||args.category||'').trim();
+  const desc=args.desc||'';
   const localSubdir=process.env.LOCAL_SUBDIR||'_local';
   const blogDir=path.resolve(process.cwd(), 'docs/blog', localSubdir);
   const imagesDir=path.resolve(process.cwd(), 'docs/public/images');
@@ -40,7 +41,7 @@ function createCoverSVG(title, outPath){ const svg=`<?xml version="1.0" encoding
     `date: "${date}"`,
     `description: "${escYaml(desc||'待补充摘要...')}"`,
     `tags: [ ${tags.map(t=>`\"${escYaml(t)}\"`).join(', ')} ]`,
-    `categories: [ ${cat? `\"${escYaml(cat)}\"` : ''} ]`,
+    cat ? `categories: [ "${escYaml(cat)}" ]` : 'categories: []',
     `cover: "${escYaml(cover)}"`,
     'publish: false',
     'draft: true',

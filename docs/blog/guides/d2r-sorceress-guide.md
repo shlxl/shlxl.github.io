@@ -3,7 +3,10 @@ title: 巫师 - 元素女王（D2R职业攻略系列之五）
 date: 2025/09/14 18:20:00
 description: 开荒与MF女王：冰火双修与单系极限（冰/电/火），加点、属性、装备与佣兵、组队定位、PVM/PVP打法与MF路线全攻略。
 tags: [D2R, Sorceress, Blizzard, Lightning]
-categories: [职业攻略]
+categories: [游戏攻略]
+aliases:
+  - /blog/d2r-sorceress-guide.html
+  - /blog/d2r-sorceress-guide
 cover: /images/sorceress-cover.png
 recommend: 职业
 publish: true

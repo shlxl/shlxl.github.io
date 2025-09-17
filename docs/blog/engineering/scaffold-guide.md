@@ -3,7 +3,10 @@ title: 站点内容脚手架与发布全指南（含博客与作品集）
 date: 2025/09/14 10:20:00
 description: 以 new:post 脚手架为核心，整合博客新增、作品集维护、预览与推送规范，并附常用 Markdown 编辑技巧。
 tags: [脚手架, 自动化, 博客, 作品集]
-categories: [文档]
+categories: [工程实践]
+aliases:
+  - /blog/scaffold-guide.html
+  - /blog/scaffold-guide
 cover: /images/scaffold-guide-cover.svg
 top: 1
 publish: true
@@ -132,4 +135,3 @@ GitHub Actions 成功后访问 `https://<你的用户名>.github.io/`。
 - 图片 404：确保放 `docs/public/` 并用以 `/` 开头的路径
 - 排序异常：检查 `date` 格式；置顶用 `top: 1/2/...`
 - 时间展示：统一绝对时间（`yyyy/MM/dd HH:mm`），避免相对时间导致的时区偏差
-

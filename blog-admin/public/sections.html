@@ -4,11 +4,23 @@
 <title>Blog Admin — 栏目管理</title>
 <link rel="stylesheet" href="style.css">
 </head><body>
+<div id="login-overlay" class="login-overlay hidden">
+  <div class="login-card">
+    <h2>管理员登录</h2>
+    <p id="login-help" class="login-help">请输入访问密码以继续。</p>
+    <input id="login-password" type="password" placeholder="访问密码" autocomplete="current-password">
+    <div id="login-error" class="login-error"></div>
+    <button id="login-submit">登录</button>
+  </div>
+</div>
+
+<div id="app-shell" class="app-shell">
 <header><h1>栏目管理（Sections Manager）</h1>
   <div class="actions">
     <a href="index.html"><button>← 返回合体版</button></a>
     <button id="btn-refresh">刷新</button>
     <button id="btn-nav-sync">同步导航</button>
+    <button id="btn-logout">退出登录</button>
   </div>
 </header>
 
@@ -43,5 +55,7 @@
 </section>
 
 <footer><div id="toast"></div></footer>
+</div>
+<script src="auth.js"></script>
 <script src="sections.js"></script>
 </body></html>

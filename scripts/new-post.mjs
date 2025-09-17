@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveColumnDir } from './lib/columns.js';
 
 const BLOG_DIR = 'docs/blog';
 const TZ = getArg('--tz') || 'Asia/Shanghai';
@@ -8,14 +9,15 @@ const TZ = getArg('--tz') || 'Asia/Shanghai';
 const title = getArg('--title') || firstPositional() || '未命名文章';
 const desc  = getArg('--desc')  || '';
 const tags  = (getArg('--tags') || '').split(',').map(s=>s.trim()).filter(Boolean);
-const cat   = getArg('--cat')   || '';
+const cat   = (getArg('--cat')   || '').trim();
 const cover = getArg('--cover') || '';
 const date  = getArg('--date')  || formatNow(TZ);
 let slug    = getArg('--slug')  || slugify(title);
 if(!slug) slug = 'post-' + formatNow(TZ).replace(/[^\d]/g,'');
 
 const year = date.slice(0,4);
-const outDir = path.join(BLOG_DIR, year);
+const columnDir = resolveColumnDir(cat);
+const outDir = columnDir ? path.join(BLOG_DIR, columnDir) : path.join(BLOG_DIR, year);
 const outFile = path.join(outDir, `${slug}.md`);
 
 ensureDir(outDir);
@@ -30,7 +32,7 @@ const fm = [
   `date: "${date}"`,
   `description: "${escapeYaml(desc)}"`,
   `tags: [ ${tags.map(s=>`"${escapeYaml(s)}"`).join(', ')} ]`,
-  `categories: [ "${escapeYaml(cat)}" ]`,
+  cat ? `categories: [ "${escapeYaml(cat)}" ]` : 'categories: []',
   cover ? `cover: "${escapeYaml(cover)}"` : null,
   'publish: true',
   'top: 1',

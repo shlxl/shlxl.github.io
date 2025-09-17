@@ -2,9 +2,13 @@ const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>Array.from(r
 const toast=(m,ok=true)=>{const t=$('#toast');t.textContent=m;t.style.borderColor=ok?'#2b376c':'#804040';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);};
 
 async function api(path, method='GET', data){
-  const opt = { method, headers:{ 'Content-Type':'application/json' } };
+  const opt = { method, headers: AdminAuth.authHeaders({ 'Content-Type':'application/json' }) };
   if(data) opt.body = JSON.stringify(data);
   const res = await fetch(path, opt);
+  if(res.status === 401){
+    AdminAuth.handleUnauthorized();
+    throw new Error('未授权或登录已过期');
+  }
   const json = await res.json().catch(()=>({ok:false, error:'Bad JSON'}));
   if(!json.ok){
     const err = new Error(json.error || '操作失败');
@@ -120,6 +124,16 @@ async function main(){
     try{ await api('/api/sections/create','POST',{rel, title, publish}); toast('已创建'); $('#new-rel').value=''; $('#new-title').value=''; await refresh(); }
     catch(e){ toast((e.detail?.err || e.detail?.out || e.message).slice(0,400), false); }
   });
-  await refresh();
+  if(AdminAuth.isAuthed()){
+    await refresh();
+  }
+  document.addEventListener('admin-auth-changed', async e=>{
+    if(e.detail?.authed){
+      await refresh();
+    }else{
+      $('#tbl-sections tbody').innerHTML = '';
+      $('#tbl-trash tbody').innerHTML = '';
+    }
+  });
 }
 main();

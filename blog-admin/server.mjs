@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +25,21 @@ const DIST_DIR = path.join(DOCS_DIR, '.vitepress', 'dist');
 const TRASH_DIR = path.join(DOCS_DIR, '.trash');
 const LOCAL_DIR = path.join(BLOG_DIR, '_local');
 
-const JSON_HEADERS = { 'Content-Type':'application/json; charset=utf-8', 'Access-Control-Allow-Origin':'*' };
+const RAW_ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.BLOG_ADMIN_PASSWORD || process.env.ADMIN_PASS || '').trim();
+const ADMIN_PASSWORD = RAW_ADMIN_PASSWORD;
+const FALLBACK_PASSWORD = ADMIN_PASSWORD ? '' : (process.env.ADMIN_PASSWORD_FALLBACK || 'admin');
+const SESSION_TTL_MS = Number(process.env.ADMIN_SESSION_TTL || (12 * 60 * 60 * 1000));
+if(!ADMIN_PASSWORD){
+  console.warn('[admin] ADMIN_PASSWORD not set, using fallback password "admin". Set ADMIN_PASSWORD to override.');
+}
+const SESSIONS = new Map();
+
+const JSON_HEADERS = {
+  'Content-Type':'application/json; charset=utf-8',
+  'Access-Control-Allow-Origin':'*',
+  'Access-Control-Allow-Headers':'Content-Type, Authorization',
+  'Access-Control-Allow-Methods':'GET,POST,OPTIONS'
+};
 
 function send(res, code, data){ res.writeHead(code, JSON_HEADERS); res.end(typeof data==='string'?data:JSON.stringify(data)); }
 function notFound(res){ send(res,404,{ok:false,error:'Not found'}); }
@@ -38,6 +53,70 @@ function runCmd(cmd, args=[], opts={cwd: PROJECT_ROOT}){
   });
 }
 const runNodeScript = (rel, args=[]) => runCmd(process.execPath, [path.join(SCRIPTS_DIR, rel), ...args]);
+
+function cleanupSessions(){
+  const now = Date.now();
+  for(const [token, session] of SESSIONS){
+    if(!session || session.expiresAt <= now) SESSIONS.delete(token);
+  }
+}
+function verifyPassword(password){
+  const target = ADMIN_PASSWORD || FALLBACK_PASSWORD;
+  if(!target) return false;
+  return String(password || '').trim() === target;
+}
+function createSession(){
+  cleanupSessions();
+  const token = randomUUID();
+  const session = { token, expiresAt: Date.now() + SESSION_TTL_MS };
+  SESSIONS.set(token, session);
+  return session;
+}
+function tokenFromReq(req){
+  const auth = req.headers?.authorization || req.headers?.Authorization || '';
+  if(typeof auth === 'string'){
+    const m = auth.match(/^Bearer\s+(.+)$/i);
+    if(m) return m[1].trim();
+  }
+  return '';
+}
+function ensureSession(token){
+  if(!token) return null;
+  const session = SESSIONS.get(token);
+  if(!session) return null;
+  if(session.expiresAt <= Date.now()){
+    SESSIONS.delete(token);
+    return null;
+  }
+  session.expiresAt = Date.now() + SESSION_TTL_MS;
+  return session;
+}
+function ensureAuth(req,res){
+  const token = tokenFromReq(req);
+  const session = ensureSession(token);
+  if(!session){
+    unauthorized(res);
+    return null;
+  }
+  return session;
+}
+function unauthorized(res){ send(res,401,{ok:false,error:'未授权或登录已过期'}); }
+
+async function apiLogin(req,res){
+  try{
+    const body = await readBody(req);
+    if(!verifyPassword(body.password)){
+      return send(res,401,{ok:false,error:'密码错误'});
+    }
+    const session = createSession();
+    send(res,200,{ok:true,token:session.token,ttl:SESSION_TTL_MS});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+async function apiLogout(req,res){
+  const token = tokenFromReq(req);
+  if(token) SESSIONS.delete(token);
+  send(res,200,{ok:true});
+}
 
 const relOf  = p=> path.relative(BLOG_DIR, p).replace(/\\/g,'/');
 const isSection = p => path.basename(p).toLowerCase()==='index.md';
@@ -416,10 +495,24 @@ function serveStatic(req, res) {
 const server = createServer(async (req,res)=>{
   const { pathname } = parseUrl(req.url);
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'content-type'});
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin':'*',
+      'Access-Control-Allow-Methods':'GET,POST,OPTIONS',
+      'Access-Control-Allow-Headers':'Content-Type, Authorization'
+    });
     return res.end();
   }
   try{
+    if(req.method==='POST' && pathname==='/api/login')            return apiLogin(req,res);
+
+    const protectedApi = pathname?.startsWith('/api/') && pathname !== '/api/login';
+    if(protectedApi){
+      const session = ensureAuth(req,res);
+      if(!session) return;
+      req.session = session;
+    }
+
+    if(req.method==='POST' && pathname==='/api/logout')           return apiLogout(req,res);
     if(req.method==='GET'  && pathname==='/api/list')             return apiList(req,res);
     if(req.method==='POST' && pathname==='/api/new-local')        return apiNewLocal(req,res);
     if(req.method==='POST' && pathname==='/api/promote')          return apiPromote(req,res);

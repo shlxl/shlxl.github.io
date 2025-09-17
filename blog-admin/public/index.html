@@ -4,6 +4,17 @@
 <title>Blog Admin — 合体版 v4</title>
 <link rel="stylesheet" href="style.css">
 </head><body>
+<div id="login-overlay" class="login-overlay hidden">
+  <div class="login-card">
+    <h2>管理员登录</h2>
+    <p id="login-help" class="login-help">请输入访问密码以继续。</p>
+    <input id="login-password" type="password" placeholder="访问密码" autocomplete="current-password">
+    <div id="login-error" class="login-error"></div>
+    <button id="login-submit">登录</button>
+  </div>
+</div>
+
+<div id="app-shell" class="app-shell">
 <header><h1>Blog Admin 合体版 v4</h1>
   <div class="actions">
     <a href="sections.html"><button>栏目管理</button></a>
@@ -12,6 +23,7 @@
     <button id="btn-preview">本地预览</button>
     <button id="btn-aliases">生成别名</button>
     <button id="btn-deploy">部署 gh-pages</button>
+    <button id="btn-logout">退出登录</button>
   </div>
 </header>
 
@@ -28,7 +40,12 @@
     <label>标题 <input id="title" placeholder="文章标题"></label>
     <label>摘要 <input id="desc" placeholder="可选摘要"></label>
     <label>标签 <input id="tags" placeholder="前端,经验"></label>
-    <label>分类 <input id="cat" placeholder="工程化"></label>
+    <label>栏目
+      <select id="column" data-placeholder="选择栏目">
+        <option value="">选择栏目</option>
+      </select>
+    </label>
+    <label>分类补充（可选） <input id="cat" placeholder="自定义子分类"></label>
     <label>Slug <input id="slug" placeholder="留空自动生成"></label>
     <label>封面 <input id="cover" placeholder="/images/xxx-cover.svg"></label>
   </div>
@@ -81,5 +98,7 @@
 </section>
 
 <footer><div id="toast"></div></footer>
+</div>
+<script src="auth.js"></script>
 <script src="admin.js"></script>
 </body></html>

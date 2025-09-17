@@ -1,204 +1,74 @@
-# 个人博客（VitePress）开发与发布指南
+# 个人博客（VitePress + Sugarat 主题）
 
-> 本项目使用 **VitePress** 构建为静态站点，由 **GitHub Actions → GitHub Pages** 发布。本文覆盖：开发、发文、构建、搜索、别名重定向与发布的完整流程和常见坑。
+本仓库维护小凌的个人站点，使用 **VitePress** 构建并通过 **GitHub Pages** 发布。站点内容由前台静态页面 + 后台管理工具（`blog-admin/`）共同组成。
 
 ## 快速开始
 
 ```bash
-npm ci
-npm run docs:preview   # 预览 dist（不会构建）
-npm run docs:build     # 构建到 docs/.vitepress/dist
-重要：docs:preview 只读取 docs/.vitepress/dist，不会自动构建。若页面与源码不一致，多半在“吃旧产物”。见下文《验证不吃旧 dist》。
+npm install            # 安装依赖
+npm run docs:dev       # http://localhost:5173/ 热更新写作
+node blog-admin/server.mjs  # 127.0.0.1:5174 管理后台（默认密码 admin）
+```
 
-目录结构（核心约定）
-csharp
-复制代码
+> ⚠️ 构建命令 `npm run docs:build` 在 Apple Silicon 上会因 Pagefind 缺少 `darwin-arm64` 二进制而失败。目前的做法是：在本地记录该限制或手动跳过 Pagefind，CI 仍能正常产出索引。
+
+## 目录结构速览
+
+```
 docs/
-  ├─ .vitepress/           # 配置与主题；构建产物 dist 在这里
-  ├─ blog/                 # 博文（文件名 = slug = 路由）
-  │   ├─ 2025/
-  │   │   └─ my-first-post.md
-  │   └─ index.md
-  └─ public/
-      └─ images/           # 封面等静态资源（/images/...）
-文件名 = slug → docs/blog/2025/my-first-post.md 产出 /blog/2025/my-first-post.html（启用 cleanUrls 后即 /blog/2025/my-first-post）。
+  ├─ .vitepress/        # 配置、主题覆盖、Pagefind 输出
+  ├─ blog/
+  │   ├─ guides/        # 游戏攻略栏目
+  │   ├─ engineering/   # 工程实践栏目
+  │   ├─ creative/      # 创作手记栏目
+  │   ├─ life/          # 生活记录栏目
+  │   └─ resources/     # 资源精选栏目
+  └─ public/            # 静态资源（/images/...）
+scripts/
+  ├─ lib/columns.js     # 栏目标题 → 目录映射
+  ├─ new-post.mjs       # 直接发布文章
+  ├─ new-post-local.mjs # 草稿脚手架
+  └─ post-promote.mjs   # 草稿转正式（按栏目落盘）
+```
 
-frontmatter 必填：title、date、description、publish。
+每个栏目文件夹内的 `index.md` 负责渲染栏目首页，并动态读取 `pagesData` 中的对应文章，无需手工维护“现有内容”列表。
 
-不要在 frontmatter 再写 slug（避免双事实来源）。如确需保留仅作元数据，务必与文件名一致（可在校验脚本中强制检查）。
+## 内容工作流
 
-发文（脚手架）
-bash
-复制代码
-npm run post:new -- "我的标题" --desc "列表摘要" --tags "随笔,前端" --cat "工程化"
-# 可选：--slug 自定义-slug  --draft  --cover "/images/xxx.svg"  --tz "Asia/Shanghai"
-生成：
+### 草稿 & 发布脚本
 
-docs/blog/<slug>.md（标准 frontmatter + 正文占位）
-
-未指定封面时自动生成 docs/public/images/<slug>-cover.svg
-
-撤稿 / 删除
-bash
-复制代码
-npm run post:archive -- <slug>        # 列表下架（publish:false）
-npm run post:remove  -- <slug>        # 移出 docs/，不再生成路由
-npm run post:remove  -- <slug> -- --hard
-别名与重定向（改 slug 不丢外链）
-在新文 frontmatter 维护旧地址：
-
-yaml
-复制代码
-aliases:
-  - /blog/2024/old-title.html
-  - /blog/old-title/
-构建后执行：
-
-bash
-复制代码
-npm run docs:aliases
-脚本会在 dist 里为每个别名写出静态跳转页（meta refresh + JS fallback）。
-
-构建与预览
-bash
-复制代码
-npm run docs:build
-npm run docs:preview
-验证不“吃旧 dist”
-bash
-复制代码
-# Windows:
-Rename-Item docs/.vitepress/dist docs/.vitepress/dist.bak
-npm run docs:preview      # 预期失败
-npx vitepress build docs
-npm run docs:preview      # 应成功
-搜索（Pagefind）策略
-本地默认跳过 Pagefind（Windows 上 npx pagefind 容易失败）。
-
-CI（GitHub Actions，Ubuntu）生成索引 更稳。
-
-本地确需索引：
-py -m pip install "pagefind[extended]" && py -m pagefind --site docs/.vitepress/dist --exclude-selectors "div.aside, a.header-anchor"
-
-GitHub Pages 发布（CI 云端构建）
-推到 main → Actions 构建（+ Pagefind）→ 上传工件 → deploy-pages。
-
-无需本地构建 也能上线（CI 在替你构建）。
-
-base 自动识别与覆盖
-.vitepress/config.ts：
-
-ts
-复制代码
-export default { base: process.env.DEPLOY_BASE ?? '/' }
-frontmatter 规范
-yaml
-复制代码
----
-title: "我的标题"
-date: "YYYY/MM/DD HH:mm:ss"
-description: "用于列表摘要与 SEO 描述"
-tags: [ "前端", "随笔" ]
-categories: [ "工程化" ]
-cover: "/images/my-first-post-cover.svg"
-publish: true
-# aliases:
-#   - /blog/2024/old-title.html
-# top: 1
----
-NPM 脚本一览
-json
-复制代码
-{
-  "scripts": {
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "post:new": "node scripts/new-post.mjs",
-    "docs:aliases": "node scripts/gen-alias-redirects.mjs"
-  }
-}
-r
-复制代码
-
-# 步骤 2：写入博文
-先确保目录存在并打开记事本：
-```powershell
-mkdir .\docs\blog\2025 -Force | Out-Null
-notepad .\docs\blog\2025\dev-and-deploy-guide.md
-把下面整段全文粘进去，保存并关闭：
-
-markdown
-复制代码
----
-title: "从 0 到上线：我的 VitePress 博客开发与发布指南"
-date: "2025/09/16 10:30:00"
-description: "理清 preview 与 build、CI 端生成搜索索引、slug/别名规范、改名不丢外链，一次性绕开 90% 的坑。"
-tags: [ "VitePress", "工程化", "GitHub Pages" ]
-categories: [ "工程化" ]
-cover: "/images/dev-and-deploy-guide-cover.svg"
-publish: true
-top: 1
----
-
-> **TL;DR**：preview ≠ build；slug=文件名；Pagefind 只在 CI 跑；改名要维护 aliases 并在 dist 里生成跳转页；GitHub Actions 端构建 + Pages 发布最省心。
-
-## 1. 本地预览与构建的边界
-`npm run docs:preview` 只读 `docs/.vitepress/dist`，不会构建；可能在“吃旧产物”。快速自检：
 ```bash
-Rename-Item docs/.vitepress/dist docs/.vitepress/dist.bak
-npm run docs:preview   # 预期失败
-npx vitepress build docs
-npm run docs:preview   # 现在是新产物
-2. 搜索索引（Pagefind）：本地跳过，CI 生成
-本地 npx pagefind 易因平台/网络失败。最佳实践：本地仅构建站点；CI（Ubuntu）上生成索引。
-本地确需索引：
+npm run new:local -- "文章标题" --desc "摘要" --tags "标签1,标签2" --cat "工程实践"
+npm run post:promote <slug>      # 草稿 → 正式，优先落到栏目目录
+npm run new:post -- "标题" --cat "游戏攻略"   # 直接创建并发布
+npm run post:archive <slug>      # 下架
+npm run post:remove <slug> [-- --hard]  # 移除/删除
+npm run docs:aliases             # 生成别名跳转页
+```
 
-bash
-复制代码
-py -m pip install "pagefind[extended]"
-py -m pagefind --site docs/.vitepress/dist --exclude-selectors "div.aside, a.header-anchor"
-3. slug 与链接稳定性
-文件名 = slug（小写、ASCII、- 分词）；中文标题建议转拼音/英文。
+传入 `--cat "栏目名"` 时脚本会根据 `scripts/lib/columns.js` 的映射把文章写进正确的栏目目录；找不到匹配栏目时会退回按年份归档。
 
-不在 frontmatter 写 slug；避免双事实来源。
+### 后台管理
 
-改名/搬家：在新文 frontmatter 维护旧地址：
+1. `node blog-admin/server.mjs`
+2. 浏览器打开 `http://127.0.0.1:5174`，默认密码 `admin`（建议在部署环境设置 `ADMIN_PASSWORD`）。
+3. “新建草稿”支持直接选择栏目；栏目列表来源于后台“栏目管理”页（section）。
+4. 所有 API 均要求 Bearer Token，登录态过期后会自动回退到登录页。
 
-yaml
-复制代码
-aliases:
-  - /blog/2024/old-title.html
-  - /blog/old-title/
-构建后运行 npm run docs:aliases，在 dist 里生成静态跳转页，外链不 404。
+## 构建与发布
 
-4. 云端构建与发布（GitHub Actions → Pages）
-推到 main → CI 构建（+ Pagefind）→ 上传工件 → deploy-pages。
-.vitepress/config.ts：
+- `npm run docs:build`：本地生成静态站点。若 Pagefind 导致失败，可临时禁用插件或改在 CI 侧验证。
+- `npm run docs:preview`：在 `docs/.vitepress/dist/` 上起预览服务。
+- CI（GitHub Actions）在 `main` 分支触发：安装依赖 → `npm run docs:build` → 生成 Pagefind 索引 → 发布到 GitHub Pages。
+- 需要为旧链接保留访问时，在新文章 frontmatter 中维护 `aliases:` 并运行 `npm run docs:aliases` 生成静态跳转。
 
-ts
-复制代码
-export default { base: process.env.DEPLOY_BASE ?? '/' }
-5. 发文与撤稿
-bash
-复制代码
-npm run post:new -- "我的标题" --desc "列表摘要" --tags "随笔,前端" --cat "工程化"
-npm run post:archive -- <slug>
-npm run post:remove  -- <slug>   # 移出 docs/；或加 -- --hard 永久删除
-6. 上线前自查
- 最新 dist 已构建
+## 常见问题
 
- frontmatter 完整且需转义的字段已加引号
+| 问题 | 解决方案 |
+| --- | --- |
+| `npm run docs:build` 在 macOS (Apple Silicon) 报 Pagefind 安装失败 | 暂记为已知限制（写入 PR/commit 描述），或手动下载 Pagefind ARM 版本后放入 PATH。CI 构建不受影响。 |
+| 后台“新建草稿”缺少栏目选项 | 先在后台“栏目管理”创建并上架栏目；列表会自动同步到草稿面板。 |
+| 发布的文章没有展示在栏目页 | 确认 frontmatter 的 `categories` 包含栏目名称（与栏目首页 `index.md` 中的标题一致）。 |
+| 本地预览看到旧内容 | 先执行 `npm run docs:build`，或删除 `docs/.vitepress/dist/` 后重新构建。 |
 
- 如改过 slug：aliases 已维护且已执行 npm run docs:aliases
-
- CI 中 DEPLOY_BASE 与仓库类型一致
-
- （启用 Pagefind）CI 日志可见 /pagefind/ 目录输出
-
-arduino
-复制代码
-
-# 最后：本地验证
-```powershell
-npm run docs:build
-npm run docs:preview
+如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。

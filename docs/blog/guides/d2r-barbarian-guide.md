@@ -3,7 +3,10 @@ title: 野蛮人 - 战场的怒吼（D2R职业攻略系列之一）
 date: 2025/09/14 17:00:00
 description: 近战之王的全阶段指南：开荒加点、属性分配、装备与佣兵、PVM/PVP思路、MF路线与成型装备配置。
 tags: [D2R, Barbarian, 旋风斩, Build]
-categories: [职业攻略]
+categories: [游戏攻略]
+aliases:
+  - /blog/d2r-barbarian-guide.html
+  - /blog/d2r-barbarian-guide
 cover: /images/barbarian-cover.png
 recommend: 职业
 publish: true
