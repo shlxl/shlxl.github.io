@@ -13,6 +13,23 @@ if (!Number.isFinite(limit) || limit < 1) {
 
 const { getThemeConfig } = await import('@sugarat/theme/node')
 
+const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
+const pagefindForceLanguage = (process.env.PAGEFIND_FORCE_LANGUAGE || '').trim()
+const pagefindCommandParts = [
+  'node',
+  'scripts/run-pagefind.mjs',
+  '"docs/.vitepress/dist"',
+  `"${pagefindExcludeSelectors.join(',')}"`
+]
+pagefindCommandParts.push(pagefindForceLanguage ? `"${pagefindForceLanguage}"` : '-')
+const pagefindSearch: Record<string, any> = {
+  excludeSelector: pagefindExcludeSelectors,
+  indexingCommand: pagefindCommandParts.join(' ')
+}
+if (pagefindForceLanguage) {
+  pagefindSearch.forceLanguage = pagefindForceLanguage
+}
+
 const blogTheme = getThemeConfig({
   timeZone: 0,
   author: '小凌',
@@ -26,7 +43,7 @@ const blogTheme = getThemeConfig({
     { icon: 'github', link: 'https://github.com/lxlcool3000' },
     { icon: 'email', link: 'mailto:coollxl92@gmail.com' }
   ],
-  search: true,
+  search: pagefindSearch,
   hotArticle: false,
   homeTags: false,
   recommend: { showDate: true },
