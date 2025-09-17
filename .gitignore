@@ -7,7 +7,8 @@ pnpm-lock.yaml
 # VitePress
 docs/.vitepress/dist/
 docs/.vitepress/cache/
-
+docs/blog/_local/
+docs/.trash/
 # OS / Editor
 .DS_Store
 Thumbs.db
