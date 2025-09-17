@@ -5,9 +5,10 @@ h1{margin:0;font-size:20px}h2{margin:0 0 12px 0;font-size:16px}
 .actions button{margin-left:8px}.card{background:#11183a;border:1px solid #263060;border-radius:12px;padding:16px;margin:16px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
 label{display:flex;flex-direction:column;font-size:12px;opacity:.9}
-input{margin-top:6px;padding:8px;border-radius:8px;border:1px solid #2b376c;background:#0b1020;color:#e8ecff}
+input,select{margin-top:6px;padding:8px;border-radius:8px;border:1px solid #2b376c;background:#0b1020;color:#e8ecff}
 button{padding:8px 12px;border-radius:10px;border:1px solid #2b376c;background:#1a2260;color:#fff;cursor:pointer}button:hover{filter:brightness(1.1)}
 table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #24305c;padding:8px;text-align:left;font-size:13px}tbody tr:hover{background:#0f1638}
 .badge{display:inline-block;padding:2px 6px;border-radius:6px;background:#2b376c;margin-right:4px;font-size:12px}
 #toast{position:fixed;right:16px;bottom:16px;min-width:240px;max-width:50ch;background:#19204a;color:#fff;border:1px solid #2b376c;border-radius:12px;padding:12px;opacity:0;transform:translateY(12px);transition:all .2s}
 #toast.show{opacity:1;transform:none}td .row-actions button{margin-right:6px}@media (max-width:940px){.grid{grid-template-columns:1fr}}
+code{background:#0f1638;padding:2px 4px;border-radius:6px}

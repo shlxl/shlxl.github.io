@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog Admin — 栏目管理</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header><h1>栏目管理（Sections Manager）</h1>
+  <div class="actions">
+    <a href="index.html"><button>← 返回合体版</button></a>
+    <button id="btn-refresh">刷新</button>
+    <button id="btn-nav-sync">同步导航</button>
+  </div>
+</header>
+
+<section class="card">
+  <h2>新建栏目</h2>
+  <div class="grid">
+    <label>相对路径（例如：<code>series</code> 或 <code>series/d2r</code>）
+      <input id="new-rel" placeholder="series 或 series/d2r">
+    </label>
+    <label>标题（可选）
+      <input id="new-title" placeholder="栏目标题（默认用文件夹名）">
+    </label>
+    <label>是否立即上架
+      <select id="new-publish"><option value="true" selected>是</option><option value="false">否</option></select>
+    </label>
+  </div>
+  <button id="btn-create">创建栏目</button>
+</section>
+
+<section class="card">
+  <h2>栏目列表</h2>
+  <table id="tbl-sections"><thead>
+    <tr><th>标题</th><th>路径</th><th>博文数</th><th>发布</th><th>修改时间</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<section class="card">
+  <h2>栏目回收站（只列出被移走的 index.md）</h2>
+  <table id="tbl-trash"><thead>
+    <tr><th>回收站文件</th><th>推测原路径</th><th>时间</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<footer><div id="toast"></div></footer>
+<script src="sections.js"></script>
+</body></html>

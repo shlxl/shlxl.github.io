@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blog Admin Lite</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ffffff'/%3E%3C/svg%3E">
+<title>Blog Admin — 合体版 v4</title>
 <link rel="stylesheet" href="style.css">
 </head><body>
-<header><h1>Blog Admin Lite</h1>
+<header><h1>Blog Admin 合体版 v4</h1>
   <div class="actions">
+    <a href="sections.html"><button>栏目管理</button></a>
     <button id="btn-refresh">刷新列表</button>
     <button id="btn-build">构建</button>
     <button id="btn-preview">本地预览</button>
@@ -54,6 +54,20 @@
     <h2>已下架</h2>
     <table id="tbl-archived"><thead>
       <tr><th>标题</th><th>Slug</th><th>日期</th><th>标签</th><th>分类</th><th>操作</th></tr>
+    </thead><tbody></tbody></table>
+  </div>
+
+  <div class="card">
+    <h2>栏目 / 系列索引（识别 index.md）</h2>
+    <table id="tbl-sections"><thead>
+      <tr><th>标题</th><th>相对路径</th><th>发布</th><th>操作</th></tr>
+    </thead><tbody></tbody></table>
+  </div>
+
+  <div class="card">
+    <h2>页面 / 特殊页（不在文章列表中显示）</h2>
+    <table id="tbl-pages"><thead>
+      <tr><th>标题</th><th>相对路径</th><th>类型</th><th>操作</th></tr>
     </thead><tbody></tbody></table>
   </div>
 

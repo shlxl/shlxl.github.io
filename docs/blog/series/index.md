@@ -1,6 +1,8 @@
 ---
 title: D2R 职业攻略系列索引
 description: 汇总已发布的职业攻略（之一～之七），统一入口，便于快速查阅与分享。
+publish: false
+draft: false
 ---
 
 # D2R 职业攻略系列索引
