@@ -86,7 +86,7 @@ draft: false
 ## 说明
 
 - 系列推荐：文章均带 `recommend: 职业`，侧栏/底部会自动串联相关文章。
-- 目录与样式：标题与封面风格统一；若需导出为 PDF 或 RSS，我可以补构建脚本。
+- 目录与样式：标题与封面风格统一；若需导出为 PDF，我可以补构建脚本。
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'

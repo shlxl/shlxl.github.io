@@ -168,7 +168,7 @@ function loadIgnores(){
     lines = fs.readFileSync(file,'utf8').split(/\r?\n/).map(s=>s.trim()).filter(s=>s && !s.startsWith('#'));
   }
   // default ignores for root pages:
-  lines.push('rss.md','blog.md');
+  lines.push('blog.md');
   return Array.from(new Set(lines));
 }
 function toRegex(glob){
@@ -183,7 +183,7 @@ function shouldIgnore(rel, abs, fm){
   if (String(fm.hidden).toLowerCase()==='true') return true;
   if (IGNORE_PATTERNS.some(p=>p.re.test(rel))) return true;
   const base = path.basename(abs).toLowerCase();
-  if (path.dirname(abs)===BLOG_DIR && (base==='rss.md' || base==='blog.md')) return true;
+  if (path.dirname(abs)===BLOG_DIR && (base==='blog.md')) return true;
   return false;
 }
 function typeOf(rel, abs, fm){

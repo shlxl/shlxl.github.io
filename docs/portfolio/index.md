@@ -38,7 +38,7 @@ publish: false
 
   <div class="xl-card">
     <h3>Blog Kit</h3>
-    <p>基于 VitePress 的博客脚手架，支持标签、RSS、主题化与搜索。</p>
+    <p>基于 VitePress 的博客脚手架，支持标签、主题化与搜索。</p>
     <div class="xl-links">
       <a class="xl-chip" href="https://github.com/lxlcool3000" target="_blank" rel="noreferrer">GitHub</a>
       <a class="xl-chip" href="#" target="_blank" rel="noreferrer">Demo</a>
