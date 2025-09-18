@@ -79,10 +79,7 @@ export default defineConfig({
         '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
         '@sugarat/theme/src/components/BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
         '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
-        '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue'),
-        '@sugarat/theme/src/components/BlogHomeBanner.vue': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/components/BlogHomeBanner.vue'),
-        '@sugarat/theme/src/components/BlogHomeInfo.vue': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/components/BlogHomeInfo.vue'),
-        '@sugarat/theme/src/components/BlogList.vue': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/components/BlogList.vue')
+        '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
       }
     }
   }
@@ -132,4 +129,3 @@ function overrideSugaratComponents() {
     }
   }
 }
-
