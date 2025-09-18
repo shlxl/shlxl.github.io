@@ -47,12 +47,6 @@ const blogTheme = getThemeConfig({
   hotArticle: false,
   homeTags: false,
   recommend: { showDate: true },
-  RSS: {
-    title: '小凌的博客',
-    baseUrl: 'https://lxlcool3000.github.io',
-    copyright: '© 小凌',
-    filter: (page) => page?.meta?.publish !== false
-  }
 })
 
 export default defineConfig({
@@ -75,8 +69,7 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '关于我', link: '/about/' },
       { text: '作品集', link: '/portfolio/' },
-      { text: '博客', link: '/blog/' },
-      { text: 'RSS', link: '/rss/' }
+      { text: '博客', link: '/blog/' }
     ],
     outline: { label: '本页导航', level: 'deep' }
   },
