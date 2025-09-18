@@ -66,10 +66,9 @@ export default defineConfig({
       { icon: 'mail', link: 'mailto:coollxl92@gmail.com' }
     ],
     nav: [
-      { text: '首页', link: '/' },
-      { text: '关于我', link: '/about/' },
-      { text: '作品集', link: '/portfolio/' },
-      { text: '博客', link: '/blog/' }
+      { text: '博客', link: '/blog/' },
+      { text: '作品', link: '/portfolio/' },
+      { text: '关于', link: '/about/' }
     ],
     outline: { label: '本页导航', level: 'deep' }
   },
