@@ -79,7 +79,8 @@ export default defineConfig({
         '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
         '@sugarat/theme/src/components/BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
         '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
-        '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
+        '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue'),
+        '@sugarat/theme/src/composables/config/blog': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/composables/config/blog.ts')
       }
     }
   }
@@ -129,3 +130,4 @@ function overrideSugaratComponents() {
     }
   }
 }
+

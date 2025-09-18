@@ -1,5 +1,14 @@
 import Theme from '@sugarat/theme'
+import type { Theme as VitePressTheme } from 'vitepress'
+import BlogFeed from './BlogFeed.vue'
 import './custom.css'
 
-// 回退为原主题导出，避免客户端对时间文本进行二次修改引发水合不一致
-export default Theme
+const theme: VitePressTheme = {
+  ...Theme,
+  enhanceApp(ctx) {
+    Theme.enhanceApp?.(ctx)
+    ctx.app.component('BlogFeed', BlogFeed)
+  }
+}
+
+export default theme
