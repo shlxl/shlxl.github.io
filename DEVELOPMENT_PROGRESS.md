@@ -3,7 +3,7 @@
 This note summarizes the current state of the personal site project and highlights the next engineering priorities.
 
 ## Recent Highlights
-- **Landing hero**: Added a full-viewport welcome screen with scroll/keyboard cues that reveal the blog feed inline.
+- **Home redirect**: Root route now forwards straight to the blog list so the latest posts appear on first load.
 - **RSS sunset**: Removed the legacy feed page and aligned admin ignores now that columns own listings.
 - **Admin access control**: Added login overlay, token-based sessions, and bearer token propagation across the blog-admin UI and API. The default password falls back to `admin`, but the server now respects `ADMIN_PASSWORD`/`ADMIN_SESSION_TTL`.
 - **Column-driven blog structure**: Reorganized content into dedicated folders (`guides`, `engineering`, `creative`, `life`, `resources`) with consistent frontmatter aliases to preserve old URLs.
