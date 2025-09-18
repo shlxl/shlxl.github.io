@@ -18,19 +18,19 @@
 <header><h1>Blog Admin 合体版 v4</h1>
   <div class="actions">
     <a href="sections.html"><button>栏目管理</button></a>
-    <button id="btn-refresh">刷新列表</button>
+    <button id="btn-refresh" class="neutral">刷新列表</button>
     <button id="btn-build">构建</button>
-    <button id="btn-preview">本地预览</button>
-    <button id="btn-aliases">生成别名</button>
+    <button id="btn-preview" class="neutral">本地预览</button>
+    <button id="btn-aliases" class="neutral">生成别名</button>
     <button id="btn-deploy">部署 gh-pages</button>
-    <button id="btn-logout">退出登录</button>
+    <button id="btn-logout" class="neutral">退出登录</button>
   </div>
 </header>
 
-<section class="card" style="margin-top:8px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <input id="q" placeholder="搜索 标题/slug/标签/分类" style="flex:1;padding:8px;border-radius:8px;border:1px solid #2b376c;background:#0b1020;color:#e8ecff">
-    <button id="btn-clear">清空</button>
+<section class="card search-card">
+  <div class="search-bar">
+    <input id="q" placeholder="搜索 标题/slug/标签/分类">
+    <button id="btn-clear" class="neutral">清空</button>
   </div>
 </section>
 
@@ -90,7 +90,7 @@
 
   <div class="card">
     <h2>回收站</h2>
-    <div style="margin-bottom:8px"><button id="btn-trash-refresh">刷新回收站</button></div>
+    <div class="list-actions"><button id="btn-trash-refresh" class="neutral">刷新回收站</button></div>
     <table id="tbl-trash"><thead>
       <tr><th>文件名</th><th>猜测 Slug</th><th>修改时间</th><th>操作</th></tr>
     </thead><tbody></tbody></table>
