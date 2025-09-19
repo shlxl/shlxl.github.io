@@ -18,7 +18,7 @@ node blog-admin/server.mjs  # 127.0.0.1:5174 管理后台（默认密码 admin�
 docs/
   ├─ .vitepress/        # 配置、主题覆盖、Pagefind 输出
   ├─ blog/
-  │   ├─ guides/        # 游戏攻略栏目
+  │   ├─ guides/        # 职业攻略栏目
   │   ├─ engineering/   # 工程实践栏目
   │   ├─ creative/      # 创作手记栏目
   │   ├─ life/          # 生活记录栏目
@@ -32,6 +32,7 @@ scripts/
 ```
 
 每个栏目文件夹内的 `index.md` 负责渲染栏目首页，并动态读取 `pagesData` 中的对应文章，无需手工维护“现有内容”列表。
+> 注意：`guides/` 栏目不再保留 `index.md`，导航中的“攻略”菜单会自动跳转到 `categories: [职业攻略]` 的最新文章。请不要恢复旧的栏目首页或随意改动 frontmatter，否则链接会指向不存在的页面。
 
 ## 内容工作流
 
@@ -40,7 +41,7 @@ scripts/
 ```bash
 npm run new:local -- "文章标题" --desc "摘要" --tags "标签1,标签2" --cat "工程实践"
 npm run post:promote <slug>      # 草稿 → 正式，优先落到栏目目录
-npm run new:post -- "标题" --cat "游戏攻略"   # 直接创建并发布
+npm run new:post -- "标题" --cat "职业攻略"   # 直接创建并发布
 npm run post:archive <slug>      # 下架
 npm run post:remove <slug> [-- --hard]  # 移除/删除
 npm run docs:aliases             # 生成别名跳转页
@@ -70,5 +71,7 @@ npm run docs:aliases             # 生成别名跳转页
 | 后台“新建草稿”缺少栏目选项 | 先在后台“栏目管理”创建并上架栏目；列表会自动同步到草稿面板。 |
 | 发布的文章没有展示在栏目页 | 确认 frontmatter 的 `categories` 包含栏目名称（与栏目首页 `index.md` 中的标题一致）。 |
 | 本地预览看到旧内容 | 先执行 `npm run docs:build`，或删除 `docs/.vitepress/dist/` 后重新构建。 |
+| “攻略” 菜单跳到 404 或 HTML 页面 | 确认最新 `职业攻略` 文章存在且 frontmatter 写成 `categories: [职业攻略]`，不要恢复 `guides/index.md` 或手工改导航链接；菜单会自动指向该文章。 |
 
 如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。
+

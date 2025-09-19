@@ -3,7 +3,7 @@ title: 圣骑士 - 神圣的化身（D2R职业攻略系列之六）
 date: 2025/09/14 18:40:00
 description: 开荒圣火 → 飞锤成型，攻守兼备的团队中坚：加点、属性、装备与佣兵、组队定位、PVM/PVP、MF路线与阶段配装全指南。
 tags: [D2R, Paladin, Hammerdin, Smiter]
-categories: [游戏攻略]
+categories: [职业攻略]
 aliases:
   - /blog/d2r-paladin-guide.html
   - /blog/d2r-paladin-guide

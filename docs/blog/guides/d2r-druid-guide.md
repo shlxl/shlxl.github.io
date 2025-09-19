@@ -3,7 +3,7 @@ title: 德鲁伊：自然的守护者（D2R职业攻略系列之二）
 date: 2025/09/14 17:20:00
 description: 多面手的全阶段指南：火开荒转风、加点与属性、装备与佣兵、组队定位、PVM/PVP打法、MF路线与成型搭配。
 tags: [D2R, Druid, 风德, Build]
-categories: [游戏攻略]
+categories: [职业攻略]
 aliases:
   - /blog/d2r-druid-guide.html
   - /blog/d2r-druid-guide
