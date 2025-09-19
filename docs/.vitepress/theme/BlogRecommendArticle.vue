@@ -27,7 +27,7 @@ function toDisplayDate(value: any): string {
   return raw.replace(/-/g, '/').slice(0, 16)
 }
 
-function shortenTitle(title: string, limit = 24): string {
+function shortenTitle(title: string, limit = 20): string {
   const text = title.trim()
   if (text.length <= limit) return text
   return text.slice(0, limit) + '……'
@@ -51,13 +51,16 @@ const catalogList = computed(() => {
     : list
 
   return pool
-    .map((v: any) => ({
-      route: v.route,
-      href: withBase(v.route),
-      title: v.meta.title || '未命名文章',
-      dateText: toDisplayDate(v.meta.date),
-      sortTime: +new Date(v.meta.date || 0)
-    }))
+    .map((v: any) => {
+      const sortTime = +new Date(v.meta.date || 0)
+      return {
+        route: v.route,
+        href: withBase(v.route),
+        title: v.meta.title || '未命名文章',
+        dateText: toDisplayDate(v.meta.date),
+        sortTime: Number.isFinite(sortTime) ? sortTime : Number.MAX_SAFE_INTEGER
+      }
+    })
     .sort((a, b) => a.sortTime - b.sortTime)
     .map((item) => ({
       ...item,
@@ -85,11 +88,13 @@ function handleNavigate(target: { href: string }) {
           :class="{ active: isCurrentDoc(item.route) }"
           @click="handleNavigate(item)"
         >
-          <span class="catalog__line">
+          <span class="catalog__content">
             <span class="catalog__num">{{ index + 1 }}</span>
-            <span class="catalog__text" :title="item.title">{{ item.shortTitle }}</span>
+            <span class="catalog__body">
+              <span class="catalog__text" :title="item.title">{{ item.shortTitle }}</span>
+              <span class="catalog__date" v-if="item.dateText">{{ item.dateText }}</span>
+            </span>
           </span>
-          <span class="catalog__date" v-if="item.dateText">{{ item.dateText }}</span>
         </button>
       </li>
     </ol>
@@ -128,7 +133,6 @@ function handleNavigate(target: { href: string }) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
   font: inherit;
   color: inherit;
   text-align: left;
@@ -143,15 +147,8 @@ function handleNavigate(target: { href: string }) {
 }
 
 .catalog__item.active {
-  border-color: var(--vp-c-brand-1);
-  background: rgba(79, 70, 229, 0.12);
-}
-
-.catalog__line {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 10px;
+  border-color: var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
 }
 
 .catalog__num {
@@ -161,16 +158,38 @@ function handleNavigate(target: { href: string }) {
   color: var(--vp-c-brand-1);
 }
 
+.catalog__content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  width: 100%;
+  align-items: start;
+}
+
+.catalog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .catalog__text {
-  flex: 1 1 auto;
+  display: block;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: clip;
+  text-overflow: ellipsis;
 }
 
 .catalog__date {
   font-size: 12px;
   color: var(--vp-c-text-3);
+}
+
+.catalog__item.active .catalog__text,
+.catalog__item.active .catalog__date {
+  color: var(--vp-c-brand-1);
 }
 
 @media (max-width: 1080px) {
