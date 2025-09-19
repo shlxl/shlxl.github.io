@@ -37,6 +37,7 @@ const blogTheme = getThemeConfig({
     name: '小凌',
     motto: '记录与分享，让代码有温度',
     inspiring: 'Keep learning, keep creating.',
+    logo: '/avatar-avatar.png',
     pageSize: 6
   },
   socialLinks: [
@@ -61,6 +62,7 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }]
   ],
   themeConfig: {
+    logo: '/avatar-avatar.png',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/lxlcool3000' },
       { icon: 'mail', link: 'mailto:coollxl92@gmail.com' }
@@ -129,3 +131,4 @@ function overrideSugaratComponents() {
     }
   }
 }
+

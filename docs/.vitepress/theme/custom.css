@@ -121,3 +121,13 @@ html.dark {
   border: 1px solid var(--vp-c-divider);
   margin-bottom: 12px;
 }
+
+/* 博客列表移除 Hero 区域 */
+.blog-theme-layout .blog-home-header-avatar,
+.blog-theme-layout .header-banner {
+  display: none;
+}
+.blog-theme-layout .header-banner {
+  padding: 0;
+}
+
