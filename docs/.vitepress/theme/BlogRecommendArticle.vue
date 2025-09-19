@@ -27,10 +27,11 @@ function toDisplayDate(value: any): string {
   return raw.replace(/-/g, '/').slice(0, 16)
 }
 
-function shortenTitle(title: string, limit = 20): string {
+function shortenTitle(title: string, limit = 10): string {
   const text = title.trim()
   if (text.length <= limit) return text
-  return text.slice(0, limit) + '……'
+  if (limit <= 1) return text.slice(0, limit)
+  return text.slice(0, limit - 1) + '…'
 }
 
 const hiddenCatalogPaths = ['/portfolio/', '/about/']
@@ -137,13 +138,7 @@ function handleNavigate(target: { href: string }) {
   color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.catalog__item:hover {
-  border-color: var(--vp-c-brand-1);
-  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.12);
-  transform: translateY(-1px);
+  transition: color 0.2s ease;
 }
 
 .catalog__item.active {
@@ -180,6 +175,13 @@ function handleNavigate(target: { href: string }) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.catalog__item:hover .catalog__text {
+  color: var(--vp-c-brand-1);
+  text-decoration: underline;
 }
 
 .catalog__date {
