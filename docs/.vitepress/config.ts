@@ -19,6 +19,12 @@ if (professionGuideNavItem.link && professionGuideNavItem.link !== '/blog/') {
   professionGuideNavItem.activeMatch = `^${escapeForRegExp(professionGuideNavItem.link)}$`
 }
 
+const engineeringPracticeLink = resolveLatestCategoryArticle('工程实践')
+const engineeringPracticeNavItem = { text: '工程', link: engineeringPracticeLink || '/blog/' }
+if (engineeringPracticeNavItem.link && engineeringPracticeNavItem.link !== '/blog/') {
+  engineeringPracticeNavItem.activeMatch = `^${escapeForRegExp(engineeringPracticeNavItem.link)}$`
+}
+
 const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
 const pagefindForceLanguage = (process.env.PAGEFIND_FORCE_LANGUAGE || '').trim()
 const pagefindCommandParts = [
@@ -76,6 +82,7 @@ export default defineConfig({
     nav: [
       { text: '博客', link: '/blog/' },
       professionGuideNavItem,
+      engineeringPracticeNavItem,
       { text: '作品', link: '/portfolio/' },
       { text: '关于', link: '/about/' }
     ],
