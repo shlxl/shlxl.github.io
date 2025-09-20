@@ -9,7 +9,6 @@ const extendedTheme: VitePressTheme = {
     Theme.enhanceApp?.(ctx)
     if (inBrowser) {
       setupCategoryNavPersistence(ctx)
-      setupParagraphJustify(ctx)
     }
   }
 }
@@ -59,111 +58,6 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   }
 
   handleRouteChange(states, ctx.router.route.data, themeConfig, base)
-}
-
-const PARAGRAPH_SELECTOR = '.vp-doc p'
-const JUSTIFY_ATTR = 'xlJustifyApplied'
-const ORIGINAL_ALIGN_ATTR = 'xlOriginalAlign'
-const MULTILINE_THRESHOLD = 1.5
-
-function setupParagraphJustify(ctx: EnhanceAppContext) {
-  let rafId: number | null = null
-
-  const scheduleApply = () => {
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId)
-    }
-    rafId = requestAnimationFrame(() => {
-      rafId = null
-      const paragraphs = document.querySelectorAll<HTMLElement>(PARAGRAPH_SELECTOR)
-      paragraphs.forEach(updateParagraphAlignment)
-    })
-  }
-
-  const handleResize = () => scheduleApply()
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scheduleApply, { once: true })
-  } else {
-    scheduleApply()
-  }
-
-  const previous = ctx.router.onAfterRouteChange
-  ctx.router.onAfterRouteChange = async (to: string) => {
-    if (typeof previous === 'function') {
-      await previous.call(ctx.router, to)
-    }
-    scheduleApply()
-  }
-
-  window.addEventListener('resize', handleResize, { passive: true })
-}
-
-function updateParagraphAlignment(paragraph: HTMLElement) {
-  if (shouldApplyJustify(paragraph)) {
-    applyJustifyAlignment(paragraph)
-  } else {
-    restoreParagraphAlignment(paragraph)
-  }
-}
-
-function shouldApplyJustify(paragraph: HTMLElement) {
-  const styles = window.getComputedStyle(paragraph)
-  const computedAlign = styles.textAlign
-  if (
-    paragraph.dataset[JUSTIFY_ATTR] !== 'true' &&
-    computedAlign &&
-    computedAlign !== 'start' &&
-    computedAlign !== 'left' &&
-    computedAlign !== 'justify'
-  ) {
-    return false
-  }
-
-  let lineHeight = parseFloat(styles.lineHeight)
-  if (!Number.isFinite(lineHeight) || lineHeight <= 0) {
-    const fontSize = parseFloat(styles.fontSize)
-    if (Number.isFinite(fontSize) && fontSize > 0) {
-      lineHeight = fontSize * 1.4
-    } else {
-      return false
-    }
-  }
-
-  const paddingTop = parseFloat(styles.paddingTop) || 0
-  const paddingBottom = parseFloat(styles.paddingBottom) || 0
-  const borderTop = parseFloat(styles.borderTopWidth) || 0
-  const borderBottom = parseFloat(styles.borderBottomWidth) || 0
-  const contentHeight =
-    paragraph.getBoundingClientRect().height - paddingTop - paddingBottom - borderTop - borderBottom
-
-  if (!Number.isFinite(contentHeight) || contentHeight <= 0) {
-    return false
-  }
-
-  const lineCount = contentHeight / lineHeight
-  return lineCount > MULTILINE_THRESHOLD
-}
-
-function applyJustifyAlignment(paragraph: HTMLElement) {
-  if (!paragraph.dataset[JUSTIFY_ATTR]) {
-    paragraph.dataset[ORIGINAL_ALIGN_ATTR] = paragraph.style.textAlign || ''
-  }
-  paragraph.dataset[JUSTIFY_ATTR] = 'true'
-  paragraph.style.textAlign = 'justify'
-}
-
-function restoreParagraphAlignment(paragraph: HTMLElement) {
-  if (paragraph.dataset[JUSTIFY_ATTR] === 'true') {
-    const original = paragraph.dataset[ORIGINAL_ALIGN_ATTR] || ''
-    if (original) {
-      paragraph.style.textAlign = original
-    } else {
-      paragraph.style.removeProperty('text-align')
-    }
-    delete paragraph.dataset[JUSTIFY_ATTR]
-    delete paragraph.dataset[ORIGINAL_ALIGN_ATTR]
-  }
 }
 
 function buildCategoryStates(navItems: NavRecord[], base: string) {
