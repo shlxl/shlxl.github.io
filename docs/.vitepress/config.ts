@@ -14,15 +14,19 @@ if (!Number.isFinite(limit) || limit < 1) {
 const { getThemeConfig } = await import('@sugarat/theme/node')
 
 const professionGuideLink = resolveLatestCategoryArticle('职业攻略')
-const professionGuideNavItem = { text: '攻略', link: professionGuideLink || '/blog/' }
-if (professionGuideNavItem.link && professionGuideNavItem.link !== '/blog/') {
-  professionGuideNavItem.activeMatch = `^${escapeForRegExp(professionGuideNavItem.link)}$`
+const professionGuideNavItem = {
+  text: '攻略',
+  link: professionGuideLink || '/blog/',
+  fallbackLink: professionGuideLink || '/blog/',
+  category: '职业攻略'
 }
 
 const engineeringPracticeLink = resolveLatestCategoryArticle('工程实践')
-const engineeringPracticeNavItem = { text: '工程', link: engineeringPracticeLink || '/blog/' }
-if (engineeringPracticeNavItem.link && engineeringPracticeNavItem.link !== '/blog/') {
-  engineeringPracticeNavItem.activeMatch = `^${escapeForRegExp(engineeringPracticeNavItem.link)}$`
+const engineeringPracticeNavItem = {
+  text: '工程',
+  link: engineeringPracticeLink || '/blog/',
+  fallbackLink: engineeringPracticeLink || '/blog/',
+  category: '工程实践'
 }
 
 const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
@@ -231,10 +235,6 @@ function buildRouteFromPath(filePath: string) {
 function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
-}
-
-function escapeForRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\$&')
 }
 
 function faviconIcoFallback() {
