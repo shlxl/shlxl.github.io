@@ -9,6 +9,7 @@ const extendedTheme: VitePressTheme = {
     Theme.enhanceApp?.(ctx)
     if (inBrowser) {
       setupCategoryNavPersistence(ctx)
+      setupParagraphJustify(ctx)
     }
   }
 }
@@ -58,6 +59,33 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   }
 
   handleRouteChange(states, ctx.router.route.data, themeConfig, base)
+}
+
+const PARAGRAPH_SELECTOR = '.vp-doc p'
+
+function setupParagraphJustify(ctx: EnhanceAppContext) {
+  const apply = () => {
+    requestAnimationFrame(() => {
+      const paragraphs = document.querySelectorAll<HTMLElement>(PARAGRAPH_SELECTOR)
+      paragraphs.forEach((paragraph) => {
+        paragraph.style.textAlign = 'justify'
+      })
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', apply, { once: true })
+  } else {
+    apply()
+  }
+
+  const previous = ctx.router.onAfterRouteChange
+  ctx.router.onAfterRouteChange = async (to: string) => {
+    if (typeof previous === 'function') {
+      await previous.call(ctx.router, to)
+    }
+    apply()
+  }
 }
 
 function buildCategoryStates(navItems: NavRecord[], base: string) {
