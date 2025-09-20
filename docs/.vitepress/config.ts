@@ -90,16 +90,6 @@ export default defineConfig({
       { text: '作品', link: '/portfolio/' },
       { text: '关于', link: '/about/' }
     ],
-    sidebar: {
-      '/guide/': [
-        {
-          text: '对齐与版式', // added
-          items: [
-            { text: '对齐工具', link: '/guide/alignment' } // added
-          ]
-        }
-      ]
-    },
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {

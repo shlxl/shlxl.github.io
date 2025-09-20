@@ -2,13 +2,11 @@ import Theme from '@sugarat/theme'
 import type { EnhanceAppContext, PageData, Theme as VitePressTheme } from 'vitepress'
 import { inBrowser } from 'vitepress'
 import './custom.css'
-import Center from './components/Center.vue'
 
 const extendedTheme: VitePressTheme = {
   ...Theme,
   enhanceApp(ctx) {
     Theme.enhanceApp?.(ctx)
-    ctx.app.component('Center', Center)
     if (inBrowser) {
       setupCategoryNavPersistence(ctx)
     }
