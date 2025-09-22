@@ -1,0 +1,21 @@
+{
+  "updatedAt": "2025-09-22T15:36:06.767Z",
+  "items": [
+    {
+      "text": "工程实践",
+      "category": "工程实践",
+      "dir": "engineering",
+      "link": "/blog/engineering/",
+      "fallback": "/blog/engineering/",
+      "menuOrder": 1
+    },
+    {
+      "text": "职业攻略",
+      "category": "职业攻略",
+      "dir": "guides",
+      "link": "/blog/guides/",
+      "fallback": "/blog/guides/",
+      "menuOrder": 2
+    }
+  ]
+}

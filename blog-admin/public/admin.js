@@ -1,7 +1,7 @@
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const toast=(m,ok=true)=>{const t=$('#toast');t.textContent=m;t.style.borderColor=ok?'#2b376c':'#804040';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);};
 const showError=(err)=>{if(!err)return;if(err.status===401)return;const msg=(err.detail?.err||err.detail?.out||err.message||'操作失败').slice(0,400);if(!msg)return;toast(msg,false);};
-let ALL_ITEMS=[], QUERY='';
+let ALL_ITEMS=[], QUERY='', CATEGORY_CACHE=[];
 
 async function api(path, method='GET', data){
   const opt={method,headers:AdminAuth.authHeaders({'Content-Type':'application/json'})};
@@ -107,7 +107,7 @@ async function handleCategoryChecklist(checklist){
   }
 }
 
-function syncColumnSelect(sectionList){
+function syncColumnSelect(categories){
   const select = $('#column');
   if(!select) return;
   const placeholder = select.dataset.placeholder || '选择栏目';
@@ -120,13 +120,25 @@ function syncColumnSelect(sectionList){
   placeholderOption.textContent = placeholder;
   select.appendChild(placeholderOption);
 
-  (sectionList || []).forEach((item)=>{
-    const rawTitle = (item.title || '').trim() || String(item.rel || '').replace(/\/index\.md$/,'');
+  const ordered = Array.isArray(categories)
+    ? [...categories].sort((a,b)=>{
+        const ao = Number(a.menuOrder||0);
+        const bo = Number(b.menuOrder||0);
+        if(ao!==bo) return ao-bo;
+        return String(a.title||'').localeCompare(String(b.title||''));
+      })
+    : [];
+
+  ordered.forEach(item=>{
+    const rawTitle = String(item.title||'').trim();
     if(!rawTitle || seen.has(rawTitle)) return;
     seen.add(rawTitle);
     const option = document.createElement('option');
     option.value = rawTitle;
-    option.textContent = item.publish ? rawTitle : `${rawTitle}（未上架）`;
+    let label = rawTitle;
+    if(item.publish === false) label += '（未上架）';
+    else if(item.menuEnabled === false) label += '（菜单未上架）';
+    option.textContent = label;
     if(rawTitle === current) option.selected = true;
     select.appendChild(option);
   });
@@ -134,13 +146,12 @@ function syncColumnSelect(sectionList){
   if(current && !seen.has(current)) select.value = '';
 }
 
-function render(items){
+function render(items, categories=[]){
   const data = items.filter(x=>matches(x, QUERY));
   const isDraft = x=> x.abs.includes('/_local/');
   const drafts   = data.filter(x=>x.type==='post' && isDraft(x) && !x.hidden);
   const pubs     = data.filter(x=>x.type==='post' && !isDraft(x) &&  x.publish && !x.hidden);
   const archived = data.filter(x=>x.type==='post' && !isDraft(x) && !x.publish && !x.hidden);
-  const sections = data.filter(x=>x.type==='section');
   const pages    = data.filter(x=>x.type==='page'); // 显式列出来
 
   const tag=arr=>arr.map(t=>`<span class="badge">${t}</span>`).join('');
@@ -160,18 +171,6 @@ function render(items){
   $('#tbl-pubs tbody').innerHTML     = pubs.map(x=>rowPost(x, `<button data-act="archive" data-rel="${x.rel}">下架</button>`)).join('');
   $('#tbl-archived tbody').innerHTML = archived.map(x=>rowPost(x, `<button data-act="archive" data-rel="${x.rel}">下架</button><button data-act="republish" data-rel="${x.rel}">重新上架</button>`)).join('');
 
-  $('#tbl-sections tbody').innerHTML = sections.map(x=>`<tr>
-    <td>${x.title||'(无标题)'}</td><td>${x.rel}</td><td>${x.publish?'✅':'❌'}</td>
-    <td class="row-actions">
-      <button data-sact="republish" data-rel="${x.rel}">上架</button>
-      <button data-sact="archive"   data-rel="${x.rel}">下架</button>
-      <button data-sact="open"      data-rel="${x.rel}">VS Code</button>
-      <button data-sact="edit"      data-rel="${x.rel}">编辑</button>
-      <button data-sact="remove"    data-rel="${x.rel}">回收站</button>
-      <button data-sact="remove-hard" data-rel="${x.rel}">永久删</button>
-    </td>
-  </tr>`).join('');
-
   $('#tbl-pages tbody').innerHTML = pages.map(x=>`<tr>
     <td>${x.title||'(无标题)'}</td><td><code>${x.rel}</code></td><td>${x.type}</td>
     <td class="row-actions">
@@ -182,7 +181,7 @@ function render(items){
     </td>
   </tr>`).join('');
 
-  syncColumnSelect(sections);
+  syncColumnSelect(categories);
 
   const idx = Object.fromEntries(data.map(x=>[x.rel,x]));
 
@@ -219,40 +218,6 @@ function render(items){
         }else if(btn.dataset.act==='remove-hard'){
           if(!confirm(`永久删除？不可恢复！`)) return;
           await api('/api/remove','POST',{rel,hard:true}); toast(`已永久删除`);
-        }
-        await refresh(); await loadTrash();
-      }catch(e){
-        if(e.detail?.checklist){
-          await handleCategoryChecklist(e.detail.checklist);
-        }else{
-          showError(e);
-        }
-      }
-    });
-  });
-
-  // sections actions
-  $$('#tbl-sections [data-sact]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const rel=btn.dataset.rel; const item = idx[rel];
-      try{
-        if(btn.dataset.sact==='open'){
-          if(!item?.abs) return toast('没有绝对路径',false);
-          window.location.href = toVSCodeUri(item.abs); return;
-        }
-        if(btn.dataset.sact==='edit'){
-          const title = prompt('标题（留空不改）', item.title || '');
-          const doPub = confirm('是否设 publish:true ？取消=不改');
-          const patch = {}; if(title && title!==item.title) patch.title = title; if(doPub) patch.publish = true;
-          await api('/api/update-meta','POST',{rel, patch}); toast('已更新');
-        }else if(btn.dataset.sact==='republish'){
-          await api('/api/republish','POST',{rel}); toast('已上架');
-        }else if(btn.dataset.sact==='archive'){
-          await api('/api/archive','POST',{rel}); toast('已下架');
-        }else if(btn.dataset.sact==='remove'){
-          if(!confirm('移入回收站？')) return; await api('/api/remove','POST',{rel}); toast('已移入回收站');
-        }else if(btn.dataset.sact==='remove-hard'){
-          if(!confirm('永久删除？')) return; await api('/api/remove','POST',{rel,hard:true}); toast('已永久删除');
         }
         await refresh(); await loadTrash();
       }catch(e){
@@ -318,11 +283,19 @@ async function loadTrash(){
   }
 }
 
-async function refresh(){ const r = await api('/api/list'); ALL_ITEMS = r.items || []; render(ALL_ITEMS); }
+async function refresh(){
+  const [listRes, categoriesRes] = await Promise.all([
+    api('/api/list'),
+    api('/api/categories').catch(()=>({ items: [] }))
+  ]);
+  ALL_ITEMS = listRes.items || [];
+  CATEGORY_CACHE = categoriesRes?.items || [];
+  render(ALL_ITEMS, CATEGORY_CACHE);
+}
 async function main(){
   $('#btn-refresh').addEventListener('click', async ()=>{ try{ await refresh(); await loadTrash(); }catch(e){ showError(e); }});
-  $('#btn-clear').addEventListener('click', ()=>{ $('#q').value=''; QUERY=''; render(ALL_ITEMS); loadTrash().catch(showError); });
-  $('#q').addEventListener('input', e=>{ QUERY = e.target.value || ''; render(ALL_ITEMS); loadTrash().catch(showError); });
+  $('#btn-clear').addEventListener('click', ()=>{ $('#q').value=''; QUERY=''; render(ALL_ITEMS, CATEGORY_CACHE); loadTrash().catch(showError); });
+  $('#q').addEventListener('input', e=>{ QUERY = e.target.value || ''; render(ALL_ITEMS, CATEGORY_CACHE); loadTrash().catch(showError); });
 
   $('#btn-create').addEventListener('click', async ()=>{
     const column = $('#column').value.trim();
@@ -370,7 +343,6 @@ async function main(){
       $('#tbl-drafts tbody').innerHTML = '';
       $('#tbl-pubs tbody').innerHTML = '';
       $('#tbl-archived tbody').innerHTML = '';
-      $('#tbl-sections tbody').innerHTML = '';
       $('#tbl-pages tbody').innerHTML = '';
       $('#tbl-trash tbody').innerHTML = '';
     }
