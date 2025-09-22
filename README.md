@@ -53,7 +53,7 @@ npm run docs:aliases             # 生成别名跳转页
 
 1. `node blog-admin/server.mjs`
 2. 浏览器打开 `http://127.0.0.1:5174`，默认密码 `admin`（建议在部署环境设置 `ADMIN_PASSWORD`）。
-3. “新建草稿”支持直接选择栏目；栏目列表来源于后台“栏目管理”页（section）。
+3. “新建草稿”支持直接选择栏目；栏目列表来源于后台“分类管理”页（Categories Manager）。
 4. 所有 API 均要求 Bearer Token，登录态过期后会自动回退到登录页。
 
 ## 构建与发布
@@ -68,7 +68,7 @@ npm run docs:aliases             # 生成别名跳转页
 | 问题 | 解决方案 |
 | --- | --- |
 | `npm run docs:build` 在 macOS (Apple Silicon) 报 Pagefind 安装失败 | 暂记为已知限制（写入 PR/commit 描述），或手动下载 Pagefind ARM 版本后放入 PATH。CI 构建不受影响。 |
-| 后台“新建草稿”缺少栏目选项 | 先在后台“栏目管理”创建并上架栏目；列表会自动同步到草稿面板。 |
+| 后台“新建草稿”缺少栏目选项 | 先在后台“分类管理”创建并上架栏目；列表会自动同步到草稿面板。 |
 | 发布的文章没有展示在栏目页 | 确认 frontmatter 的 `categories` 包含栏目名称（与栏目首页 `index.md` 中的标题一致）。 |
 | 本地预览看到旧内容 | 先执行 `npm run docs:build`，或删除 `docs/.vitepress/dist/` 后重新构建。 |
 | “攻略” 菜单跳到 404 或 HTML 页面 | 确认最新 `职业攻略` 文章存在且 frontmatter 写成 `categories: [职业攻略]`，不要恢复 `guides/index.md` 或手工改导航链接；菜单会自动指向该文章。 |

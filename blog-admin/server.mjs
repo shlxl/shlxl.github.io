@@ -20,6 +20,8 @@ const VP_DIR = path.join(DOCS_DIR, '.vitepress');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const SCRIPTS_DIR = path.join(PROJECT_ROOT, 'scripts');
 const CATEGORY_REGISTRY_FILE = path.join(VP_DIR, 'categories.map.json');
+const CATEGORY_NAV_FILE = path.join(VP_DIR, 'categories.nav.json');
+const CATEGORY_REGISTRY_VERSION = 2;
 
 const PREVIEW_PORT = Number(process.env.PREVIEW_PORT || 4173);
 const DIST_DIR = path.join(DOCS_DIR, '.vitepress', 'dist');
@@ -162,91 +164,259 @@ function setPublishFlag(file, publish){
 }
 
 // ---- category registry helpers ----
-function loadCategoryRegistry(){
-  try{
-    if(!fs.existsSync(CATEGORY_REGISTRY_FILE)) return { version:1, items:[] };
-    const raw = fs.readFileSync(CATEGORY_REGISTRY_FILE,'utf8');
-    if(!raw.trim()) return { version:1, items:[] };
-    const data = JSON.parse(raw);
-    if(Array.isArray(data)) return { version:1, items:data };
-    if(data && Array.isArray(data.items)) return { version:data.version||1, items:data.items };
-    if(data && typeof data === 'object'){
-      const items = Object.entries(data)
-        .filter(([,v])=>typeof v === 'string')
-        .map(([title, dir])=>({ title, dir }));
-      return { version:1, items };
-    }
-  }catch{}
-  return { version:1, items:[] };
-}
-function writeCategoryRegistry(registry){
-  const now = new Date().toISOString();
-  const items = Array.isArray(registry.items) ? registry.items : [];
-  const payload = {
-    version: registry.version || 1,
-    updatedAt: now,
-    items: items
-      .filter(item=>item && typeof item === 'object')
-      .map(item=>({
-        dir: normalizeDirKey(item.dir),
-        title: typeof item.title === 'string' ? item.title.trim() : '',
-        publish: item.publish === undefined ? true : !!item.publish,
-        lastUpdated: item.lastUpdated || now
-      }))
-      .filter(item=>item.dir)
-      .sort((a,b)=>a.dir.localeCompare(b.dir))
-  };
-  fs.mkdirSync(path.dirname(CATEGORY_REGISTRY_FILE),{recursive:true});
-  fs.writeFileSync(CATEGORY_REGISTRY_FILE, JSON.stringify(payload, null, 2), 'utf8');
-  return payload;
-}
 function normalizeDirKey(dir=''){
   return String(dir||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'');
 }
+function coerceIso(value, fallback){
+  if(value){
+    try{
+      const t = new Date(value).getTime();
+      if(Number.isFinite(t)) return new Date(t).toISOString();
+    }catch{}
+  }
+  if(fallback) return fallback;
+  return new Date().toISOString();
+}
+function extractRegistryCandidates(raw){
+  if(Array.isArray(raw)) return raw;
+  if(raw && Array.isArray(raw.items)) return raw.items;
+  if(raw && Array.isArray(raw.categories)) return raw.categories;
+  if(raw && typeof raw === 'object'){
+    return Object.entries(raw)
+      .filter(([,v])=>typeof v === 'string')
+      .map(([title, dir])=>({ title, dir }));
+  }
+  return [];
+}
+function normalizeCategoryEntry(entry, index, fallbackDate){
+  if(!entry || typeof entry !== 'object') return null;
+  const dir = normalizeDirKey(entry.dir || entry.path || entry.rel || entry.slug || '');
+  let title = '';
+  if(typeof entry.title === 'string') title = entry.title.trim();
+  else if(typeof entry.text === 'string') title = entry.text.trim();
+  else if(typeof entry.name === 'string') title = entry.name.trim();
+  let menuLabel = '';
+  if(typeof entry.menuLabel === 'string') menuLabel = entry.menuLabel.trim();
+  else if(typeof entry.navLabel === 'string') menuLabel = entry.navLabel.trim();
+  else if(typeof entry.label === 'string') menuLabel = entry.label.trim();
+  const publish = entry.publish === undefined ? true : !!entry.publish;
+  let menuEnabled;
+  if(entry.menuEnabled !== undefined) menuEnabled = !!entry.menuEnabled;
+  else if(entry.navEnabled !== undefined) menuEnabled = !!entry.navEnabled;
+  else if(entry.enabled !== undefined) menuEnabled = !!entry.enabled;
+  else if(entry.visible === false || entry.publish === false) menuEnabled = false;
+  else menuEnabled = true;
+  let menuOrder = Number(entry.menuOrder);
+  if(!Number.isFinite(menuOrder)) menuOrder = index + 1;
+  const fallback = coerceIso(fallbackDate, undefined);
+  const createdAt = coerceIso(entry.createdAt || entry.lastUpdated, fallback);
+  const updatedAt = coerceIso(entry.updatedAt || entry.lastUpdated, fallback);
+  if(!dir && !title && !menuLabel) return null;
+  const resolvedTitle = title || menuLabel || dir;
+  const resolvedLabel = menuLabel || resolvedTitle;
+  return {
+    dir,
+    title: resolvedTitle,
+    menuLabel: resolvedLabel,
+    publish,
+    menuEnabled,
+    menuOrder,
+    createdAt,
+    updatedAt
+  };
+}
+function dedupeRegistryItems(items, fallbackDate){
+  const map = new Map();
+  const fallback = coerceIso(fallbackDate, undefined);
+  for(const entry of items){
+    const key = normalizeDirKey(entry.dir);
+    if(!key) continue;
+    const createdAt = coerceIso(entry.createdAt, fallback);
+    const updatedAt = coerceIso(entry.updatedAt, createdAt);
+    const normalized = {
+      dir: key,
+      title: entry.title || entry.menuLabel || key,
+      menuLabel: entry.menuLabel || entry.title || key,
+      publish: entry.publish !== false,
+      menuEnabled: entry.menuEnabled !== false,
+      menuOrder: Number(entry.menuOrder),
+      createdAt,
+      updatedAt
+    };
+    if(map.has(key)){
+      const existing = map.get(key);
+      const prev = new Date(existing.updatedAt || existing.createdAt || fallback).getTime();
+      const next = new Date(updatedAt).getTime();
+      if(Number.isFinite(next) && (!Number.isFinite(prev) || next >= prev)){
+        map.set(key, normalized);
+      }
+    }else{
+      map.set(key, normalized);
+    }
+  }
+  return Array.from(map.values());
+}
+function normalizeMenuOrder(items){
+  const sorted = items.slice().sort((a,b)=>{
+    const oa = Number(a.menuOrder);
+    const ob = Number(b.menuOrder);
+    const fa = Number.isFinite(oa);
+    const fb = Number.isFinite(ob);
+    if(fa && fb && oa !== ob) return oa - ob;
+    if(fa && !fb) return -1;
+    if(!fa && fb) return 1;
+    return (a.title||'').localeCompare(b.title||'');
+  });
+  const seen = new Set();
+  let nextOrder = 1;
+  return sorted.map(item=>{
+    let order = Number(item.menuOrder);
+    if(!Number.isFinite(order) || order < 1) order = nextOrder;
+    while(seen.has(order)) order++;
+    seen.add(order);
+    if(order >= nextOrder) nextOrder = order + 1;
+    return { ...item, menuOrder: order };
+  });
+}
+function prepareCategoryRegistry(raw, now = new Date().toISOString()){
+  const baseline = raw && typeof raw === 'object' ? raw : { items: [] };
+  const fallback = coerceIso(baseline.updatedAt, now);
+  const candidates = extractRegistryCandidates(baseline);
+  const normalized = candidates
+    .map((entry, idx)=>normalizeCategoryEntry(entry, idx, fallback))
+    .filter(Boolean);
+  const deduped = dedupeRegistryItems(normalized, fallback);
+  const ordered = normalizeMenuOrder(deduped);
+  return {
+    version: CATEGORY_REGISTRY_VERSION,
+    updatedAt: coerceIso(baseline.updatedAt, fallback),
+    items: ordered
+  };
+}
+function backupCategoryRegistryFile(snapshot=''){
+  try{
+    if(!fs.existsSync(CATEGORY_REGISTRY_FILE)) return null;
+    const dir = path.dirname(CATEGORY_REGISTRY_FILE);
+    const pad = n=>String(n).padStart(2,'0');
+    const t = new Date();
+    const stamp = `${t.getFullYear()}${pad(t.getMonth()+1)}${pad(t.getDate())}${pad(t.getHours())}${pad(t.getMinutes())}${pad(t.getSeconds())}`;
+    const name = `categories.map.json.bak-${stamp}`;
+    const file = path.join(dir, name);
+    const payload = snapshot || fs.readFileSync(CATEGORY_REGISTRY_FILE,'utf8');
+    fs.writeFileSync(file, payload, 'utf8');
+    return file;
+  }catch{
+    return null;
+  }
+}
+function loadCategoryRegistry(){
+  let rawText = '';
+  let parsed = null;
+  try{
+    if(fs.existsSync(CATEGORY_REGISTRY_FILE)){
+      rawText = fs.readFileSync(CATEGORY_REGISTRY_FILE,'utf8');
+      if(rawText.trim()) parsed = JSON.parse(rawText);
+    }
+  }catch{
+    parsed = null;
+  }
+  const registry = prepareCategoryRegistry(parsed || { items: [] });
+  const version = Number(parsed?.version || (Array.isArray(parsed) ? 1 : 0));
+  if(version !== CATEGORY_REGISTRY_VERSION && rawText){
+    backupCategoryRegistryFile(rawText);
+    return writeCategoryRegistry(registry);
+  }
+  if(!fs.existsSync(CATEGORY_REGISTRY_FILE)){
+    writeCategoryRegistry(registry);
+  }
+  return registry;
+}
+function writeCategoryRegistry(registry){
+  const now = new Date().toISOString();
+  const prepared = prepareCategoryRegistry({ ...(registry||{}), updatedAt: now }, now);
+  prepared.updatedAt = now;
+  fs.mkdirSync(path.dirname(CATEGORY_REGISTRY_FILE), { recursive:true });
+  fs.writeFileSync(CATEGORY_REGISTRY_FILE, JSON.stringify(prepared, null, 2), 'utf8');
+  return prepared;
+}
+function nextMenuOrder(items){
+  let max = 0;
+  for(const entry of items || []){
+    const n = Number(entry.menuOrder);
+    if(Number.isFinite(n) && n > max) max = n;
+  }
+  return max + 1;
+}
 function touchRegistryEntry(dir, patch={}){
-  const registry = loadCategoryRegistry();
   const normalizedDir = normalizeDirKey(dir);
   if(!normalizedDir) return null;
+  const registry = loadCategoryRegistry();
   const now = new Date().toISOString();
-  let entry = registry.items.find(item=>normalizeDirKey(item.dir) === normalizedDir);
+  let entry = registry.items.find(item=>normalizeDirKey(item.dir)===normalizedDir);
   if(!entry){
-    entry = { dir: normalizedDir, title: '', publish: true, lastUpdated: now };
+    entry = {
+      dir: normalizedDir,
+      title: '',
+      menuLabel: '',
+      publish: true,
+      menuEnabled: true,
+      menuOrder: nextMenuOrder(registry.items),
+      createdAt: now,
+      updatedAt: now
+    };
     registry.items.push(entry);
   }
-  if(patch.title !== undefined) entry.title = String(patch.title||'').trim();
+  if(patch.title !== undefined){
+    const value = String(patch.title||'').trim();
+    entry.title = value || entry.title || normalizedDir;
+  }
+  if(patch.menuLabel !== undefined){
+    const value = String(patch.menuLabel||'').trim();
+    entry.menuLabel = value || entry.title || normalizedDir;
+  }else if(!entry.menuLabel){
+    entry.menuLabel = entry.title || normalizedDir;
+  }
   if(patch.publish !== undefined) entry.publish = !!patch.publish;
-  entry.lastUpdated = now;
-  writeCategoryRegistry(registry);
-  return entry;
+  if(patch.menuEnabled !== undefined) entry.menuEnabled = !!patch.menuEnabled;
+  if(patch.menuOrder !== undefined){
+    const order = Number(patch.menuOrder);
+    if(Number.isFinite(order)) entry.menuOrder = order;
+  }
+  entry.updatedAt = now;
+  if(!entry.createdAt) entry.createdAt = now;
+  const written = writeCategoryRegistry(registry);
+  return written.items.find(item=>normalizeDirKey(item.dir)===normalizedDir) || null;
 }
 function renameRegistryDir(oldDir, newDir){
-  const registry = loadCategoryRegistry();
   const from = normalizeDirKey(oldDir);
   const to = normalizeDirKey(newDir);
   if(!from || !to) return null;
-  const entry = registry.items.find(item=>normalizeDirKey(item.dir) === from);
-  if(!entry) return null;
-  entry.dir = to;
-  entry.lastUpdated = new Date().toISOString();
-  writeCategoryRegistry(registry);
-  return entry;
+  const registry = loadCategoryRegistry();
+  const idx = registry.items.findIndex(item=>normalizeDirKey(item.dir)===from);
+  if(idx===-1) return null;
+  if(registry.items.some((item,i)=>i!==idx && normalizeDirKey(item.dir)===to)) return null;
+  registry.items[idx].dir = to;
+  registry.items[idx].updatedAt = new Date().toISOString();
+  const written = writeCategoryRegistry(registry);
+  return written.items.find(item=>normalizeDirKey(item.dir)===to) || null;
 }
 function renameRegistryTitle(oldTitle, newTitle){
-  const registry = loadCategoryRegistry();
   const from = String(oldTitle||'').trim();
   const to = String(newTitle||'').trim();
   if(!from || !to) return null;
-  const entry = registry.items.find(item=>String(item.title||'').trim() === from);
+  const registry = loadCategoryRegistry();
+  const entry = registry.items.find(item=>String(item.title||'').trim()===from);
   if(!entry) return null;
   entry.title = to;
-  entry.lastUpdated = new Date().toISOString();
-  writeCategoryRegistry(registry);
-  return entry;
+  if(!entry.menuLabel || entry.menuLabel === from) entry.menuLabel = to;
+  entry.updatedAt = new Date().toISOString();
+  const written = writeCategoryRegistry(registry);
+  return written.items.find(item=>String(item.title||'').trim()===to) || null;
 }
 function removeRegistryByDir(dir){
-  const registry = loadCategoryRegistry();
   const target = normalizeDirKey(dir);
   if(!target) return false;
+  const registry = loadCategoryRegistry();
   const before = registry.items.length;
   registry.items = registry.items.filter(item=>normalizeDirKey(item.dir)!==target);
   if(registry.items.length === before) return false;
@@ -254,9 +424,9 @@ function removeRegistryByDir(dir){
   return true;
 }
 function removeRegistryByTitle(title){
-  const registry = loadCategoryRegistry();
   const target = String(title||'').trim();
   if(!target) return false;
+  const registry = loadCategoryRegistry();
   const before = registry.items.length;
   registry.items = registry.items.filter(item=>String(item.title||'').trim()!==target);
   if(registry.items.length === before) return false;
@@ -264,15 +434,15 @@ function removeRegistryByTitle(title){
   return true;
 }
 function registryEntryByDir(dir){
-  const registry = loadCategoryRegistry();
   const target = normalizeDirKey(dir);
   if(!target) return null;
+  const registry = loadCategoryRegistry();
   return registry.items.find(item=>normalizeDirKey(item.dir)===target) || null;
 }
 function registryEntryByTitle(title){
-  const registry = loadCategoryRegistry();
   const target = String(title||'').trim();
   if(!target) return null;
+  const registry = loadCategoryRegistry();
   return registry.items.find(item=>String(item.title||'').trim()===target) || null;
 }
 
@@ -585,173 +755,329 @@ async function apiCategoryRewrite(req,res){
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 
-// ---------- Sections APIs v2 ----------
-function listSections(){
-  const files = walkMd(BLOG_DIR).filter(isSection);
-  return files.map(f=>{
-    const st = fs.statSync(f);
-    const fm = parseFM(fs.readFileSync(f,'utf8'));
-    const dir = path.dirname(f);
-    const children = fs.readdirSync(dir).filter(n=>/\.md$/i.test(n) && n.toLowerCase()!=='index.md').length;
-    return {
-      rel: relOf(f),
-      abs: f,
-      dir: path.relative(BLOG_DIR, dir).replace(/\\/g,'/'),
-      title: fm.title || path.basename(dir),
-      publish: fm.publish === 'true',
-      draft: fm.draft === 'true',
-      childrenCount: children,
-      mtime: st.mtimeMs
-    };
-  }).sort((a,b)=> b.mtime-a.mtime);
-}
-function listSectionTrash(){
-  if(!fs.existsSync(TRASH_DIR)) return [];
-  const out = [];
-  for(const n of fs.readdirSync(TRASH_DIR)){
-    const p = path.join(TRASH_DIR, n);
-    if(fs.statSync(p).isFile() && /\.md$/i.test(n)){
-      const m = n.match(/^\d{14}-(.+)$/);
-      if(!m) continue;
-      const raw = m[1];
-      const guessRel = raw.replace(/_/g,'/');
-      if(!/index\.md$/i.test(guessRel)) continue;
-      const st = fs.statSync(p);
-      out.push({ name:n, guessRel, mtime: st.mtimeMs });
-    }
+function getCategoryBucket(map, key){
+  let bucket = map.get(key);
+  if(!bucket){
+    bucket = { total:0, published:0, latestPublished:null, latestAny:null };
+    map.set(key, bucket);
   }
-  out.sort((a,b)=> b.mtime - a.mtime);
-  return out;
+  return bucket;
 }
-async function apiSections(req,res){ send(res,200,{ok:true, items:listSections()}); }
-async function apiSectionToggle(req,res){
-  try{
-    const { rel, publish } = await readBody(req);
-    if(!rel) return send(res,400,{ok:false,error:'missing rel'});
-    const file = path.join(BLOG_DIR, rel);
-    if(!fs.existsSync(file)) return send(res,404,{ok:false,error:'not found'});
-    setPublishFlag(file, !!publish);
-    const relDir = normalizeDirKey(rel.replace(/\/?index\.md$/i,''));
-    if(relDir) touchRegistryEntry(relDir, { publish: !!publish });
-    send(res,200,{ok:true});
-  }catch(e){ send(res,500,{ok:false,error:e.message}); }
-}
-async function apiSectionCreate(req,res){
-  try{
-    const { rel, title, publish } = await readBody(req);
-    if(!rel) return send(res,400,{ok:false,error:'missing rel (like "series" or "series/d2r")'});
-    const dir = path.join(BLOG_DIR, rel);
-    fs.mkdirSync(dir,{recursive:true});
-    const file = path.join(dir, 'index.md');
-    if(fs.existsSync(file)) return send(res,409,{ok:false,error:'index.md already exists'});
-    const fm = `---\ntitle: ${title||path.basename(dir)}\npublish: ${publish===false?'false':'true'}\ndraft: false\n---\n\n# ${title||path.basename(dir)}\n`;
-    fs.writeFileSync(file, fm, 'utf8');
-    const normalizedDir = normalizeDirKey(rel);
-    if(normalizedDir) touchRegistryEntry(normalizedDir, { title: title||path.basename(dir), publish: publish===false?false:true });
-    send(res,200,{ok:true, rel: relOf(file)});
-  }catch(e){ send(res,500,{ok:false,error:e.message}); }
-}
-async function apiSectionRename(req,res){
-  try{
-    const { rel, newRel, dryRun } = await readBody(req);
-    if(!rel || !newRel) return send(res,400,{ok:false,error:'missing rel or newRel'});
-    const srcDir = path.dirname(path.join(BLOG_DIR, rel));
-    const dstDir = path.join(BLOG_DIR, newRel);
-    const plan = { move: [{ from: srcDir, to: dstDir }] };
-    if(dryRun) return send(res,200,{ok:true, plan});
-    if(!fs.existsSync(srcDir)) return send(res,404,{ok:false,error:'src not exist'});
-    if(fs.existsSync(dstDir)) return send(res,409,{ok:false,error:'target exists'});
-    fs.mkdirSync(path.dirname(dstDir),{recursive:true});
-    fs.renameSync(srcDir, dstDir);
-    const oldDirKey = normalizeDirKey(rel.replace(/\/?index\.md$/i,''));
-    const newDirKey = normalizeDirKey(newRel.replace(/\/?index\.md$/i,''));
-    if(oldDirKey && newDirKey) renameRegistryDir(oldDirKey, newDirKey);
-    send(res,200,{ok:true, rel:newRel+'/index.md'});
-  }catch(e){ send(res,500,{ok:false,error:e.message}); }
-}
-async function apiSectionDelete(req,res){
-  try{
-    const { rel, hard } = await readBody(req);
-    if(!rel) return send(res,400,{ok:false,error:'missing rel'});
-    const file = path.join(BLOG_DIR, rel);
-    if(!fs.existsSync(file)) return send(res,404,{ok:false,error:'not found'});
-    const relDir = normalizeDirKey(rel.replace(/\/?index\.md$/i,'').replace(/\\/g,'/'));
-    let categoryTitle = '';
-    if(relDir){
-      const entry = registryEntryByDir(relDir);
-      if(entry?.title) categoryTitle = String(entry.title).trim();
+function collectCategoryOverview(){
+  const stats = new Map();
+  const files = walkMd(BLOG_DIR);
+  for(const file of files){
+    if(isSection(file)) continue;
+    let txt = '';
+    try{ txt = fs.readFileSync(file,'utf8'); }
+    catch{ continue; }
+    const fm = parseFM(txt);
+    const list = (fm.categories||[]).map(v=>String(v||'').trim()).filter(Boolean);
+    if(!list.length) continue;
+    const rel = relOf(file);
+    let ts = Date.parse(fm.date || '');
+    if(!Number.isFinite(ts)){
+      try{ ts = fs.statSync(file).mtimeMs; }
+      catch{ ts = Date.now(); }
     }
-    if(!categoryTitle){
-      try{ const fm = parseFM(fs.readFileSync(file,'utf8')); categoryTitle = String(fm.title||'').trim(); }
-      catch{}
-    }
-    if(hard){
-      if(categoryTitle){
-        const usage = collectCategoryUsage(categoryTitle);
-        if(usage.total>0){
-          const checklist = {
-            category: categoryTitle,
-            dir: relDir,
-            rel,
-            total: usage.total,
-            posts: usage.posts.map(p=>({ rel: p.rel, title: p.title, publish: p.publish, draft: p.draft, isLocal: p.isLocal })),
-            instructions: [
-              '1. 运行“分类批处理”任务：重命名或移除该分类。',
-              '2. 确认所有文章的 categories frontmatter 已完成迁移。',
-              '3. 再次尝试删除栏目 index.md。'
-            ],
-            jobEndpoint: '/api/categories/rewrite'
-          };
-          return send(res,409,{ok:false,error:`分类「${categoryTitle}」仍被 ${usage.total} 篇文章引用，已阻止删除。`, checklist});
+    const iso = new Date(ts).toISOString();
+    const title = fm.title || slugOf(file);
+    const isPublished = fm.publish === 'true' && fm.draft !== 'true';
+    for(const categoryName of list){
+      if(!categoryName) continue;
+      const bucket = getCategoryBucket(stats, categoryName);
+      bucket.total += 1;
+      if(!bucket.latestAny || ts > bucket.latestAny.time){
+        bucket.latestAny = { time: ts, at: iso, rel, title };
+      }
+      if(isPublished){
+        bucket.published += 1;
+        if(!bucket.latestPublished || ts > bucket.latestPublished.time){
+          bucket.latestPublished = { time: ts, at: iso, rel, title };
         }
       }
-      fs.mkdirSync(TRASH_DIR,{recursive:true});
-      const name = rel.replace(/[\\/]/g,'_');
-      const stamp = new Date().toISOString().replace(/[-:.TZ]/g,'');
-      const dst = path.join(TRASH_DIR, `${stamp}-${name}`);
-      fs.renameSync(file, dst);
-      if(relDir) removeRegistryByDir(relDir);
-      if(categoryTitle) removeRegistryByTitle(categoryTitle);
-      return send(res,200,{ok:true, trashed: path.basename(dst)});
-    }else{
-      setPublishFlag(file, false);
-      if(relDir) touchRegistryEntry(relDir, { publish: false });
-      return send(res,200,{ok:true});
     }
+  }
+  return stats;
+}
+async function apiCategories(req,res){
+  try{
+    const registry = loadCategoryRegistry();
+    const usage = collectCategoryOverview();
+    const items = registry.items.map(entry=>{
+      const title = String(entry.title||'').trim();
+      const stats = usage.get(title) || { total:0, published:0, latestPublished:null, latestAny:null };
+      const dirKey = normalizeDirKey(entry.dir);
+      let absDir = '';
+      let hasDirectory = false;
+      let hasIndex = false;
+      let indexAbs = '';
+      if(dirKey){
+        absDir = path.join(BLOG_DIR, dirKey);
+        try{
+          if(fs.existsSync(absDir) && fs.statSync(absDir).isDirectory()){
+            hasDirectory = true;
+            indexAbs = path.join(absDir, 'index.md');
+            if(fs.existsSync(indexAbs) && fs.statSync(indexAbs).isFile()){
+              hasIndex = true;
+            }
+          }
+        }catch{}
+      }
+      const issues = [];
+      if(dirKey && !hasDirectory) issues.push('missing-dir');
+      if(hasDirectory && !hasIndex) issues.push('missing-index');
+      if(entry.publish === false) issues.push('unpublished');
+      if(entry.menuEnabled === false) issues.push('menu-disabled');
+      if((stats.total||0) === 0) issues.push('unused');
+      const latestPublished = stats.latestPublished || null;
+      const latestAny = stats.latestAny || null;
+      return {
+        id: dirKey || title,
+        title,
+        menuLabel: entry.menuLabel || title || dirKey,
+        dir: dirKey,
+        publish: entry.publish !== false,
+        menuEnabled: entry.menuEnabled !== false,
+        menuOrder: entry.menuOrder,
+        createdAt: entry.createdAt,
+        updatedAt: entry.updatedAt,
+        postCount: stats.total || 0,
+        publishedCount: stats.published || 0,
+        latestPublishedAt: latestPublished?.at || '',
+        latestPublishedRel: latestPublished?.rel || '',
+        latestPublishedTitle: latestPublished?.title || '',
+        latestPostAt: latestAny?.at || '',
+        latestPostRel: latestAny?.rel || '',
+        latestPostTitle: latestAny?.title || '',
+        hasDirectory,
+        hasIndex,
+        dirPath: dirKey ? path.relative(PROJECT_ROOT, absDir).replace(/\\/g,'/') : '',
+        absDir: absDir || '',
+        indexPath: hasIndex ? path.relative(PROJECT_ROOT, indexAbs).replace(/\\/g,'/') : '',
+        indexRel: hasIndex ? relOf(indexAbs) : '',
+        link: '/blog/' + (dirKey ? `${dirKey.replace(/\/+$/,'')}/` : ''),
+        issues
+      };
+    });
+    const knownTitles = new Set(items.map(item=>item.title));
+    const orphans = [];
+    for(const [title, bucket] of usage.entries()){
+      if(knownTitles.has(title)) continue;
+      const latestPublished = bucket.latestPublished || null;
+      const latestAny = bucket.latestAny || null;
+      orphans.push({
+        title,
+        postCount: bucket.total || 0,
+        publishedCount: bucket.published || 0,
+        latestPublishedAt: latestPublished?.at || '',
+        latestPublishedRel: latestPublished?.rel || '',
+        latestPublishedTitle: latestPublished?.title || '',
+        latestPostAt: latestAny?.at || '',
+        latestPostRel: latestAny?.rel || '',
+        latestPostTitle: latestAny?.title || ''
+      });
+    }
+    orphans.sort((a,b)=> (b.latestPostAt||'').localeCompare(a.latestPostAt||''));
+    send(res,200,{ ok:true, registry:{ version: registry.version, updatedAt: registry.updatedAt }, items, orphans });
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
-async function apiSectionTrash(req,res){ try{ send(res,200,{ok:true, items:listSectionTrash()}); } catch(e){ send(res,500,{ok:false,error:e.message}); } }
-async function apiSectionRestore(req,res){
+async function apiCategoriesCreate(req,res){
   try{
-    const { name } = await readBody(req);
-    if(!name) return send(res,400,{ok:false,error:'missing name'});
-    const src = path.join(TRASH_DIR, name);
-    if(!fs.existsSync(src)) return send(res,404,{ok:false,error:'trash file not found'});
-    const m = name.match(/^\d{14}-(.+)$/); if(!m) return send(res,400,{ok:false,error:'bad trash name'});
-    const guessRel = m[1].replace(/_/g,'/');
-    const dst = path.join(BLOG_DIR, guessRel);
-    fs.mkdirSync(path.dirname(dst), {recursive:true});
-    if(fs.existsSync(dst)) return send(res,409,{ok:false,error:'target already exists', rel: guessRel});
-    fs.renameSync(src, dst);
-    const dirKey = normalizeDirKey(guessRel.replace(/\/?index\.md$/i,''));
-    if(dirKey){
-      let title = '';
-      try{ const fm = parseFM(fs.readFileSync(dst,'utf8')); title = String(fm.title||'').trim(); }
-      catch{}
-      touchRegistryEntry(dirKey, { title: title || path.basename(dirKey), publish: true });
+    const body = await readBody(req);
+    const title = String(body.title||'').trim();
+    const dir = normalizeDirKey(body.dir || '');
+    if(!title) return send(res,400,{ok:false,error:'缺少分类名称'});
+    if(!dir) return send(res,400,{ok:false,error:'缺少目录标识'});
+    const registry = loadCategoryRegistry();
+    if(registry.items.some(item=>normalizeDirKey(item.dir)===dir)){
+      return send(res,409,{ok:false,error:'目录已存在'});
     }
-    send(res,200,{ok:true, rel: guessRel});
+    if(registry.items.some(item=>String(item.title||'').trim()===title)){
+      return send(res,409,{ok:false,error:'分类名称已存在'});
+    }
+    const publish = body.publish === undefined ? true : !!body.publish;
+    const menuEnabled = body.menuEnabled === undefined ? publish : !!body.menuEnabled;
+    const now = new Date().toISOString();
+    const menuOrder = Number.isFinite(Number(body.menuOrder)) ? Number(body.menuOrder) : nextMenuOrder(registry.items);
+    registry.items.push({
+      dir,
+      title,
+      menuLabel: String(body.menuLabel||'').trim() || title,
+      publish,
+      menuEnabled,
+      menuOrder,
+      createdAt: now,
+      updatedAt: now
+    });
+    const written = writeCategoryRegistry(registry);
+    const item = written.items.find(entry=>normalizeDirKey(entry.dir)===dir);
+    if(body.createDir !== false){
+      const absDir = path.join(BLOG_DIR, dir);
+      fs.mkdirSync(absDir,{recursive:true});
+    }
+    send(res,200,{ok:true, item});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+async function apiCategoriesUpdate(req,res){
+  try{
+    const body = await readBody(req);
+    const originalDir = normalizeDirKey(body.dir || body.originalDir || '');
+    if(!originalDir) return send(res,400,{ok:false,error:'缺少分类目录标识'});
+    const registry = loadCategoryRegistry();
+    const idx = registry.items.findIndex(item=>normalizeDirKey(item.dir)===originalDir);
+    if(idx === -1) return send(res,404,{ok:false,error:'分类不存在'});
+    const entry = registry.items[idx];
+    const oldTitle = String(entry.title||'').trim();
+    const targetDir = normalizeDirKey(body.nextDir || body.dir || entry.dir);
+    const desiredTitle = body.title !== undefined ? String(body.title||'').trim() : oldTitle;
+    if(!desiredTitle) return send(res,400,{ok:false,error:'分类名称不能为空'});
+    if(!targetDir) return send(res,400,{ok:false,error:'目录标识不能为空'});
+    if(targetDir !== originalDir && registry.items.some((item,i)=>i!==idx && normalizeDirKey(item.dir)===targetDir)){
+      return send(res,409,{ok:false,error:'目标目录已存在'});
+    }
+    if(desiredTitle !== oldTitle && registry.items.some((item,i)=>i!==idx && String(item.title||'').trim()===desiredTitle)){
+      return send(res,409,{ok:false,error:'分类名称冲突'});
+    }
+    const publish = body.publish === undefined ? entry.publish : !!body.publish;
+    const menuEnabled = body.menuEnabled === undefined ? entry.menuEnabled : !!body.menuEnabled;
+    const menuOrder = body.menuOrder !== undefined && Number.isFinite(Number(body.menuOrder))
+      ? Number(body.menuOrder)
+      : entry.menuOrder;
+    const menuLabelInput = body.menuLabel !== undefined ? String(body.menuLabel||'').trim() : null;
+    const ensureDir = body.ensureDir === false ? false : true;
+    let dirMove = null;
+    if(targetDir !== originalDir){
+      const srcDir = path.join(BLOG_DIR, originalDir);
+      const dstDir = path.join(BLOG_DIR, targetDir);
+      if(fs.existsSync(dstDir)){
+        return send(res,409,{ok:false,error:'目标目录已存在于文件系统'});
+      }
+      if(fs.existsSync(srcDir)){
+        fs.mkdirSync(path.dirname(dstDir), {recursive:true});
+        fs.renameSync(srcDir, dstDir);
+        dirMove = { from: path.relative(PROJECT_ROOT, srcDir).replace(/\\/g,'/'), to: path.relative(PROJECT_ROOT, dstDir).replace(/\\/g,'/') };
+      }else if(ensureDir){
+        fs.mkdirSync(dstDir, {recursive:true});
+      }
+    }else if(ensureDir && targetDir){
+      const absDir = path.join(BLOG_DIR, targetDir);
+      if(!fs.existsSync(absDir)) fs.mkdirSync(absDir,{recursive:true});
+    }
+    const now = new Date().toISOString();
+    entry.dir = targetDir;
+    entry.title = desiredTitle;
+    if(menuLabelInput !== null){
+      entry.menuLabel = menuLabelInput || desiredTitle || targetDir;
+    }else if(!entry.menuLabel){
+      entry.menuLabel = desiredTitle || targetDir;
+    }
+    entry.publish = publish;
+    entry.menuEnabled = menuEnabled;
+    entry.menuOrder = menuOrder;
+    entry.updatedAt = now;
+    let rewrite = null;
+    if(desiredTitle !== oldTitle && body.rewrite === false){
+      // skip rewrite
+    }else if(desiredTitle !== oldTitle){
+      rewrite = rewriteCategoryReferences({ from: oldTitle, to: desiredTitle, mode:'rename' });
+    }
+    const written = writeCategoryRegistry(registry);
+    const item = written.items.find(it=>normalizeDirKey(it.dir)===targetDir);
+    send(res,200,{ok:true, item, dirMove, rewrite});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+async function apiCategoriesToggle(req,res){
+  try{
+    const body = await readBody(req);
+    const dir = normalizeDirKey(body.dir || '');
+    if(!dir) return send(res,400,{ok:false,error:'缺少分类目录标识'});
+    const fieldRaw = String(body.field||'').trim();
+    const field = fieldRaw === 'menu' ? 'menuEnabled' : fieldRaw || 'publish';
+    if(!['publish','menuEnabled'].includes(field)){
+      return send(res,400,{ok:false,error:'不支持的字段'});
+    }
+    const registry = loadCategoryRegistry();
+    const entry = registry.items.find(item=>normalizeDirKey(item.dir)===dir);
+    if(!entry) return send(res,404,{ok:false,error:'分类不存在'});
+    entry[field] = !!body.value;
+    entry.updatedAt = new Date().toISOString();
+    const written = writeCategoryRegistry(registry);
+    const item = written.items.find(it=>normalizeDirKey(it.dir)===dir);
+    send(res,200,{ok:true, item});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+async function apiCategoriesDelete(req,res){
+  try{
+    const body = await readBody(req);
+    const dir = normalizeDirKey(body.dir || '');
+    if(!dir) return send(res,400,{ok:false,error:'缺少分类目录标识'});
+    const registry = loadCategoryRegistry();
+    const entry = registry.items.find(item=>normalizeDirKey(item.dir)===dir);
+    if(!entry) return send(res,404,{ok:false,error:'分类不存在'});
+    const title = String(entry.title||'').trim();
+    if(title){
+      const usage = collectCategoryUsage(title);
+      if(usage.total > 0){
+        const checklist = {
+          category: title,
+          dir,
+          total: usage.total,
+          posts: usage.posts.map(p=>({ rel: p.rel, title: p.title, publish: p.publish, draft: p.draft, isLocal: p.isLocal })),
+          instructions: [
+            '1. 运行“分类批处理”任务：重命名或移除该分类。',
+            '2. 确认所有文章的 categories frontmatter 已完成迁移。',
+            '3. 再次尝试删除该分类。'
+          ],
+          jobEndpoint: '/api/categories/rewrite'
+        };
+        return send(res,409,{ok:false,error:`分类「${title}」仍被 ${usage.total} 篇文章引用，已阻止删除。`, checklist});
+      }
+    }
+    removeRegistryByDir(dir);
+    let removedIndex = null;
+    if(body.hard){
+      const absDir = entry.dir ? path.join(BLOG_DIR, entry.dir) : '';
+      if(absDir && fs.existsSync(absDir)){
+        try{
+          const contents = fs.readdirSync(absDir);
+          if(!contents.length){
+            fs.rmdirSync(absDir);
+          }else if(contents.length===1 && contents[0].toLowerCase()==='index.md'){
+            const indexFile = path.join(absDir, contents[0]);
+            const trashed = moveToTrash(indexFile);
+            removedIndex = { trashed: path.basename(trashed) };
+            const remaining = fs.readdirSync(absDir);
+            if(!remaining.length) fs.rmdirSync(absDir);
+          }
+        }catch{}
+      }
+    }
+    send(res,200,{ok:true, removedIndex});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 
 // ---------- Nav sync ----------
-function publishedSectionsToNav(){
-  const items = listSections().filter(x=>x.publish);
-  return items.map(x=>{
-    const dir = x.dir;
-    const link = '/blog/' + (dir ? (dir.replace(/\/+$/,'') + '/') : '');
-    return { text: x.title || (dir || '博客'), link };
-  });
+function buildCategoryNavItems(){
+  const registry = loadCategoryRegistry();
+  return registry.items
+    .filter(item=>item.publish !== false && item.menuEnabled !== false)
+    .map(item=>{
+      const dir = normalizeDirKey(item.dir);
+      const link = '/blog/' + (dir ? `${dir.replace(/\/+$/,'')}/` : '');
+      return {
+        text: item.menuLabel || item.title || dir || '博客',
+        category: item.title || item.menuLabel || dir || '博客',
+        dir,
+        link,
+        fallback: link,
+        menuOrder: Number(item.menuOrder) || 0
+      };
+    })
+    .sort((a,b)=>{
+      if(a.menuOrder !== b.menuOrder) return a.menuOrder - b.menuOrder;
+      return a.text.localeCompare(b.text);
+    });
 }
 function findConfigFile(){
   const cands = ['config.ts','config.mts','config.js','config.mjs'];
@@ -765,7 +1091,7 @@ function patchConfigWithMarkers(file, navItems){
   const start = '/* ADMIN NAV START */';
   const end   = '/* ADMIN NAV END */';
   let txt = fs.readFileSync(file, 'utf8');
-  const payload = `${start}\n  // 由 Blog Admin 自动生成：栏目导航\n  ${JSON.stringify(navItems, null, 2)}\n  ${end}`;
+  const payload = `${start}\nconst adminGeneratedNav = ${JSON.stringify(navItems, null, 2)};\n${end}`;
   if(txt.includes(start) && txt.includes(end)){
     txt = txt.replace(new RegExp(`${start}[\\s\\S]*?${end}`,'m'), payload);
     fs.writeFileSync(file, txt, 'utf8');
@@ -773,19 +1099,25 @@ function patchConfigWithMarkers(file, navItems){
   }
   return { mode:'missing-markers', payload };
 }
-async function apiNavSync(req,res){
+async function apiCategoriesNavSync(req,res){
   try{
-    const items = publishedSectionsToNav();
+    const items = buildCategoryNavItems();
+    const now = new Date().toISOString();
     fs.mkdirSync(VP_DIR, {recursive:true});
-    const jsonFile = path.join(VP_DIR, 'sections.nav.json');
-    fs.writeFileSync(jsonFile, JSON.stringify(items, null, 2), 'utf8');
-
+    const payload = { updatedAt: now, items };
+    fs.writeFileSync(CATEGORY_NAV_FILE, JSON.stringify(payload, null, 2), 'utf8');
     const cfg = findConfigFile();
     let patched = { mode:'json-only' };
     if(cfg){
       patched = patchConfigWithMarkers(cfg, items);
     }
-    send(res,200,{ok:true, items, json: path.relative(PROJECT_ROOT, jsonFile).replace(/\\/g,'/'), config: cfg?path.relative(PROJECT_ROOT,cfg).replace(/\\/g,'/'):null, patched });
+    send(res,200,{
+      ok:true,
+      items,
+      json: path.relative(PROJECT_ROOT, CATEGORY_NAV_FILE).replace(/\\/g,'/'),
+      config: cfg ? path.relative(PROJECT_ROOT, cfg).replace(/\\/g,'/') : null,
+      patched
+    });
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 
@@ -841,14 +1173,12 @@ const server = createServer(async (req,res)=>{
     if(req.method==='POST' && pathname==='/api/aliases')          return apiAliases(req,res);
     if(req.method==='POST' && pathname==='/api/categories/rewrite') return apiCategoryRewrite(req,res);
 
-    if(req.method==='GET'  && pathname==='/api/sections')         return apiSections(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/toggle')  return apiSectionToggle(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/create')  return apiSectionCreate(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/rename')  return apiSectionRename(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/delete')  return apiSectionDelete(req,res);
-    if(req.method==='GET'  && pathname==='/api/sections/trash')   return apiSectionTrash(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/restore') return apiSectionRestore(req,res);
-    if(req.method==='POST' && pathname==='/api/sections/nav-sync')return apiNavSync(req,res);
+    if(req.method==='GET'  && pathname==='/api/categories')        return apiCategories(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/create') return apiCategoriesCreate(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/update') return apiCategoriesUpdate(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/toggle') return apiCategoriesToggle(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/delete') return apiCategoriesDelete(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/nav-sync') return apiCategoriesNavSync(req,res);
 
     if(req.method==='POST' && pathname==='/api/build')            return apiBuild(req,res);
     if(req.method==='POST' && pathname==='/api/preview')          return apiPreview(req,res);
