@@ -17,6 +17,31 @@ This note summarizes the current state of the personal site project and highligh
 - **Testing**: add integration smoke tests (e.g., headless login + draft creation) once the admin flow stabilizes.
 - **Docs**: expand contributor guide with the new column automation flow and auth requirements for running `blog-admin/server.mjs` locally.
 
+## Category Registry Migration Plan
+
+### Admin API integration
+- The admin server already exposes `/api/sections` endpoints that enumerate section indices, toggle publish flags, create new directories (with a default `index.md`), rename the underlying folders, soft-delete to `.trash`, and restore entries directly against the filesystem.【F:blog-admin/server.mjs†L320-L427】
+- `/api/sections/nav-sync` persists the curated navigation to `docs/.vitepress/sections.nav.json` and optionally patches the VitePress config between the `/* ADMIN NAV START */` markers, so today this handler is the single writer for both the directory layout and navigation payload.【F:blog-admin/server.mjs†L429-L471】
+- Decision: the new category registry will become the source of truth for published columns, while these handlers remain as the orchestration layer. The registry module should wrap the existing flows so `server.mjs` stays the only code path that mutates directories or rewrites `sections.nav.json`. Tasks:
+  - Extract the section-scan logic (currently in `listSections`) into a shared registry helper that can read/write the canonical definition before touching disk.
+  - Ensure `/api/sections/*` updates the registry first, then performs the filesystem action (create/rename/delete) and finally triggers nav-sync so only one path emits the navigation JSON.
+  - Provide a lightweight read-only endpoint or static artifact so the admin UI and CLI tooling can consume the registry without invoking the mutating handlers.
+
+### Tooling alignment
+- CLI helpers resolve destinations by parsing `docs/blog/<column>/index.md` frontmatter at runtime: `scripts/lib/columns.js` builds a title→folder map, and `new-post.mjs`, `new-post-local.mjs`, plus `post-promote.mjs` rely on `resolveColumnDir` to decide where to write posts.【F:scripts/lib/columns.js†L1-L35】【F:scripts/new-post.mjs†L1-L46】【F:scripts/new-post-local.mjs†L1-L55】【F:scripts/post-promote.mjs†L1-L58】
+- Plan: migrate these utilities to read from the registry (or a generated JSON derivative) so the column lookup stays consistent with the admin API. That includes:
+  - Replacing `buildColumnMap` with a registry reader and falling back to directory scans only when the registry is missing during the transition period.
+  - Updating promotion/new-post scripts to consume the registry artifact, with validation that flags drafts targeting unknown categories before writing files.
+  - Extending any future helpers (`post-archive`, content linters, etc.) to reuse the same registry accessor instead of reimplementing directory heuristics.
+
+### Legacy data & UI cleanup
+- Existing column titles live inside each section's `index.md`, and the admin UI surfaces both a section manager (`sections.html`) and an inline draft form that mixes a canonical dropdown with a free-form category input.【F:blog-admin/public/sections.js†L1-L120】【F:blog-admin/public/index.html†L32-L63】【F:blog-admin/public/admin.js†L60-L214】
+- Migration steps:
+  - Write a one-off migration script that scans the current section indices, seeds the registry with title/slug/publish metadata, and normalises any duplicated titles before we flip consumers over.
+  - Sweep `.trash` for orphaned `index.md` backups, restoring or deleting entries so the registry only contains live sections.
+  - After the registry ships, hide the ad-hoc “分类补充” textbox in the admin draft form and drive all category changes through the registry-backed controls to prevent divergent data.
+  - Update the sections manager to display registry status (e.g., pending publish vs. archived) pulled from the shared module, ensuring nav-sync reflects the registry contents immediately after each mutation.
+
 Keep this document updated after each major iteration to maintain a reliable handover record.
 
 
