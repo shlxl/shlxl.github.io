@@ -26,6 +26,8 @@ This note summarizes the current state of the personal site project and highligh
   - Extract the section-scan logic (currently in `listSections`) into a shared registry helper that can read/write the canonical definition before touching disk.
   - Ensure `/api/sections/*` updates the registry first, then performs the filesystem action (create/rename/delete) and finally triggers nav-sync so only one path emits the navigation JSON.
   - Provide a lightweight read-only endpoint or static artifact so the admin UI and CLI tooling can consume the registry without invoking the mutating handlers.
+  - Ship a `/api/categories/rewrite` task that can batch-rename or detach a category across all Markdown frontmatter, rewrites `docs/.vitepress/categories.map.json`, and returns a migration summary for the UI to display.【F:blog-admin/server.mjs†L472-L562】
+  - Add guard rails to the section deletion flow so hard-deleting a column that still has dependent posts returns an actionable checklist (including the new rewrite job) instead of silently moving `index.md` to `.trash`. The UI should surface this checklist and offer to run the rewrite task before retrying.【F:blog-admin/server.mjs†L526-L575】【F:blog-admin/public/sections.js†L1-L115】【F:blog-admin/public/admin.js†L1-L214】
 
 ### Tooling alignment
 - CLI helpers resolve destinations by parsing `docs/blog/<column>/index.md` frontmatter at runtime: `scripts/lib/columns.js` builds a title→folder map, and `new-post.mjs`, `new-post-local.mjs`, plus `post-promote.mjs` rely on `resolveColumnDir` to decide where to write posts.【F:scripts/lib/columns.js†L1-L35】【F:scripts/new-post.mjs†L1-L46】【F:scripts/new-post-local.mjs†L1-L55】【F:scripts/post-promote.mjs†L1-L58】
@@ -33,6 +35,7 @@ This note summarizes the current state of the personal site project and highligh
   - Replacing `buildColumnMap` with a registry reader and falling back to directory scans only when the registry is missing during the transition period.
   - Updating promotion/new-post scripts to consume the registry artifact, with validation that flags drafts targeting unknown categories before writing files.
   - Extending any future helpers (`post-archive`, content linters, etc.) to reuse the same registry accessor instead of reimplementing directory heuristics.
+  - Publish and keep `docs/.vitepress/categories.map.json` in sync so CLI workflows (`post-promote.mjs`, alias generators) always re-read the canonical mapping before placing files. The map should record at least `{ title, dir, publish }` for each column.【F:docs/.vitepress/categories.map.json†L1-L14】【F:scripts/lib/columns.js†L1-L52】
 
 ### Legacy data & UI cleanup
 - Existing column titles live inside each section's `index.md`, and the admin UI surfaces both a section manager (`sections.html`) and an inline draft form that mixes a canonical dropdown with a free-form category input.【F:blog-admin/public/sections.js†L1-L120】【F:blog-admin/public/index.html†L32-L63】【F:blog-admin/public/admin.js†L60-L214】
