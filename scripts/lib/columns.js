@@ -49,7 +49,9 @@ export function buildColumnMap() {
     let dir = ''
     if (typeof entry === 'string') continue
     if (typeof entry.title === 'string') title = entry.title.trim()
+    else if (typeof entry.menuLabel === 'string') title = entry.menuLabel.trim()
     else if (typeof entry.text === 'string') title = entry.text.trim()
+    else if (typeof entry.category === 'string') title = entry.category.trim()
     if (typeof entry.dir === 'string') dir = entry.dir.trim()
     else if (typeof entry.rel === 'string') dir = normalizeDir(entry.rel)
     else if (typeof entry.path === 'string') dir = normalizeDir(entry.path)

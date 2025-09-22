@@ -1,18 +1,26 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2025-09-18T00:00:00.000Z",
   "items": [
     {
       "dir": "engineering",
       "title": "工程实践",
+      "menuLabel": "工程实践",
       "publish": true,
-      "lastUpdated": "2025-09-18T00:00:00.000Z"
+      "menuEnabled": true,
+      "menuOrder": 1,
+      "createdAt": "2025-09-18T00:00:00.000Z",
+      "updatedAt": "2025-09-18T00:00:00.000Z"
     },
     {
       "dir": "guides",
       "title": "职业攻略",
+      "menuLabel": "职业攻略",
       "publish": true,
-      "lastUpdated": "2025-09-18T00:00:00.000Z"
+      "menuEnabled": true,
+      "menuOrder": 2,
+      "createdAt": "2025-09-18T00:00:00.000Z",
+      "updatedAt": "2025-09-18T00:00:00.000Z"
     }
   ]
 }
