@@ -34,6 +34,11 @@ This note summarizes the current state of the personal site project and highligh
   - Updating promotion/new-post scripts to consume the registry artifact, with validation that flags drafts targeting unknown categories before writing files.
   - Extending any future helpers (`post-archive`, content linters, etc.) to reuse the same registry accessor instead of reimplementing directory heuristics.
 
+### Navigation & fallback helpers
+- `docs/.vitepress/config.ts` currently relies on `resolveLatestCategoryArticle` to walk the filesystem and locate the latest published post for a category-specific redirect (used by “攻略”). Update the migration so this helper (or its replacement) consumes the registry as its primary data source, understands each category's canonical directory/index path from that metadata, and still falls back to the newest published article when no explicit index exists.
+- The `guides/` column intentionally omits an `index.md`, so plan a migration step that either provisions a generated index mirroring the old redirect behaviour or augments the helper to continue emitting the latest-article link without introducing a static index, preserving the current navigation semantics.
+- When `/api/sections/nav-sync` (and any static generation step) emits navigation entries, use the shared registry metadata to populate both the `link` (primary index route) and `fallbackLink` (latest-article redirect) fields so persistence logic and empty states stay aligned with the runtime helper.
+
 ### Legacy data & UI cleanup
 - Existing column titles live inside each section's `index.md`, and the admin UI surfaces both a section manager (`sections.html`) and an inline draft form that mixes a canonical dropdown with a free-form category input.【F:blog-admin/public/sections.js†L1-L120】【F:blog-admin/public/index.html†L32-L63】【F:blog-admin/public/admin.js†L60-L214】
 - Migration steps:
