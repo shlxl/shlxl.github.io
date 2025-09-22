@@ -19,6 +19,7 @@ const BLOG_DIR = path.join(DOCS_DIR, 'blog');
 const VP_DIR = path.join(DOCS_DIR, '.vitepress');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const SCRIPTS_DIR = path.join(PROJECT_ROOT, 'scripts');
+const CATEGORY_REGISTRY_FILE = path.join(VP_DIR, 'categories.map.json');
 
 const PREVIEW_PORT = Number(process.env.PREVIEW_PORT || 4173);
 const DIST_DIR = path.join(DOCS_DIR, '.vitepress', 'dist');
@@ -160,6 +161,192 @@ function setPublishFlag(file, publish){
   updateFrontmatter(file, { publish: publish ? 'true' : 'false', draft: publish ? 'false' : undefined });
 }
 
+// ---- category registry helpers ----
+function loadCategoryRegistry(){
+  try{
+    if(!fs.existsSync(CATEGORY_REGISTRY_FILE)) return { version:1, items:[] };
+    const raw = fs.readFileSync(CATEGORY_REGISTRY_FILE,'utf8');
+    if(!raw.trim()) return { version:1, items:[] };
+    const data = JSON.parse(raw);
+    if(Array.isArray(data)) return { version:1, items:data };
+    if(data && Array.isArray(data.items)) return { version:data.version||1, items:data.items };
+    if(data && typeof data === 'object'){
+      const items = Object.entries(data)
+        .filter(([,v])=>typeof v === 'string')
+        .map(([title, dir])=>({ title, dir }));
+      return { version:1, items };
+    }
+  }catch{}
+  return { version:1, items:[] };
+}
+function writeCategoryRegistry(registry){
+  const now = new Date().toISOString();
+  const items = Array.isArray(registry.items) ? registry.items : [];
+  const payload = {
+    version: registry.version || 1,
+    updatedAt: now,
+    items: items
+      .filter(item=>item && typeof item === 'object')
+      .map(item=>({
+        dir: normalizeDirKey(item.dir),
+        title: typeof item.title === 'string' ? item.title.trim() : '',
+        publish: item.publish === undefined ? true : !!item.publish,
+        lastUpdated: item.lastUpdated || now
+      }))
+      .filter(item=>item.dir)
+      .sort((a,b)=>a.dir.localeCompare(b.dir))
+  };
+  fs.mkdirSync(path.dirname(CATEGORY_REGISTRY_FILE),{recursive:true});
+  fs.writeFileSync(CATEGORY_REGISTRY_FILE, JSON.stringify(payload, null, 2), 'utf8');
+  return payload;
+}
+function normalizeDirKey(dir=''){
+  return String(dir||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'');
+}
+function touchRegistryEntry(dir, patch={}){
+  const registry = loadCategoryRegistry();
+  const normalizedDir = normalizeDirKey(dir);
+  if(!normalizedDir) return null;
+  const now = new Date().toISOString();
+  let entry = registry.items.find(item=>normalizeDirKey(item.dir) === normalizedDir);
+  if(!entry){
+    entry = { dir: normalizedDir, title: '', publish: true, lastUpdated: now };
+    registry.items.push(entry);
+  }
+  if(patch.title !== undefined) entry.title = String(patch.title||'').trim();
+  if(patch.publish !== undefined) entry.publish = !!patch.publish;
+  entry.lastUpdated = now;
+  writeCategoryRegistry(registry);
+  return entry;
+}
+function renameRegistryDir(oldDir, newDir){
+  const registry = loadCategoryRegistry();
+  const from = normalizeDirKey(oldDir);
+  const to = normalizeDirKey(newDir);
+  if(!from || !to) return null;
+  const entry = registry.items.find(item=>normalizeDirKey(item.dir) === from);
+  if(!entry) return null;
+  entry.dir = to;
+  entry.lastUpdated = new Date().toISOString();
+  writeCategoryRegistry(registry);
+  return entry;
+}
+function renameRegistryTitle(oldTitle, newTitle){
+  const registry = loadCategoryRegistry();
+  const from = String(oldTitle||'').trim();
+  const to = String(newTitle||'').trim();
+  if(!from || !to) return null;
+  const entry = registry.items.find(item=>String(item.title||'').trim() === from);
+  if(!entry) return null;
+  entry.title = to;
+  entry.lastUpdated = new Date().toISOString();
+  writeCategoryRegistry(registry);
+  return entry;
+}
+function removeRegistryByDir(dir){
+  const registry = loadCategoryRegistry();
+  const target = normalizeDirKey(dir);
+  if(!target) return false;
+  const before = registry.items.length;
+  registry.items = registry.items.filter(item=>normalizeDirKey(item.dir)!==target);
+  if(registry.items.length === before) return false;
+  writeCategoryRegistry(registry);
+  return true;
+}
+function removeRegistryByTitle(title){
+  const registry = loadCategoryRegistry();
+  const target = String(title||'').trim();
+  if(!target) return false;
+  const before = registry.items.length;
+  registry.items = registry.items.filter(item=>String(item.title||'').trim()!==target);
+  if(registry.items.length === before) return false;
+  writeCategoryRegistry(registry);
+  return true;
+}
+function registryEntryByDir(dir){
+  const registry = loadCategoryRegistry();
+  const target = normalizeDirKey(dir);
+  if(!target) return null;
+  return registry.items.find(item=>normalizeDirKey(item.dir)===target) || null;
+}
+function registryEntryByTitle(title){
+  const registry = loadCategoryRegistry();
+  const target = String(title||'').trim();
+  if(!target) return null;
+  return registry.items.find(item=>String(item.title||'').trim()===target) || null;
+}
+
+function collectCategoryUsage(category){
+  const target = String(category||'').trim();
+  if(!target) return { category:'', posts:[], total:0 };
+  const files = walkMd(BLOG_DIR);
+  const posts = [];
+  for(const file of files){
+    if(isSection(file)) continue;
+    const txt = fs.readFileSync(file,'utf8');
+    const fm = parseFM(txt);
+    const list = (fm.categories||[]).map(v=>String(v||'').trim()).filter(Boolean);
+    if(!list.length) continue;
+    if(!list.includes(target)) continue;
+    const rel = relOf(file);
+    posts.push({
+      rel,
+      title: fm.title || slugOf(file),
+      publish: fm.publish === 'true',
+      draft: fm.draft === 'true',
+      isLocal: rel.startsWith('_local/'),
+      categories: list
+    });
+  }
+  posts.sort((a,b)=>a.rel.localeCompare(b.rel));
+  return { category: target, posts, total: posts.length };
+}
+
+function rewriteCategoryReferences({ from, to='', mode='rename', dryRun=false, exclude=[] }){
+  const source = String(from||'').trim();
+  const replacement = String(to||'').trim();
+  const normalizedMode = mode === 'remove' ? 'remove' : 'rename';
+  if(!source) return { updated:0, files:[], mode: normalizedMode };
+  if(normalizedMode==='rename' && !replacement) return { updated:0, files:[], mode: normalizedMode };
+  const files = walkMd(BLOG_DIR);
+  const skip = new Set((exclude||[]).map(p=>path.resolve(p)));
+  const touched = [];
+  for(const file of files){
+    if(skip.has(path.resolve(file))) continue;
+    const txt = fs.readFileSync(file,'utf8');
+    const fm = parseFM(txt);
+    const original = (fm.categories||[]).map(v=>String(v||'').trim()).filter(Boolean);
+    if(!original.length) continue;
+    const next=[];
+    const seen=new Set();
+    let changed=false;
+    for(const cat of original){
+      if(cat === source){
+        if(normalizedMode==='rename'){
+          if(!seen.has(replacement)){
+            next.push(replacement);
+            seen.add(replacement);
+          }
+        }
+        changed = true;
+      }else{
+        if(!seen.has(cat)){
+          next.push(cat);
+          seen.add(cat);
+        }else{
+          changed = true;
+        }
+      }
+    }
+    if(!changed) continue;
+    touched.push({ file, rel: relOf(file), before: original, after: next });
+    if(!dryRun){
+      updateFrontmatter(file, { categories: next });
+    }
+  }
+  return { updated: touched.length, files: touched, mode: normalizedMode };
+}
+
 // ---- ignore rules (.adminignore) ----
 function loadIgnores(){
   const file = path.join(BLOG_DIR, '.adminignore');
@@ -289,8 +476,47 @@ async function apiRemove(req,res){
   const t = rel ? path.join(BLOG_DIR, rel) : '';
   if(!t || !fs.existsSync(t)) return send(res,404,{ok:false,error:'target not found'});
   if(isSection(t)){
-    try{ const dst = moveToTrash(t); return send(res,200,{ok:true,trash:dst}); }
-    catch(e){ return send(res,500,{ok:false,error:e.message}); }
+    const relPath = relOf(t);
+    const relDir = normalizeDirKey(relPath.replace(/\/?index\.md$/i,''));
+    let categoryTitle = '';
+    if(relDir){ const entry = registryEntryByDir(relDir); if(entry?.title) categoryTitle = String(entry.title).trim(); }
+    if(!categoryTitle){
+      try{ const fm = parseFM(fs.readFileSync(t,'utf8')); categoryTitle = String(fm.title||'').trim(); }
+      catch{}
+    }
+    if(b.hard){
+      if(categoryTitle){
+        const usage = collectCategoryUsage(categoryTitle);
+        if(usage.total>0){
+          const checklist = {
+            category: categoryTitle,
+            dir: relDir,
+            rel: relPath,
+            total: usage.total,
+            posts: usage.posts.map(p=>({ rel: p.rel, title: p.title, publish: p.publish, draft: p.draft, isLocal: p.isLocal })),
+            instructions: [
+              '1. 运行“分类批处理”任务：重命名或移除该分类。',
+              '2. 确认所有文章的 categories frontmatter 已完成迁移。',
+              '3. 再次尝试删除栏目 index.md。'
+            ],
+            jobEndpoint: '/api/categories/rewrite'
+          };
+          return send(res,409,{ok:false,error:`分类「${categoryTitle}」仍被 ${usage.total} 篇文章引用，已阻止删除。`, checklist});
+        }
+      }
+      try{
+        const dst = moveToTrash(t);
+        if(relDir) removeRegistryByDir(relDir);
+        if(categoryTitle) removeRegistryByTitle(categoryTitle);
+        return send(res,200,{ok:true,trash:dst});
+      }catch(e){ return send(res,500,{ok:false,error:e.message}); }
+    }else{
+      try{
+        setPublishFlag(t,false);
+        if(relDir) touchRegistryEntry(relDir, { publish: false });
+        return send(res,200,{ok:true});
+      }catch(e){ return send(res,500,{ok:false,error:e.message}); }
+    }
   }
   const args=[ slugOf(t) ]; if(b.hard) args.push('--hard');
   try{ const r = await runNodeScript('post-remove.mjs', args); send(res,200,{ok:true,out:r.out.trim()}); }
@@ -307,11 +533,57 @@ async function apiUpdateMeta(req,res){
       file = hit || '';
     }
     if(!file) return send(res,404,{ok:false,error:'target not found'});
+
+    const beforeTxt = fs.readFileSync(file,'utf8');
+    const beforeFm = parseFM(beforeTxt);
+
     updateFrontmatter(file, b.patch||{});
-    send(res,200,{ok:true,file:relOf(file)});
+
+    const afterTxt = fs.readFileSync(file,'utf8');
+    const afterFm = parseFM(afterTxt);
+    let rewrite = null;
+
+    if(isSection(file)){
+      const relFile = relOf(file);
+      const dir = normalizeDirKey(relFile.replace(/\/?index\.md$/i,''));
+      if(dir) touchRegistryEntry(dir, { title: afterFm.title || beforeFm.title || path.basename(dir), publish: afterFm.publish === 'true' });
+      const from = String(beforeFm.title||'').trim();
+      const to = String(afterFm.title||'').trim();
+      if(from && to && from !== to){
+        rewrite = rewriteCategoryReferences({ from, to, mode:'rename', exclude:[file] });
+        renameRegistryTitle(from, to);
+      }
+    }
+
+    send(res,200,{ok:true,file:relOf(file), rewrite});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 async function apiAliases(req,res){ try{ const r = await runNodeScript('gen-alias-redirects.mjs', []); send(res,200,{ok:true,out:r.out.trim()}); } catch(e){ send(res,500,{ok:false,error:e.message,out:e.out,err:e.err}); } }
+
+async function apiCategoryRewrite(req,res){
+  try{
+    const body = await readBody(req);
+    const from = String(body.from || body.category || '').trim();
+    const mode = body.mode === 'remove' ? 'remove' : 'rename';
+    const dryRun = !!body.dryRun;
+    const to = mode === 'rename' ? String(body.to||'').trim() : '';
+    if(!from) return send(res,400,{ok:false,error:'missing from'});
+    if(mode==='rename' && !to) return send(res,400,{ok:false,error:'missing to'});
+    const result = rewriteCategoryReferences({ from, to, mode, dryRun });
+    if(!dryRun){
+      if(mode==='rename'){
+        renameRegistryTitle(from, to);
+      }else{
+        removeRegistryByTitle(from);
+      }
+    }
+    const summary = mode==='rename'
+      ? `${dryRun?'预览':'更新'} ${result.updated} 篇：${from} → ${to}`
+      : `${dryRun?'预览':'更新'} ${result.updated} 篇：移除 ${from}`;
+    const files = result.files.map(f=>({ rel: f.rel, before: f.before, after: f.after }));
+    send(res,200,{ok:true, from, to, mode, dryRun, updated: result.updated, files, summary});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
 
 // ---------- Sections APIs v2 ----------
 function listSections(){
@@ -359,6 +631,8 @@ async function apiSectionToggle(req,res){
     const file = path.join(BLOG_DIR, rel);
     if(!fs.existsSync(file)) return send(res,404,{ok:false,error:'not found'});
     setPublishFlag(file, !!publish);
+    const relDir = normalizeDirKey(rel.replace(/\/?index\.md$/i,''));
+    if(relDir) touchRegistryEntry(relDir, { publish: !!publish });
     send(res,200,{ok:true});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
@@ -372,6 +646,8 @@ async function apiSectionCreate(req,res){
     if(fs.existsSync(file)) return send(res,409,{ok:false,error:'index.md already exists'});
     const fm = `---\ntitle: ${title||path.basename(dir)}\npublish: ${publish===false?'false':'true'}\ndraft: false\n---\n\n# ${title||path.basename(dir)}\n`;
     fs.writeFileSync(file, fm, 'utf8');
+    const normalizedDir = normalizeDirKey(rel);
+    if(normalizedDir) touchRegistryEntry(normalizedDir, { title: title||path.basename(dir), publish: publish===false?false:true });
     send(res,200,{ok:true, rel: relOf(file)});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
@@ -387,6 +663,9 @@ async function apiSectionRename(req,res){
     if(fs.existsSync(dstDir)) return send(res,409,{ok:false,error:'target exists'});
     fs.mkdirSync(path.dirname(dstDir),{recursive:true});
     fs.renameSync(srcDir, dstDir);
+    const oldDirKey = normalizeDirKey(rel.replace(/\/?index\.md$/i,''));
+    const newDirKey = normalizeDirKey(newRel.replace(/\/?index\.md$/i,''));
+    if(oldDirKey && newDirKey) renameRegistryDir(oldDirKey, newDirKey);
     send(res,200,{ok:true, rel:newRel+'/index.md'});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
@@ -396,15 +675,47 @@ async function apiSectionDelete(req,res){
     if(!rel) return send(res,400,{ok:false,error:'missing rel'});
     const file = path.join(BLOG_DIR, rel);
     if(!fs.existsSync(file)) return send(res,404,{ok:false,error:'not found'});
+    const relDir = normalizeDirKey(rel.replace(/\/?index\.md$/i,'').replace(/\\/g,'/'));
+    let categoryTitle = '';
+    if(relDir){
+      const entry = registryEntryByDir(relDir);
+      if(entry?.title) categoryTitle = String(entry.title).trim();
+    }
+    if(!categoryTitle){
+      try{ const fm = parseFM(fs.readFileSync(file,'utf8')); categoryTitle = String(fm.title||'').trim(); }
+      catch{}
+    }
     if(hard){
+      if(categoryTitle){
+        const usage = collectCategoryUsage(categoryTitle);
+        if(usage.total>0){
+          const checklist = {
+            category: categoryTitle,
+            dir: relDir,
+            rel,
+            total: usage.total,
+            posts: usage.posts.map(p=>({ rel: p.rel, title: p.title, publish: p.publish, draft: p.draft, isLocal: p.isLocal })),
+            instructions: [
+              '1. 运行“分类批处理”任务：重命名或移除该分类。',
+              '2. 确认所有文章的 categories frontmatter 已完成迁移。',
+              '3. 再次尝试删除栏目 index.md。'
+            ],
+            jobEndpoint: '/api/categories/rewrite'
+          };
+          return send(res,409,{ok:false,error:`分类「${categoryTitle}」仍被 ${usage.total} 篇文章引用，已阻止删除。`, checklist});
+        }
+      }
       fs.mkdirSync(TRASH_DIR,{recursive:true});
       const name = rel.replace(/[\\/]/g,'_');
       const stamp = new Date().toISOString().replace(/[-:.TZ]/g,'');
       const dst = path.join(TRASH_DIR, `${stamp}-${name}`);
       fs.renameSync(file, dst);
+      if(relDir) removeRegistryByDir(relDir);
+      if(categoryTitle) removeRegistryByTitle(categoryTitle);
       return send(res,200,{ok:true, trashed: path.basename(dst)});
     }else{
       setPublishFlag(file, false);
+      if(relDir) touchRegistryEntry(relDir, { publish: false });
       return send(res,200,{ok:true});
     }
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
@@ -422,6 +733,13 @@ async function apiSectionRestore(req,res){
     fs.mkdirSync(path.dirname(dst), {recursive:true});
     if(fs.existsSync(dst)) return send(res,409,{ok:false,error:'target already exists', rel: guessRel});
     fs.renameSync(src, dst);
+    const dirKey = normalizeDirKey(guessRel.replace(/\/?index\.md$/i,''));
+    if(dirKey){
+      let title = '';
+      try{ const fm = parseFM(fs.readFileSync(dst,'utf8')); title = String(fm.title||'').trim(); }
+      catch{}
+      touchRegistryEntry(dirKey, { title: title || path.basename(dirKey), publish: true });
+    }
     send(res,200,{ok:true, rel: guessRel});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
@@ -521,6 +839,7 @@ const server = createServer(async (req,res)=>{
     if(req.method==='POST' && pathname==='/api/remove')           return apiRemove(req,res);
     if(req.method==='POST' && pathname==='/api/update-meta')      return apiUpdateMeta(req,res);
     if(req.method==='POST' && pathname==='/api/aliases')          return apiAliases(req,res);
+    if(req.method==='POST' && pathname==='/api/categories/rewrite') return apiCategoryRewrite(req,res);
 
     if(req.method==='GET'  && pathname==='/api/sections')         return apiSections(req,res);
     if(req.method==='POST' && pathname==='/api/sections/toggle')  return apiSectionToggle(req,res);

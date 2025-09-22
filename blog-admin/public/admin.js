@@ -45,7 +45,7 @@ async function api(path, method='GET', data){
 
   if(!json?.ok){
     const err=new Error(json?.error||'操作失败');
-    err.detail={out:json?.out,err:json?.err};
+    err.detail={...json,out:json?.out,err:json?.err||json?.error};
     err.status=res.status;
     throw err;
   }
@@ -61,6 +61,50 @@ function matches(item, q){
     (item.tags||[]).join(' '),
     (item.categories||[]).join(' ')
   ].join(' ').toLowerCase().includes(s);
+}
+
+async function handleCategoryChecklist(checklist){
+  if(!checklist) return;
+  const posts = Array.isArray(checklist.posts) ? checklist.posts : [];
+  const total = checklist.total ?? posts.length;
+  const lines = [];
+  const name = checklist.category || '(未命名)';
+  lines.push(`分类「${name}」仍被 ${total} 篇文章引用，已阻止删除。`);
+  if(posts.length){
+    lines.push('', '受影响文章：');
+    posts.slice(0,10).forEach((p,idx)=>{
+      const status = [p.publish?'已发布':null, p.draft?'草稿标记':null, p.isLocal?'本地草稿':null].filter(Boolean).join('/');
+      lines.push(`- ${p.title||p.rel||`(#${idx+1})`} (${p.rel||''})${status?` [${status}]`:''}`);
+    });
+    if(posts.length>10) lines.push(`… 以及另外 ${posts.length-10} 篇。`);
+  }
+  if(Array.isArray(checklist.instructions) && checklist.instructions.length){
+    lines.push('', '下一步：');
+    checklist.instructions.forEach(step=>lines.push(step));
+  }
+  alert(lines.join('\n'));
+  const promptHint = checklist.jobEndpoint ? `（后台任务：${checklist.jobEndpoint}）` : '';
+  const input = prompt(`输入新的分类名称以批量重命名${promptHint}。\n输入 “-” 或 “remove” 可仅移除该分类。\n留空或取消则退出。`, '');
+  if(input === null) return;
+  const trimmed = input.trim();
+  if(!trimmed){ toast('已取消批量操作', false); return; }
+  let payload;
+  let label;
+  if(trimmed === '-' || trimmed.toLowerCase()==='remove'){
+    payload = { from: name, mode: 'remove' };
+    label = '移除分类';
+  }else{
+    payload = { from: name, to: trimmed, mode: 'rename' };
+    label = `重命名为 ${trimmed}`;
+  }
+  try{
+    const result = await api('/api/categories/rewrite','POST', payload);
+    toast(result.summary || `分类批处理完成：${label}`);
+    await refresh();
+    await loadTrash();
+  }catch(e){
+    toast((e.detail?.err || e.detail?.out || e.message).slice(0,400), false);
+  }
 }
 
 function syncColumnSelect(sectionList){
@@ -177,7 +221,13 @@ function render(items){
           await api('/api/remove','POST',{rel,hard:true}); toast(`已永久删除`);
         }
         await refresh(); await loadTrash();
-      }catch(e){ showError(e); }
+      }catch(e){
+        if(e.detail?.checklist){
+          await handleCategoryChecklist(e.detail.checklist);
+        }else{
+          showError(e);
+        }
+      }
     });
   });
 
@@ -205,7 +255,13 @@ function render(items){
           if(!confirm('永久删除？')) return; await api('/api/remove','POST',{rel,hard:true}); toast('已永久删除');
         }
         await refresh(); await loadTrash();
-      }catch(e){ showError(e); }
+      }catch(e){
+        if(e.detail?.checklist){
+          await handleCategoryChecklist(e.detail.checklist);
+        }else{
+          showError(e);
+        }
+      }
     });
   });
 
