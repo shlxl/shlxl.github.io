@@ -1217,11 +1217,22 @@ async function apiCategoriesDelete(req,res){
 // ---------- Nav sync ----------
 function buildCategoryNavItems(){
   const registry = loadCategoryRegistry();
+  const blogRoot = path.resolve(BLOG_DIR);
   return registry.items
-    .filter(item=>item.publish !== false && item.menuEnabled !== false)
     .map(item=>{
+      // 顶部导航仅由菜单上架状态控制，内容发布与否不再影响可见性。
+      if(item.menuEnabled === false) return null;
       const dir = normalizeDirKey(item.dir);
-      const link = '/blog/' + (dir ? `${dir.replace(/\/+$/,'')}/` : '');
+      if(!dir) return null;
+      const safeDir = path.resolve(BLOG_DIR, dir);
+      if(safeDir !== blogRoot && !safeDir.startsWith(blogRoot + path.sep)) return null;
+      try{
+        const stat = fs.statSync(safeDir);
+        if(!stat.isDirectory()) return null;
+      }catch{
+        return null;
+      }
+      const link = '/blog/' + `${dir.replace(/\/+$/,'')}/`;
       return {
         text: item.menuLabel || item.title || dir || '博客',
         category: item.title || item.menuLabel || dir || '博客',
@@ -1231,6 +1242,7 @@ function buildCategoryNavItems(){
         menuOrder: Number(item.menuOrder) || 0
       };
     })
+    .filter(Boolean)
     .sort((a,b)=>{
       if(a.menuOrder !== b.menuOrder) return a.menuOrder - b.menuOrder;
       return a.text.localeCompare(b.text);
