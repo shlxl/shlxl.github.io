@@ -130,6 +130,15 @@ export default defineConfig({
         '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
         '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
       }
+    },
+    server: {
+      watch: {
+        ignored: [
+          '**/.vitepress/config.ts.timestamp-*',
+          '**/.vitepress/config.*.timestamp-*',
+          '**/*.timestamp-*.mjs'
+        ]
+      }
     }
   }
 })

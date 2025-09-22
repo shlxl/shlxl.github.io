@@ -148,7 +148,13 @@ function syncColumnSelect(categories){
 
 function render(items, categories=[]){
   const data = items.filter(x=>matches(x, QUERY));
-  const isDraft = x=> x.abs.includes('/_local/');
+  const isDraft = x=>{
+    const rel = String(x?.rel||'');
+    if(rel.startsWith('_local/')) return true;
+    const abs = String(x?.abs||'');
+    if(!abs) return false;
+    return abs.includes('/_local/') || abs.includes('\\_local\\');
+  };
   const drafts   = data.filter(x=>x.type==='post' && isDraft(x) && !x.hidden);
   const pubs     = data.filter(x=>x.type==='post' && !isDraft(x) &&  x.publish && !x.hidden);
   const archived = data.filter(x=>x.type==='post' && !isDraft(x) && !x.publish && !x.hidden);
