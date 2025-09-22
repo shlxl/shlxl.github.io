@@ -44,6 +44,13 @@ This note summarizes the current state of the personal site project and highligh
 
 Keep this document updated after each major iteration to maintain a reliable handover record.
 
+## Category Navigation Guard Plan
+
+- **Guard location**: extend `setupCategoryNavPersistence` to register a `router.onBeforeRouteChange` hook alongside the existing `onAfterRouteChange` override. The guard will read the precomputed `CategoryNavState` map so that approved navigations continue to fall through to the current post-tracking logic and keep localStorage in sync after every successful transition.
+- **Empty-category detection**: when the target `to` route matches a category nav item whose `routes` array contains no dated entries (only the fallback stub), treat the category as empty and stop the navigation.
+- **User messaging & overrides**: emit a cancelable `CustomEvent` named `xl:nav-empty-category` on `window` before blocking the route. The event `detail` carries `{ category, navItem, to, message, allowNavigation }` where `message` defaults to “该栏目暂无文章，敬请期待。” and `allowNavigation` starts as `false`. Listeners can `preventDefault()` to suppress the stock alert, mutate `detail.message` to customize the text, or flip `detail.allowNavigation = true` to proceed with the navigation.
+- **Default handling**: if no listener cancels the event and `allowNavigation` remains `false`, invoke `window.alert(detail.message)` and return `false` from the guard so the router halts the transition. When `allowNavigation` is toggled to `true`, return `true` so the navigation continues and `setupCategoryNavPersistence`'s `onAfterRouteChange` still updates the persisted link after the route settles.
+
 
 
 
