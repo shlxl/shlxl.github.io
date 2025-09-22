@@ -1073,7 +1073,8 @@ async function apiCategoriesCreate(req,res){
       const absDir = path.join(BLOG_DIR, dir);
       fs.mkdirSync(absDir,{recursive:true});
     }
-    send(res,200,{ok:true, item});
+    const navSync = safeSyncCategoryNav();
+    send(res,200,{ok:true, item, navSync});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 async function apiCategoriesUpdate(req,res){
@@ -1141,7 +1142,8 @@ async function apiCategoriesUpdate(req,res){
     }
     const written = writeCategoryRegistry(registry);
     const item = written.items.find(it=>normalizeDirKey(it.dir)===targetDir);
-    send(res,200,{ok:true, item, dirMove, rewrite});
+    const navSync = safeSyncCategoryNav();
+    send(res,200,{ok:true, item, dirMove, rewrite, navSync});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 async function apiCategoriesToggle(req,res){
@@ -1161,7 +1163,8 @@ async function apiCategoriesToggle(req,res){
     entry.updatedAt = new Date().toISOString();
     const written = writeCategoryRegistry(registry);
     const item = written.items.find(it=>normalizeDirKey(it.dir)===dir);
-    send(res,200,{ok:true, item});
+    const navSync = safeSyncCategoryNav();
+    send(res,200,{ok:true, item, navSync});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 async function apiCategoriesDelete(req,res){
@@ -1210,7 +1213,8 @@ async function apiCategoriesDelete(req,res){
         }catch{}
       }
     }
-    send(res,200,{ok:true, removedIndex});
+    const navSync = safeSyncCategoryNav();
+    send(res,200,{ok:true, removedIndex, navSync});
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 
@@ -1248,6 +1252,32 @@ function buildCategoryNavItems(){
       return a.text.localeCompare(b.text);
     });
 }
+function syncCategoryNavArtifacts(){
+  const items = buildCategoryNavItems();
+  const now = new Date().toISOString();
+  fs.mkdirSync(VP_DIR, {recursive:true});
+  const payload = { updatedAt: now, items };
+  fs.writeFileSync(CATEGORY_NAV_FILE, JSON.stringify(payload, null, 2), 'utf8');
+  const json = path.relative(PROJECT_ROOT, CATEGORY_NAV_FILE).replace(/\\/g,'/');
+  const cfg = findConfigFile();
+  let config = null;
+  let patched = { mode:'json-only' };
+  if(cfg){
+    patched = patchConfigWithMarkers(cfg, items);
+    config = path.relative(PROJECT_ROOT, cfg).replace(/\\/g,'/');
+  }
+  return { items, updatedAt: now, json, config, patched };
+}
+function safeSyncCategoryNav(){
+  try{
+    const result = syncCategoryNavArtifacts();
+    return { ok:true, ...result };
+  }catch(err){
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[admin] category nav sync failed', err);
+    return { ok:false, error: message };
+  }
+}
 function findConfigFile(){
   const cands = ['config.ts','config.mts','config.js','config.mjs'];
   for(const n of cands){
@@ -1270,23 +1300,8 @@ function patchConfigWithMarkers(file, navItems){
 }
 async function apiCategoriesNavSync(req,res){
   try{
-    const items = buildCategoryNavItems();
-    const now = new Date().toISOString();
-    fs.mkdirSync(VP_DIR, {recursive:true});
-    const payload = { updatedAt: now, items };
-    fs.writeFileSync(CATEGORY_NAV_FILE, JSON.stringify(payload, null, 2), 'utf8');
-    const cfg = findConfigFile();
-    let patched = { mode:'json-only' };
-    if(cfg){
-      patched = patchConfigWithMarkers(cfg, items);
-    }
-    send(res,200,{
-      ok:true,
-      items,
-      json: path.relative(PROJECT_ROOT, CATEGORY_NAV_FILE).replace(/\\/g,'/'),
-      config: cfg ? path.relative(PROJECT_ROOT, cfg).replace(/\\/g,'/') : null,
-      patched
-    });
+    const result = syncCategoryNavArtifacts();
+    send(res,200,{ ok:true, ...result });
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 }
 

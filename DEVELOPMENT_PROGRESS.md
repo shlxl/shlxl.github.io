@@ -1,4 +1,4 @@
-# Development Progress – 2025-09-18
+# Development Progress – 2025-09-22
 
 This note summarizes the current state of the personal site project and highlights the next engineering priorities.
 
@@ -10,18 +10,21 @@ This note summarizes the current state of the personal site project and highligh
 - **Dynamic column pages**: Each column index now renders live data from `themeConfig.blog.pagesData`, so the “Existing Content” blocks auto-update without manual edits.
 - **Category-aware tooling**: `new-post`, `new-post-local`, and `post-promote` now resolve target directories via the centralized category registry (`docs/.vitepress/categories.map.json`), and the admin dropdown pulls from `/api/categories` with publish/menu status indicators.
 - **Admin UX refresh**: “新建草稿” includes the column selector, inputs reset after creation, and table reloads respect auth transitions.
+- **Nav auto-sync**: Category mutations trigger `safeSyncCategoryNav`, rewriting `docs/.vitepress/categories.nav.json` and patching the VitePress config inline，确保新菜单项会立即出现在顶部导航；同时后台界面会在提示条中反馈同步结果。【F:blog-admin/server.mjs†L123-L164】【F:blog-admin/public/categories.js†L1-L112】
 
 ## Open Issues & Follow-ups
 - **Search build**: `pagefind` still lacks a darwin-arm64 binary; decide whether to vendor an ARM build, gate the plugin locally, or swap to another search solution.
 - **Column metadata**: consider storing slugs (not only titles) inside column index frontmatter to avoid ambiguous matches or renamed sections.
 - **Testing**: add integration smoke tests (e.g., headless login + draft creation) once the admin flow stabilizes.
 - **Docs**: expand contributor guide with the new column automation flow and auth requirements for running `blog-admin/server.mjs` locally.
+- **Nav observability**: surface `safeSyncCategoryNav` errors beyond the toast path—consider CLI fallbacks or build-time checks，使导航生成失败不会被忽视。【F:blog-admin/server.mjs†L123-L164】【F:blog-admin/public/categories.js†L1-L205】
 
 ## Category Registry & Menu Integration
 
 - Replaced the legacy sections surface with a category registry (schema v2) stored in `docs/.vitepress/categories.map.json`. Each entry records `dir`, `title`, `menuLabel`, `publish`, `menuEnabled`, `menuOrder`, plus created/updated timestamps, and all admin mutations flow through `server.mjs` helpers that read/write this registry.【F:blog-admin/server.mjs†L180-L379】
 - `/api/categories` aggregates registry metadata with live usage stats (post counts, latest publish time, directory health) and powers the new `blog-admin/public/categories.html` management UI, which supports create/update/toggle/delete workflows and surfaces rewrite checklists when posts still reference a category.【F:blog-admin/server.mjs†L600-L1045】【F:blog-admin/public/categories.html†L1-L80】【F:blog-admin/public/categories.js†L1-L232】
 - Nav sync now emits `docs/.vitepress/categories.nav.json` and patches the VitePress config between `/* ADMIN NAV START */ … /* ADMIN NAV END */`, writing only menu-enabled categories in deterministic order. The config consumes this JSON to build dynamic navigation items alongside `resolveLatestCategoryArticle` fallbacks.【F:blog-admin/server.mjs†L1047-L1107】【F:docs/.vitepress/config.ts†L1-L120】
+- Admin mutations (`create`/`update`/`toggle`/`delete`) now call `safeSyncCategoryNav`, so every registry change rewrites the nav artifacts and the client surfaces success or failure immediately—no more manual “导航同步” step after 菜单上架。【F:blog-admin/server.mjs†L1008-L1217】【F:blog-admin/public/categories.js†L1-L205】
 - CLI tooling (`scripts/lib/columns.js`) reads the expanded registry schema (falling back to directory scans only when the file is missing) so `new-post`/`post-promote` stay aligned with the admin source of truth.【F:scripts/lib/columns.js†L1-L70】
 - Follow-ups: enhance automated tests around the rewrite workflow, tighten alerting for unused categories or missing directories (currently surfaced via the “异常监控” panel), and document the menu-order conventions for contributors.
 
