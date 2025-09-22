@@ -74,7 +74,7 @@ export default defineConfig({
   base: deployBase,
   appearance: true,
   head: [
-    ['meta', { name: 'theme-color', content: '#4F46E5' }],
+    ['meta', { name: 'theme-color', content: '#A1745D' }],
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }]
   ],
   themeConfig: {
