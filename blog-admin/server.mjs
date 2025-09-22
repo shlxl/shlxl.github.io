@@ -640,6 +640,163 @@ function moveToTrash(file){
   fs.renameSync(file, dst);
   return dst;
 }
+
+function sanitizeSlug(value){
+  let out = String(value || '').trim();
+  if(!out) return '';
+  out = out.replace(/[\\/]+/g, '-');
+  out = out.replace(/[:*?"<>|]+/g, '');
+  out = out.replace(/\s+/g, '-');
+  out = out.replace(/-+/g, '-');
+  out = out.replace(/^[-_]+|[-_]+$/g, '');
+  return out;
+}
+
+function deriveSlugFromTrashName(name){
+  const base = String(name || '').replace(/\.md$/i,'');
+  const matchWithDash = base.match(/^\d{8}-\d{6}-(.+)$/);
+  const matchCompact = base.match(/^\d{14}-(.+)$/);
+  let candidate = '';
+  if(matchWithDash && matchWithDash[1]) candidate = matchWithDash[1];
+  else if(matchCompact && matchCompact[1]) candidate = matchCompact[1];
+  else candidate = base;
+  candidate = candidate.replace(/_/g,'-');
+  const sanitized = sanitizeSlug(candidate);
+  return sanitized || sanitizeSlug(base) || candidate;
+}
+
+function ensureDraftFrontmatter(file){
+  let txt = '';
+  try{ txt = fs.readFileSync(file,'utf8'); }
+  catch{ return; }
+  const FM = /^---\s*([\s\S]*?)\s*---/m;
+  if(!FM.test(txt)){
+    const fallback = [
+      '---',
+      `title: "${slugOf(file)}"`,
+      'publish: false',
+      'draft: true',
+      '---',
+      '',
+      txt
+    ].join('\n');
+    fs.writeFileSync(file, fallback, 'utf8');
+    return;
+  }
+  try{
+    updateFrontmatter(file, { publish: 'false', draft: 'true' });
+  }catch{
+    const m = FM.exec(txt);
+    if(!m) return;
+    let head = m[1];
+    const put = (key, val)=>{
+      const re = new RegExp(`^\\s*${key}\\s*:.*$`,'mi');
+      if(re.test(head)) head = head.replace(re, `${key}: ${val}`);
+      else head = `${head}\n${key}: ${val}`;
+    };
+    put('publish','false');
+    put('draft','true');
+    const next = txt.replace(FM, `---\n${head.trim()}\n---`);
+    fs.writeFileSync(file, next, 'utf8');
+  }
+}
+
+function listTrashEntries(){
+  if(!fs.existsSync(TRASH_DIR)) return [];
+  const names = fs.readdirSync(TRASH_DIR).filter(n=>/\.md$/i.test(n));
+  const items = [];
+  for(const name of names){
+    const abs = path.join(TRASH_DIR, name);
+    let stat;
+    try{ stat = fs.statSync(abs); }
+    catch{ continue; }
+    if(!stat.isFile()) continue;
+    let title = '';
+    try{ title = parseFM(fs.readFileSync(abs,'utf8')).title || ''; }
+    catch{}
+    items.push({
+      name,
+      slug: deriveSlugFromTrashName(name),
+      title,
+      mtime: stat.mtimeMs,
+      size: stat.size
+    });
+  }
+  items.sort((a,b)=> b.mtime - a.mtime);
+  return items;
+}
+
+function restoreTrashEntry(name, slug=''){
+  const safe = path.basename(String(name||''));
+  if(!safe) throw new Error('缺少文件名');
+  if(safe !== name) throw new Error('非法文件名');
+  const src = path.join(TRASH_DIR, safe);
+  if(!fs.existsSync(src) || !fs.statSync(src).isFile()) throw new Error('目标不存在');
+  let targetSlug = sanitizeSlug(slug);
+  if(!targetSlug){
+    targetSlug = deriveSlugFromTrashName(safe);
+  }
+  if(!targetSlug){
+    try{
+      const fm = parseFM(fs.readFileSync(src,'utf8'));
+      targetSlug = sanitizeSlug(fm.title);
+    }catch{}
+  }
+  if(!targetSlug) targetSlug = `restored-${Date.now()}`;
+  fs.mkdirSync(LOCAL_DIR,{recursive:true});
+  const base = targetSlug;
+  let finalSlug = targetSlug;
+  let dest = path.join(LOCAL_DIR, `${finalSlug}.md`);
+  let idx = 1;
+  while(fs.existsSync(dest)){
+    finalSlug = `${base}-${idx++}`;
+    dest = path.join(LOCAL_DIR, `${finalSlug}.md`);
+  }
+  fs.renameSync(src, dest);
+  try{ ensureDraftFrontmatter(dest); }
+  catch{}
+  return { slug: finalSlug, rel: relOf(dest) };
+}
+
+function deleteTrashEntry(name){
+  const safe = path.basename(String(name||''));
+  if(!safe) return false;
+  if(safe !== name) return false;
+  const file = path.join(TRASH_DIR, safe);
+  if(!fs.existsSync(file)) return false;
+  if(!fs.statSync(file).isFile()) return false;
+  fs.unlinkSync(file);
+  return true;
+}
+
+async function apiTrashList(req,res){
+  try{
+    const items = listTrashEntries();
+    send(res,200,{ok:true,items});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+
+async function apiTrashRestore(req,res){
+  try{
+    const body = await readBody(req);
+    const name = String(body.name||'').trim();
+    if(!name) return send(res,400,{ok:false,error:'缺少文件名'});
+    const slug = body.slug === undefined ? '' : String(body.slug||'').trim();
+    const restored = restoreTrashEntry(name, slug);
+    send(res,200,{ok:true,name,slug:restored.slug,rel:restored.rel});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
+
+async function apiTrashDelete(req,res){
+  try{
+    const body = await readBody(req);
+    const name = String(body.name||'').trim();
+    if(!name) return send(res,400,{ok:false,error:'缺少文件名'});
+    const ok = deleteTrashEntry(name);
+    if(!ok) return send(res,404,{ok:false,error:'目标不存在'});
+    send(res,200,{ok:true});
+  }catch(e){ send(res,500,{ok:false,error:e.message}); }
+}
 async function apiRemove(req,res){
   const b = await readBody(req);
   const rel = b.rel || (b.slug ? b.slug+'.md' : '');
@@ -1170,6 +1327,9 @@ const server = createServer(async (req,res)=>{
     if(req.method==='POST' && pathname==='/api/republish')        return apiRepublish(req,res);
     if(req.method==='POST' && pathname==='/api/remove')           return apiRemove(req,res);
     if(req.method==='POST' && pathname==='/api/update-meta')      return apiUpdateMeta(req,res);
+    if(req.method==='GET'  && pathname==='/api/trash')             return apiTrashList(req,res);
+    if(req.method==='POST' && pathname==='/api/trash/restore')     return apiTrashRestore(req,res);
+    if(req.method==='POST' && pathname==='/api/trash/delete')      return apiTrashDelete(req,res);
     if(req.method==='POST' && pathname==='/api/aliases')          return apiAliases(req,res);
     if(req.method==='POST' && pathname==='/api/categories/rewrite') return apiCategoryRewrite(req,res);
 
