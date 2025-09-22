@@ -15,7 +15,7 @@ function formatDate(){ const {year,month,day,hour,minute,second}=getTZParts(); r
 function slugify(s){ return String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s-]+/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'') }
 function escYaml(s){ return String(s).replace(/\"/g,'\\\"') }
 function ensureDir(p){ if(!fs.existsSync(p)) fs.mkdirSync(p,{recursive:true}) }
-function createCoverSVG(title, outPath){ const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">\n  <rect width="1200" height="630" fill="#4F46E5"/>\n  <text x="60" y="200" font-size="48" fill="#fff" font-weight="700">${escYaml(title)}</text>\n  <text x="60" y="260" font-size="20" fill="#fff" opacity=".8">Generated at ${formatDate()}</text>\n</svg>`; ensureDir(path.dirname(outPath)); fs.writeFileSync(outPath,svg,'utf8') }
+function createCoverSVG(title, outPath){ const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">\n  <rect width="1200" height="630" fill="#A1745D"/>\n  <text x="60" y="200" font-size="48" fill="#fff" font-weight="700">${escYaml(title)}</text>\n  <text x="60" y="260" font-size="20" fill="#fff" opacity=".8">Generated at ${formatDate()}</text>\n</svg>`; ensureDir(path.dirname(outPath)); fs.writeFileSync(outPath,svg,'utf8') }
 
 (function main(){
   const args=parseArgs(process.argv);
