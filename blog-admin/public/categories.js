@@ -8,20 +8,6 @@ const ISSUE_LABELS={
   'unused':'未被引用'
 };
 const STATE={ items:[], orphans:[] };
-function toastWithNavSync(message, navSync, ok=true){
-  const base=String(message||'').trim()||'操作完成';
-  if(!navSync){ toast(base.slice(0,400), ok); return; }
-  if(navSync.ok){
-    const touches=[];
-    if(navSync.json) touches.push(navSync.json);
-    if(navSync.config) touches.push(navSync.config);
-    const suffix=touches.length?`（${touches.join('、')}）`:'';
-    toast(`${base}；导航已同步${suffix}`.slice(0,400), ok);
-  }else{
-    const err=String(navSync.error||'未知错误');
-    toast(`${base}；导航同步失败：${err}`.slice(0,400), false);
-  }
-}
 
 function fmtTime(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleString(); }catch{ return ''; } }
 function toVSCodeUri(abs){ if(!abs) return ''; const norm=abs.replace(/\\/g,'/'); const win=norm.replace(/^([A-Za-z]):/, '/$1:'); return 'vscode://file'+encodeURI(win); }
@@ -77,10 +63,9 @@ async function handleEdit(dir){
   if(item.title !== title){ rewriteFlag = confirm('是否同步重写所有文章中的分类引用？（取消则跳过批量重写）'); }
   const payload={ dir:item.dir, title, menuLabel, nextDir, ensureDir, rewrite: rewriteFlag };
   const res = await api('/api/categories/update','POST', payload);
-  let msg='分类已更新';
-  if(res.dirMove?.to){ msg=`分类已更新，目录已移动到 ${res.dirMove.to}`; }
-  else if(res.rewrite?.summary){ msg=res.rewrite.summary; }
-  toastWithNavSync(msg, res.navSync, true);
+  if(res.dirMove?.to){ toast(`分类已更新，目录已移动到 ${res.dirMove.to}`); }
+  else if(res.rewrite?.summary){ toast(res.rewrite.summary); }
+  else toast('分类已更新');
 }
 
 function renderCategories(list){
@@ -129,21 +114,21 @@ function renderCategories(list){
         if(btn.dataset.act==='edit'){
           await handleEdit(dir);
         }else if(btn.dataset.act==='toggle-publish'){
-          const res = await api('/api/categories/toggle','POST',{ dir, field:'publish', value: btn.dataset.value==='true' });
-          toastWithNavSync('已更新内容上架状态', res.navSync, true);
+          await api('/api/categories/toggle','POST',{ dir, field:'publish', value: btn.dataset.value==='true' });
+          toast('已更新内容上架状态');
         }else if(btn.dataset.act==='toggle-menu'){
-          const res = await api('/api/categories/toggle','POST',{ dir, field:'menuEnabled', value: btn.dataset.value==='true' });
-          toastWithNavSync('已更新菜单上架状态', res.navSync, true);
+          await api('/api/categories/toggle','POST',{ dir, field:'menuEnabled', value: btn.dataset.value==='true' });
+          toast('已更新菜单上架状态');
         }else if(btn.dataset.act==='delete'){
           if(!dir){ toast('缺少目录标识',false); return; }
           if(!confirm('确认删除该分类？（不会移除目录）')) return;
-          const res = await api('/api/categories/delete','POST',{ dir });
-          toastWithNavSync('已删除分类', res.navSync, true);
+          await api('/api/categories/delete','POST',{ dir });
+          toast('已删除分类');
         }else if(btn.dataset.act==='delete-hard'){
           if(!dir){ toast('缺少目录标识',false); return; }
           if(!confirm('确认删除该分类并尝试移除目录？')) return;
-          const res = await api('/api/categories/delete','POST',{ dir, hard:true });
-          toastWithNavSync('已删除分类，目录如为空将被移除', res.navSync, true);
+          await api('/api/categories/delete','POST',{ dir, hard:true });
+          toast('已删除分类，目录如为空将被移除');
         }else if(btn.dataset.act==='rewrite'){
           await runCategoryRewrite(title || dir);
         }else if(btn.dataset.act==='open'){
@@ -254,8 +239,8 @@ async function main(){
     if(!payload.title){ toast('请填写分类名称', false); return; }
     if(!payload.dir){ toast('请填写目录', false); return; }
     try{
-      const res = await api('/api/categories/create','POST', payload);
-      toastWithNavSync('分类已创建', res.navSync, true);
+      await api('/api/categories/create','POST', payload);
+      toast('分类已创建');
       resetCreateForm();
       await refresh();
     }catch(e){ toast((e.detail?.err||e.detail?.out||e.message||'创建失败').slice(0,400), false); }

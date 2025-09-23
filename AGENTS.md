@@ -3,8 +3,6 @@
 ## Project Structure & Module Organization
 The site lives under `docs/`. `.vitepress/` keeps VitePress config (`config.ts`), theme overrides, and cached Pagefind output; keep generated `dist/` out of commits. `blog/` is organised by column folders (for example `engineering/`, `creative/`) with `index.md` frontmatter driving listings. Shared static assets belong in `docs/public/`. Automation scripts reside in `scripts/`; `scripts/lib/columns.js` maps human-readable column names to directories, so update it before renaming folders. The `blog-admin/` directory powers the local editorial dashboard served by `server.mjs`.
 
-Category mutations performed through the admin API now auto-sync the navigation: `server.mjs` writes `docs/.vitepress/categories.nav.json` and patches the `/* ADMIN NAV START */ … /* ADMIN NAV END */` block via `syncCategoryNavArtifacts`/`safeSyncCategoryNav`. Keep those helpers in lockstep with the standalone `/api/categories/nav-sync` endpoint when adjusting the workflow.
-
 The `guides/` column purposely omits an `index.md`; the main site navigation item “攻略” is wired in `docs/.vitepress/config.ts` to redirect to the latest article whose frontmatter declares `categories: [职业攻略]`. Avoid recreating the index page or changing that navigation link unless you also update the helper functions in `config.ts`.
 
 ## Build, Test, and Development Commands
