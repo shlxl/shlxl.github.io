@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog Admin — 分类管理</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div id="login-overlay" class="login-overlay hidden">
+  <div class="login-card">
+    <h2>管理员登录</h2>
+    <p id="login-help" class="login-help">请输入访问密码以继续。</p>
+    <input id="login-password" type="password" placeholder="访问密码" autocomplete="current-password">
+    <div id="login-error" class="login-error"></div>
+    <button id="login-submit">登录</button>
+  </div>
+</div>
+
+<div id="app-shell" class="app-shell">
+<header><h1>分类管理（Categories Manager）</h1>
+  <div class="actions">
+    <a href="index.html"><button>← 返回合体版</button></a>
+    <button id="btn-refresh" class="neutral">刷新</button>
+    <button id="btn-nav-sync">同步导航</button>
+    <button id="btn-logout" class="neutral">退出登录</button>
+  </div>
+</header>
+
+<section class="card">
+  <h2>新建分类</h2>
+  <div class="grid">
+    <label>分类名称
+      <input id="new-title" placeholder="例如：工程实践">
+    </label>
+    <label>导航显示文案（可选）
+      <input id="new-menu" placeholder="用于顶部导航的标题">
+    </label>
+    <label>目录（docs/blog 下）
+      <input id="new-dir" placeholder="例如：engineering">
+    </label>
+    <label>内容上架
+      <select id="new-publish">
+        <option value="true" selected>是</option>
+        <option value="false">否</option>
+      </select>
+    </label>
+    <label>菜单上架
+      <select id="new-menu-enabled">
+        <option value="true" selected>是</option>
+        <option value="false">否</option>
+      </select>
+      <small class="muted">仅决定导航是否显示，该选项与“内容上架”已解耦。</small>
+    </label>
+    <label>菜单排序（数字，越小越靠前）
+      <input id="new-order" type="number" min="0" placeholder="自动追加">
+    </label>
+    <label class="checkbox">
+      <input id="new-create-dir" type="checkbox" checked> 创建目录（若不存在）
+    </label>
+  </div>
+  <button id="btn-create">创建分类</button>
+</section>
+
+<section class="card">
+  <h2>分类列表</h2>
+  <table id="tbl-categories"><thead>
+    <tr><th>分类</th><th>导航</th><th>目录</th><th>文章数</th><th>内容</th><th>菜单</th><th>最新文章</th><th>异常</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<section class="card">
+  <h2>异常监控</h2>
+  <p class="muted">列出未登记但被文章引用的分类，或可疑状态以便进一步处理。</p>
+  <table id="tbl-issues"><thead>
+    <tr><th>分类</th><th>文章数</th><th>最新文章</th><th>操作</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<footer><div id="toast"></div></footer>
+</div>
+<script src="auth.js"></script>
+<script src="categories.js"></script>
+</body></html>

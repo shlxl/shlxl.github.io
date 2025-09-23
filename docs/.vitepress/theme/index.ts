@@ -19,8 +19,11 @@ const NAV_STORAGE_PREFIX = 'xl-last-opened:nav:'
 
 type NavRecord = Record<string, any>
 
+type SiteDataRef = EnhanceAppContext['siteData']
+
 interface CategoryNavState {
-  navItem: NavRecord
+  category: string
+  navIndex: number
   storageKey: string
   fallback: string
   routes: CategoryRouteEntry[]
@@ -34,16 +37,17 @@ interface CategoryRouteEntry {
 }
 
 function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
-  const themeConfig = ctx.siteData.value.themeConfig || {}
+  const siteData = ctx.siteData
+  const themeConfig = siteData.value.themeConfig || {}
   const navItems = Array.isArray(themeConfig.nav) ? themeConfig.nav : []
   if (!navItems.length) return
 
-  const base = ctx.siteData.value.base || '/'
+  const base = siteData.value.base || '/'
   const states = buildCategoryStates(navItems, base)
   if (!states.size) return
 
   populateCategoryRoutes(states, themeConfig, base)
-  applyInitialNavLinks(states, themeConfig, base)
+  applyInitialNavLinks(states, siteData, base)
 
   const previous = ctx.router.onAfterRouteChange
   ctx.router.onAfterRouteChange = async (to: string) => {
@@ -54,33 +58,34 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
     if (deprecated && deprecated !== ctx.router.onAfterRouteChange) {
       await deprecated.call(ctx.router, to)
     }
-    handleRouteChange(states, ctx.router.route.data, themeConfig, base)
+    handleRouteChange(states, ctx.router.route.data, siteData, base)
   }
 
-  handleRouteChange(states, ctx.router.route.data, themeConfig, base)
+  handleRouteChange(states, ctx.router.route.data, siteData, base)
 }
 
 function buildCategoryStates(navItems: NavRecord[], base: string) {
   const map = new Map<string, CategoryNavState>()
-  for (const item of navItems) {
-    if (!item || typeof item !== 'object') continue
+  navItems.forEach((item, index) => {
+    if (!item || typeof item !== 'object') return
     const category = typeof item.category === 'string' ? item.category.trim() : ''
-    if (!category) continue
+    if (!category) return
     const fallbackSource =
       (typeof item.fallbackLink === 'string' && item.fallbackLink.trim()) ||
       (typeof item.link === 'string' && item.link.trim()) ||
       ''
     const fallback = normalizeRoute(fallbackSource, base)
-    if (!fallback) continue
+    if (!fallback) return
     const state: CategoryNavState = {
-      navItem: item,
+      category,
+      navIndex: index,
       storageKey: buildStorageKey(category),
       fallback,
       routes: [],
       routeSet: new Set()
     }
     map.set(category, state)
-  }
+  })
   return map
 }
 
@@ -120,26 +125,22 @@ function populateCategoryRoutes(
 
 function applyInitialNavLinks(
   states: Map<string, CategoryNavState>,
-  themeConfig: Record<string, any>,
+  siteData: SiteDataRef,
   base: string
 ) {
-  let mutated = false
   states.forEach((state) => {
     const stored = getStoredRoute(state, base)
     const initial = selectInitialRoute(state, stored)
-    if (initial && updateNavItemLink(state, initial)) {
-      mutated = true
+    if (initial) {
+      updateNavItemLink(state, initial, siteData)
     }
   })
-  if (mutated && Array.isArray(themeConfig.nav)) {
-    themeConfig.nav = [...themeConfig.nav]
-  }
 }
 
 function handleRouteChange(
   states: Map<string, CategoryNavState>,
   pageData: PageData | undefined,
-  themeConfig: Record<string, any>,
+  siteData: SiteDataRef,
   base: string
 ) {
   if (!pageData || !pageData.frontmatter) return
@@ -149,7 +150,6 @@ function handleRouteChange(
   if (!route) return
   const time = parseDate(pageData.frontmatter.date)
 
-  let mutated = false
   for (const category of categories) {
     const state = states.get(category)
     if (!state) continue
@@ -162,21 +162,44 @@ function handleRouteChange(
         existing.time = time
       }
     }
-    if (updateNavItemLink(state, route)) {
-      mutated = true
-    }
+    updateNavItemLink(state, route, siteData)
     setStoredRoute(state, route)
-  }
-
-  if (mutated && Array.isArray(themeConfig.nav)) {
-    themeConfig.nav = [...themeConfig.nav]
   }
 }
 
-function updateNavItemLink(state: CategoryNavState, route: string) {
+function updateNavItemLink(state: CategoryNavState, route: string, siteData: SiteDataRef) {
   if (!route || state.currentLink === route) return false
+  const site = siteData.value || {}
+  const themeConfig = (site as any).themeConfig || {}
+  const nav = Array.isArray(themeConfig.nav) ? themeConfig.nav : []
+  const index = state.navIndex
+  const navEntry = nav[index]
+  if (!navEntry || typeof navEntry !== 'object') {
+    state.currentLink = route
+    return false
+  }
+  const entryCategory =
+    typeof (navEntry as NavRecord).category === 'string'
+      ? (navEntry as NavRecord).category.trim()
+      : ''
+  if (entryCategory && entryCategory !== state.category) {
+    state.currentLink = route
+    return false
+  }
+  if ((navEntry as NavRecord).link === route) {
+    state.currentLink = route
+    return false
+  }
+  const updatedNav = nav.slice()
+  updatedNav[index] = { ...(navEntry as NavRecord), link: route }
+  siteData.value = {
+    ...(site as Record<string, any>),
+    themeConfig: {
+      ...themeConfig,
+      nav: updatedNav
+    }
+  }
   state.currentLink = route
-  state.navItem.link = route
   return true
 }
 

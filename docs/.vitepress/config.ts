@@ -13,21 +13,51 @@ if (!Number.isFinite(limit) || limit < 1) {
 
 const { getThemeConfig } = await import('@sugarat/theme/node')
 
-const professionGuideLink = resolveLatestCategoryArticle('职业攻略')
-const professionGuideNavItem = {
-  text: '攻略',
-  link: professionGuideLink || '/blog/',
-  fallbackLink: professionGuideLink || '/blog/',
-  category: '职业攻略'
+/* ADMIN NAV START */
+const adminGeneratedNav = [
+  {
+    "text": "工程实践",
+    "category": "工程实践",
+    "dir": "engineering",
+    "link": "/blog/engineering/",
+    "fallback": "/blog/engineering/",
+    "menuOrder": 1
+  },
+  {
+    "text": "职业攻略",
+    "category": "职业攻略",
+    "dir": "guides",
+    "link": "/blog/guides/",
+    "fallback": "/blog/guides/",
+    "menuOrder": 2
+  }
+]
+/* ADMIN NAV END */
+
+function buildCategoryNavItems(navConfig: any[]) {
+  return (navConfig || [])
+    .slice()
+    .sort((a, b) => {
+      const ao = Number(a?.menuOrder ?? 0)
+      const bo = Number(b?.menuOrder ?? 0)
+      if (ao !== bo) return ao - bo
+      return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
+    })
+    .map((item) => {
+      const title = String(item?.category || item?.text || '').trim()
+      const fallbackLink = String(item?.fallback || item?.link || '/blog/')
+      const resolved = title ? resolveLatestCategoryArticle(title) : ''
+      return {
+        text: item?.text || title || '分类',
+        link: resolved || fallbackLink,
+        fallbackLink,
+        category: title,
+        dir: item?.dir || ''
+      }
+    })
 }
 
-const engineeringPracticeLink = resolveLatestCategoryArticle('工程实践')
-const engineeringPracticeNavItem = {
-  text: '工程',
-  link: engineeringPracticeLink || '/blog/',
-  fallbackLink: engineeringPracticeLink || '/blog/',
-  category: '工程实践'
-}
+const categoryNavItems = buildCategoryNavItems(adminGeneratedNav)
 
 const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
 const pagefindForceLanguage = (process.env.PAGEFIND_FORCE_LANGUAGE || '').trim()
@@ -74,7 +104,7 @@ export default defineConfig({
   base: deployBase,
   appearance: true,
   head: [
-    ['meta', { name: 'theme-color', content: '#4F46E5' }],
+    ['meta', { name: 'theme-color', content: '#A1745D' }],
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }]
   ],
   themeConfig: {
@@ -85,8 +115,7 @@ export default defineConfig({
     ],
     nav: [
       { text: '博客', link: '/blog/' },
-      professionGuideNavItem,
-      engineeringPracticeNavItem,
+      ...categoryNavItems,
       { text: '作品', link: '/portfolio/' },
       { text: '关于', link: '/about/' }
     ],
@@ -100,6 +129,15 @@ export default defineConfig({
         '@sugarat/theme/src/components/BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
         '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
         '@sugarat/theme/src/components/BlogRecommendArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogRecommendArticle.vue')
+      }
+    },
+    server: {
+      watch: {
+        ignored: [
+          '**/.vitepress/config.ts.timestamp-*',
+          '**/.vitepress/config.*.timestamp-*',
+          '**/*.timestamp-*.mjs'
+        ]
       }
     }
   }

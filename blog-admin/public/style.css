@@ -3,19 +3,19 @@
 }
 
 :root {
-  --brand-1: #4F46E5;
-  --brand-2: #6366F1;
-  --brand-3: #4338CA;
+  --brand-1: #A1745D;
+  --brand-2: #C18F6D;
+  --brand-3: #8C5E45;
   --accent: #F59E0B;
   --bg-soft: #EEF2FF;
   --bg-surface: #FFFFFF;
   --bg-overlay: rgba(255, 255, 255, 0.82);
-  --card-border: rgba(79, 70, 229, 0.18);
-  --card-shadow: 0 16px 40px rgba(79, 70, 229, 0.12);
+  --card-border: rgba(161, 116, 93, 0.18);
+  --card-shadow: 0 16px 40px rgba(161, 116, 93, 0.12);
   --text-1: #111827;
   --text-2: #4B5563;
   --text-muted: #6B7280;
-  --divider: rgba(99, 102, 241, 0.16);
+  --divider: rgba(193, 143, 109, 0.16);
   --radius-lg: 18px;
   --radius-md: 14px;
   --transition: all 0.18s ease;
@@ -86,8 +86,8 @@ h2 {
 }
 
 .card:hover {
-  border-color: rgba(79, 70, 229, 0.32);
-  box-shadow: 0 20px 48px rgba(79, 70, 229, 0.18);
+  border-color: rgba(161, 116, 93, 0.32);
+  box-shadow: 0 20px 48px rgba(161, 116, 93, 0.18);
 }
 
 .grid {
@@ -114,7 +114,7 @@ textarea {
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-1);
   transition: var(--transition);
-  box-shadow: inset 0 1px 2px rgba(79, 70, 229, 0.08);
+  box-shadow: inset 0 1px 2px rgba(161, 116, 93, 0.08);
 }
 
 input:focus,
@@ -122,7 +122,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--brand-2);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+  box-shadow: 0 0 0 3px rgba(193, 143, 109, 0.18);
 }
 
 button {
@@ -130,26 +130,26 @@ button {
   padding: 6px 10px;
   border-radius: 9px;
   font-size: 0.7rem;
-  border: 1px solid rgba(79, 70, 229, 0.26);
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.18), rgba(99, 102, 241, 0.28));
+  border: 1px solid rgba(161, 116, 93, 0.26);
+  background: linear-gradient(135deg, rgba(212, 168, 137, 0.18), rgba(193, 143, 109, 0.28));
   color: var(--brand-3);
   cursor: pointer;
   font-weight: 600;
   letter-spacing: 0.02em;
   transition: var(--transition);
-  box-shadow: 0 10px 22px rgba(79, 70, 229, 0.18);
+  box-shadow: 0 10px 22px rgba(161, 116, 93, 0.18);
 }
 
 button:hover {
   transform: translateY(-1px);
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.26), rgba(99, 102, 241, 0.34));
-  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.22);
+  background: linear-gradient(135deg, rgba(212, 168, 137, 0.26), rgba(193, 143, 109, 0.34));
+  box-shadow: 0 14px 28px rgba(161, 116, 93, 0.22);
 }
 
 button:active {
   transform: translateY(0);
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.22), rgba(99, 102, 241, 0.3));
-  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.18);
+  background: linear-gradient(135deg, rgba(212, 168, 137, 0.22), rgba(193, 143, 109, 0.3));
+  box-shadow: 0 8px 18px rgba(161, 116, 93, 0.18);
 }
 
 button:disabled {
@@ -160,14 +160,14 @@ button:disabled {
 }
 
 button.neutral {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(193, 143, 109, 0.08);
   color: var(--brand-3);
-  border-color: rgba(79, 70, 229, 0.25);
+  border-color: rgba(161, 116, 93, 0.25);
   box-shadow: none;
 }
 
 button.neutral:hover {
-  background: rgba(99, 102, 241, 0.14);
+  background: rgba(193, 143, 109, 0.14);
   transform: none;
 }
 
@@ -204,7 +204,7 @@ table {
 }
 
 thead {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(193, 143, 109, 0.08);
   color: var(--brand-3);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -214,13 +214,13 @@ thead {
 th,
 td {
   padding: 12px;
-  border-bottom: 1px solid rgba(79, 70, 229, 0.12);
+  border-bottom: 1px solid rgba(161, 116, 93, 0.12);
   text-align: left;
   font-size: 13px;
 }
 
 tbody tr:hover {
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(193, 143, 109, 0.05);
 }
 
 td .row-actions {
@@ -239,7 +239,7 @@ td .row-actions button {
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(79, 70, 229, 0.1);
+  background: rgba(161, 116, 93, 0.1);
   color: var(--brand-3);
   font-size: 12px;
   font-weight: 500;
@@ -260,9 +260,9 @@ td .row-actions button {
   min-width: 240px;
   max-width: 360px;
   background: var(--bg-overlay);
-  border: 1px solid rgba(79, 70, 229, 0.25);
+  border: 1px solid rgba(161, 116, 93, 0.25);
   border-radius: var(--radius-md);
-  box-shadow: 0 20px 40px rgba(79, 70, 229, 0.16);
+  box-shadow: 0 20px 40px rgba(161, 116, 93, 0.16);
   color: var(--text-1);
   padding: 14px 18px;
   opacity: 0;
@@ -276,7 +276,7 @@ td .row-actions button {
 }
 
 code {
-  background: rgba(79, 70, 229, 0.12);
+  background: rgba(161, 116, 93, 0.12);
   color: var(--brand-3);
   padding: 2px 6px;
   border-radius: 8px;
@@ -301,7 +301,7 @@ code {
 .login-card {
   width: min(100%, 360px);
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(238, 242, 255, 0.92));
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  border: 1px solid rgba(161, 116, 93, 0.2);
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 60px rgba(17, 24, 39, 0.25);
   padding: 32px;

@@ -132,9 +132,9 @@ onUnmounted(() => {
     <svg viewBox="0 0 1200 800" role="img">
       <defs>
         <radialGradient id="heroGradient" cx="50%" cy="38%" r="62%">
-          <stop offset="0%" stop-color="#6366F1" stop-opacity="0.85" />
-          <stop offset="45%" stop-color="#4338CA" stop-opacity="0.45" />
-          <stop offset="100%" stop-color="#1E1B4B" stop-opacity="0" />
+          <stop offset="0%" stop-color="#C18F6D" stop-opacity="0.85" />
+          <stop offset="45%" stop-color="#8C5E45" stop-opacity="0.45" />
+          <stop offset="100%" stop-color="#2F1A13" stop-opacity="0" />
         </radialGradient>
         <linearGradient id="heroLines" x1="0%" x2="100%">
           <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8" />
@@ -263,25 +263,25 @@ onUnmounted(() => {
 }
 
 .xl-btn--primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #C18F6D 0%, #8C5E45 100%);
   color: white;
-  box-shadow: 0 18px 38px rgba(99, 102, 241, 0.32);
+  box-shadow: 0 18px 38px rgba(193, 143, 109, 0.32);
 }
 
 .xl-btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 24px 46px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 24px 46px rgba(193, 143, 109, 0.4);
 }
 
 .xl-btn--ghost {
-  border-color: rgba(129, 140, 248, 0.35);
+  border-color: rgba(212, 168, 137, 0.35);
   color: rgba(226, 232, 240, 0.9);
-  background: rgba(79, 70, 229, 0.12);
+  background: rgba(161, 116, 93, 0.12);
 }
 
 .xl-btn--ghost:hover {
   transform: translateY(-2px);
-  background: rgba(79, 70, 229, 0.2);
+  background: rgba(161, 116, 93, 0.2);
   color: white;
 }
 
@@ -306,7 +306,7 @@ onUnmounted(() => {
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.9), rgba(14, 165, 233, 0.9));
+  background: linear-gradient(90deg, rgba(193, 143, 109, 0.9), rgba(14, 165, 233, 0.9));
   transform-origin: left center;
   animation: hero-progress var(--hero-delay, 6000ms) linear forwards;
 }

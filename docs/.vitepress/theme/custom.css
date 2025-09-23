@@ -1,8 +1,8 @@
 :root {
   /* 品牌与辅助色 */
-  --vp-c-brand-1: #4F46E5; /* indigo */
-  --vp-c-brand-2: #6366F1;
-  --vp-c-brand-3: #4338CA;
+  --vp-c-brand-1: #A1745D; /* mocha mousse */
+  --vp-c-brand-2: #C18F6D;
+  --vp-c-brand-3: #8C5E45;
   --xl-accent: #F59E0B; /* amber */
 
   /* 卡片与阴影 */
@@ -11,9 +11,9 @@
 }
 
 html.dark {
-  --vp-c-brand-1: #818CF8;
-  --vp-c-brand-2: #A5B4FC;
-  --vp-c-brand-3: #6366F1;
+  --vp-c-brand-1: #D4A889;
+  --vp-c-brand-2: #E6BFA0;
+  --vp-c-brand-3: #C18F6D;
   --xl-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
@@ -97,7 +97,7 @@ html.dark {
 .xl-card:hover {
   transform: translateY(-2px);
   border-color: var(--vp-c-brand-1);
-  box-shadow: 0 10px 28px rgba(79, 70, 229, .18);
+  box-shadow: 0 10px 28px rgba(161, 116, 93, .18);
 }
 .xl-card h3 {
   margin: 8px 0;
