@@ -1,26 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2025-09-18T00:00:00.000Z",
+  "updatedAt": "2025-09-24T10:06:37.755Z",
   "items": [
     {
       "dir": "engineering",
       "title": "工程实践",
-      "menuLabel": "工程实践",
-      "publish": true,
-      "menuEnabled": true,
-      "menuOrder": 1,
-      "createdAt": "2025-09-18T00:00:00.000Z",
-      "updatedAt": "2025-09-18T00:00:00.000Z"
-    },
-    {
-      "dir": "guides",
-      "title": "职业攻略",
-      "menuLabel": "职业攻略",
+      "menuLabel": "工程",
       "publish": true,
       "menuEnabled": true,
       "menuOrder": 2,
       "createdAt": "2025-09-18T00:00:00.000Z",
-      "updatedAt": "2025-09-18T00:00:00.000Z"
+      "updatedAt": "2025-09-24T09:53:03.061Z"
+    },
+    {
+      "dir": "guides",
+      "title": "职业攻略",
+      "menuLabel": "攻略",
+      "publish": true,
+      "menuEnabled": true,
+      "menuOrder": 3,
+      "createdAt": "2025-09-18T00:00:00.000Z",
+      "updatedAt": "2025-09-24T09:53:14.750Z"
+    },
+    {
+      "dir": "pet",
+      "title": "宠物",
+      "menuLabel": "宠物",
+      "publish": true,
+      "menuEnabled": true,
+      "menuOrder": 4,
+      "createdAt": "2025-09-24T09:09:58.948Z",
+      "updatedAt": "2025-09-24T09:09:58.948Z"
+    },
+    {
+      "dir": "note",
+      "title": "学习笔记",
+      "menuLabel": "笔记",
+      "publish": true,
+      "menuEnabled": true,
+      "menuOrder": 5,
+      "createdAt": "2025-09-24T09:50:07.388Z",
+      "updatedAt": "2025-09-24T09:50:07.388Z"
+    },
+    {
+      "dir": "test",
+      "title": "test",
+      "menuLabel": "test",
+      "publish": true,
+      "menuEnabled": true,
+      "menuOrder": 6,
+      "createdAt": "2025-09-24T10:06:37.755Z",
+      "updatedAt": "2025-09-24T10:06:37.755Z"
     }
   ]
 }

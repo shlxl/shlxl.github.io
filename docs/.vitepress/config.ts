@@ -2,6 +2,8 @@ import { defineConfig } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import type { CategoryNavItem } from '../../scripts/lib/category-types'
+
 const deployBase = process.env.DEPLOY_BASE || '/'
 
 // @sugarat/theme-shared requires a positive concurrency value; some hosts
@@ -20,21 +22,72 @@ const adminGeneratedNav = [
     "category": "工程实践",
     "dir": "engineering",
     "link": "/blog/engineering/",
-    "fallback": "/blog/engineering/",
-    "menuOrder": 1
+    "fallback": "/blog/",
+    "menuOrder": 1,
+    "latestLink": "/blog/engineering/dev-progress-20250917",
+    "latestUpdatedAt": "2025-09-17T02:30:00.000Z",
+    "latestTitle": "开发进展快照：栏目驱动与后台准入落地",
+    "postCount": 4,
+    "publishedCount": 4
   },
   {
     "text": "职业攻略",
     "category": "职业攻略",
     "dir": "guides",
     "link": "/blog/guides/",
-    "fallback": "/blog/guides/",
-    "menuOrder": 2
+    "fallback": "/blog/",
+    "menuOrder": 2,
+    "latestLink": "/blog/guides/d2r-necromancer-guide",
+    "latestUpdatedAt": "2025-09-14T11:00:00.000Z",
+    "latestTitle": "死灵法师 - 掌控生死（D2R职业攻略系列之七）",
+    "postCount": 7,
+    "publishedCount": 7
+  },
+  {
+    "text": "宠物",
+    "category": "宠物",
+    "dir": "pet",
+    "link": "/blog/pet/",
+    "fallback": "/blog/",
+    "menuOrder": 3,
+    "latestLink": "/blog/pet/cat",
+    "latestUpdatedAt": "2025-09-24T09:10:47.000Z",
+    "latestTitle": "cat",
+    "postCount": 1,
+    "publishedCount": 1
   }
 ]
 /* ADMIN NAV END */
 
-function buildCategoryNavItems(navConfig: any[]) {
+const adminNavSource = resolveAdminNavItems(adminGeneratedNav as CategoryNavItem[])
+
+function resolveAdminNavItems(fallback: CategoryNavItem[]) {
+  const fileNav = loadAdminNavFromFile()
+  if (fileNav.length) return fileNav
+  return fallback
+}
+
+function loadAdminNavFromFile(): CategoryNavItem[] {
+  try {
+    const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
+    if (!fs.existsSync(navPath)) return []
+    const raw = fs.readFileSync(navPath, 'utf8')
+    if (!raw.trim()) return []
+    const parsed = JSON.parse(raw)
+    const items = Array.isArray(parsed?.items)
+      ? parsed.items
+      : Array.isArray(parsed)
+        ? parsed
+        : []
+    if (!Array.isArray(items)) return []
+    return items as CategoryNavItem[]
+  } catch (err) {
+    console.warn('[vitepress] failed to load categories.nav.json; using embedded nav fallback', err)
+    return []
+  }
+}
+
+function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
   return (navConfig || [])
     .slice()
     .sort((a, b) => {
@@ -45,19 +98,26 @@ function buildCategoryNavItems(navConfig: any[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackLink = String(item?.fallback || item?.link || '/blog/')
-      const resolved = title ? resolveLatestCategoryArticle(title) : ''
+      const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
+      const precomputed = normalizeLink(item?.latestLink || '')
+      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
+      const link = resolved || fallbackLink
       return {
         text: item?.text || title || '分类',
-        link: resolved || fallbackLink,
+        link,
         fallbackLink,
         category: title,
-        dir: item?.dir || ''
+        dir: item?.dir || '',
+        latestLink: resolved,
+        latestUpdatedAt: item?.latestUpdatedAt || '',
+        latestTitle: item?.latestTitle || '',
+        postCount: item?.postCount ?? 0,
+        publishedCount: item?.publishedCount ?? 0
       }
     })
 }
 
-const categoryNavItems = buildCategoryNavItems(adminGeneratedNav)
+const categoryNavItems = buildCategoryNavItems(adminNavSource)
 
 const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
 const pagefindForceLanguage = (process.env.PAGEFIND_FORCE_LANGUAGE || '').trim()

@@ -1222,6 +1222,7 @@ async function apiCategoriesDelete(req,res){
 function buildCategoryNavItems(){
   const registry = loadCategoryRegistry();
   const blogRoot = path.resolve(BLOG_DIR);
+  const usage = collectCategoryOverview();
   return registry.items
     .map(item=>{
       // 顶部导航仅由菜单上架状态控制，内容发布与否不再影响可见性。
@@ -1230,20 +1231,40 @@ function buildCategoryNavItems(){
       if(!dir) return null;
       const safeDir = path.resolve(BLOG_DIR, dir);
       if(safeDir !== blogRoot && !safeDir.startsWith(blogRoot + path.sep)) return null;
+      let hasIndex = false;
       try{
         const stat = fs.statSync(safeDir);
         if(!stat.isDirectory()) return null;
+        const indexPath = path.join(safeDir, 'index.md');
+        if(fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()){
+          hasIndex = true;
+        }
       }catch{
         return null;
       }
-      const link = '/blog/' + `${dir.replace(/\/+$/,'')}/`;
+      const baseLink = '/blog/' + `${dir.replace(/\/+$/,'')}/`;
+      const fallbackLink = hasIndex ? baseLink : '/blog/';
+      const title = String(item.title || '').trim();
+      const category = title || String(item.menuLabel || item.dir || '博客').trim();
+      const stats = usage.get(title) || usage.get(category) || null;
+      const latestPublished = stats?.latestPublished || null;
+      const latestAny = stats?.latestAny || null;
+      const best = latestPublished || latestAny;
+      const latestLink = best?.rel ? relToRoute(best.rel) : '';
+      const latestUpdatedAt = best?.at || '';
+      const latestTitle = best?.title || '';
       return {
         text: item.menuLabel || item.title || dir || '博客',
-        category: item.title || item.menuLabel || dir || '博客',
+        category,
         dir,
-        link,
-        fallback: link,
-        menuOrder: Number(item.menuOrder) || 0
+        link: baseLink,
+        fallback: fallbackLink,
+        menuOrder: Number(item.menuOrder) || 0,
+        latestLink,
+        latestUpdatedAt,
+        latestTitle,
+        postCount: stats?.total || 0,
+        publishedCount: stats?.published || 0
       };
     })
     .filter(Boolean)
@@ -1251,6 +1272,26 @@ function buildCategoryNavItems(){
       if(a.menuOrder !== b.menuOrder) return a.menuOrder - b.menuOrder;
       return a.text.localeCompare(b.text);
     });
+}
+function relToRoute(rel=''){
+  let normalized = String(rel||'').trim();
+  if(!normalized) return '';
+  normalized = normalized.replace(/\\/g,'/');
+  normalized = normalized.replace(/^\/+/, '');
+  if(!normalized) return '';
+  const lower = normalized.toLowerCase();
+  if(lower === 'index.md') return '/blog/';
+  if(lower.endsWith('/index.md')){
+    const base = normalized.slice(0, -'index.md'.length).replace(/\/+$/, '') + '/';
+    return `/blog/${base}`.replace(/\/+$/,'/');
+  }
+  let trimmed = normalized;
+  if(lower.endsWith('.md')){
+    trimmed = normalized.slice(0, -'.md'.length);
+  }
+  trimmed = trimmed.replace(/\/+$/,'');
+  if(!trimmed) return '/blog/';
+  return `/blog/${trimmed}`;
 }
 function syncCategoryNavArtifacts(){
   const items = buildCategoryNavItems();
@@ -1374,9 +1415,15 @@ const server = createServer(async (req,res)=>{
     return serveStatic(req,res);
   }catch(e){ send(res,500,{ok:false,error:e.message}); }
 });
-server.listen(PORT, HOST, ()=>{
-  console.log(`[admin] running   : http://${HOST}:${PORT}`);
-  console.log(`[admin] PROJECT_ROOT: ${PROJECT_ROOT}`);
-  console.log(`[admin] PUBLIC_DIR  : ${PUBLIC_DIR}`);
-  console.log(`[admin] PREVIEW_PORT: ${PREVIEW_PORT}`);
-});
+
+const shouldListen = process.env.ADMIN_SERVER_DISABLE_LISTEN !== '1';
+if(shouldListen){
+  server.listen(PORT, HOST, ()=>{
+    console.log(`[admin] running   : http://${HOST}:${PORT}`);
+    console.log(`[admin] PROJECT_ROOT: ${PROJECT_ROOT}`);
+    console.log(`[admin] PUBLIC_DIR  : ${PUBLIC_DIR}`);
+    console.log(`[admin] PREVIEW_PORT: ${PREVIEW_PORT}`);
+  });
+}
+
+export { buildCategoryNavItems, safeSyncCategoryNav, syncCategoryNavArtifacts };

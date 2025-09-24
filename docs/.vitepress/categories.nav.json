@@ -1,21 +1,45 @@
 {
-  "updatedAt": "2025-09-22T17:21:20.661Z",
+  "updatedAt": "2025-09-24T10:24:53.715Z",
   "items": [
     {
-      "text": "工程实践",
+      "text": "工程",
       "category": "工程实践",
       "dir": "engineering",
       "link": "/blog/engineering/",
       "fallback": "/blog/engineering/",
-      "menuOrder": 1
+      "menuOrder": 2
     },
     {
-      "text": "职业攻略",
+      "text": "攻略",
       "category": "职业攻略",
       "dir": "guides",
       "link": "/blog/guides/",
       "fallback": "/blog/guides/",
-      "menuOrder": 2
+      "menuOrder": 3
+    },
+    {
+      "text": "宠物",
+      "category": "宠物",
+      "dir": "pet",
+      "link": "/blog/pet/",
+      "fallback": "/blog/pet/",
+      "menuOrder": 4
+    },
+    {
+      "text": "笔记",
+      "category": "学习笔记",
+      "dir": "note",
+      "link": "/blog/note/",
+      "fallback": "/blog/note/",
+      "menuOrder": 5
+    },
+    {
+      "text": "test",
+      "category": "test",
+      "dir": "test",
+      "link": "/blog/test/",
+      "fallback": "/blog/test/",
+      "menuOrder": 6
     }
   ]
 }

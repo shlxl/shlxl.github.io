@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+/** @typedef {import('./category-types').CategoryNavItem} CategoryNavItem */
+
 const ROOT = process.cwd()
 const BLOG_ROOT = path.resolve(ROOT, 'docs/blog')
 const CATEGORY_REGISTRY_FILE = path.resolve(ROOT, 'docs/.vitepress/categories.map.json')
