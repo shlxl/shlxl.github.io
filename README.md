@@ -8,6 +8,8 @@
 npm install            # 安装依赖
 npm run docs:dev       # http://localhost:5173/ 热更新写作
 node blog-admin/server.mjs  # 127.0.0.1:5174 管理后台（默认密码 admin）
+npm run lint           # Biome lint（聚焦共享工具）
+npm run typecheck      # TypeScript no-emit 校验
 ```
 
 > ⚠️ 构建命令 `npm run docs:build` 在 Apple Silicon 上会因 Pagefind 缺少 `darwin-arm64` 二进制而失败。目前的做法是：在本地记录该限制或手动跳过 Pagefind，CI 仍能正常产出索引。
@@ -25,10 +27,11 @@ docs/
   │   └─ note/          # 示例：学习笔记栏目（可按需增减）
   └─ public/            # 静态资源（/images/...）
 scripts/
-  ├─ lib/columns.js     # 栏目标题 → 目录映射
-  ├─ new-post.mjs       # 直接发布文章
-  ├─ new-post-local.mjs # 草稿脚手架
-  └─ post-promote.mjs   # 草稿转正式（按栏目落盘）
+  ├─ lib/columns.js       # 栏目标题 → 目录映射
+  ├─ lib/frontmatter.js   # 共享 frontmatter 解析工具（CLI + Admin 共用）
+  ├─ new-post.mjs         # 直接发布文章
+  ├─ new-post-local.mjs   # 草稿脚手架
+  └─ post-promote.mjs     # 草稿转正式（按栏目落盘）
 ```
 
 每个栏目文件夹内的 `index.md` 负责渲染栏目首页，并动态读取 `pagesData` 中的对应文章（若该栏目选择保留首页）。导航数据由后台写入 `docs/.vitepress/categories.nav.json`，在 VitePress 启动时加载；栏目为空时会自动回退到 `/blog/`，避免点击导航落到 404。
@@ -47,7 +50,7 @@ npm run post:remove <slug> [-- --hard]  # 移除/删除
 npm run docs:aliases             # 生成别名跳转页
 ```
 
-传入 `--cat "栏目名"` 时脚本会根据 `scripts/lib/columns.js` 的映射把文章写进正确的栏目目录；找不到匹配栏目时会退回按年份归档。
+`npm run new:post` 现在会强制校验 `--cat` 参数，并根据 `scripts/lib/columns.js` 的映射把文章写进正确的栏目目录；找不到匹配栏目时才会退回按年份归档。草稿脚手架 `new:local` 仍接受空栏目，但在晋升为正式文章前请补齐分类，以便导航和统计数据保持一致。
 
 ### 后台管理
 
@@ -59,6 +62,7 @@ npm run docs:aliases             # 生成别名跳转页
 ## 构建与发布
 
 - `npm run docs:build`：本地生成静态站点。若 Pagefind 导致失败，可临时禁用插件或改在 CI 侧验证。
+- `npm run lint` / `npm run typecheck`：共享工具与 TypeScript 的健全性检查，推荐与构建一起执行。
 - `npm run docs:preview`：在 `docs/.vitepress/dist/` 上起预览服务。
 - CI（GitHub Actions）在 `main` 分支触发：安装依赖 → `npm run docs:build` → 生成 Pagefind 索引 → 发布到 GitHub Pages。
 - 需要为旧链接保留访问时，在新文章 frontmatter 中维护 `aliases:` 并运行 `npm run docs:aliases` 生成静态跳转。
@@ -72,5 +76,6 @@ npm run docs:aliases             # 生成别名跳转页
 | 发布的文章没有展示在栏目页 | 确认 frontmatter 的 `categories` 包含栏目名称（与栏目首页 `index.md` 中的标题一致）。 |
 | 本地预览看到旧内容 | 先执行 `npm run docs:build`，或删除 `docs/.vitepress/dist/` 后重新构建。 |
 | “攻略” 菜单跳到 404 或 HTML 页面 | 确认最新 `职业攻略` 文章存在且 frontmatter 写成 `categories: [职业攻略]`，不要恢复 `guides/index.md` 或手工改导航链接；菜单会自动指向该文章，栏目为空时会回退 `/blog/`。 |
+| 后台同步导航后链接仍旧老旧 | 新配置会直接读取 `docs/.vitepress/categories.nav.json`，请确认后台同步成功并重启 `npm run docs:dev`，无需等待额外的目录扫描。 |
 
 如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。

@@ -11,6 +11,10 @@ This note summarizes the current state of the personal site project and highligh
 - **Category-aware tooling**: `new-post`, `new-post-local`, and `post-promote` now resolve target directories via the centralized category registry (`docs/.vitepress/categories.map.json`), and the admin dropdown pulls from `/api/categories` with publish/menu status indicators.
 - **Admin UX refresh**: “新建草稿” includes the column selector, inputs reset after creation, and table reloads respect auth transitions.
 - **Nav auto-sync**: Category mutations trigger `safeSyncCategoryNav`, rewrite `docs/.vitepress/categories.nav.json`, and patch the VitePress config inline，确保新菜单项会立即出现在顶部导航；同时后台界面会在提示条中反馈同步结果。`categories.nav.json` 现已成为导航真源，空栏目会自动把 `link`/`fallback` 填成 `/blog/`，避免 dev server 加载目录脚本时报 MIME 错误。【F:blog-admin/server.mjs†L1221-L1298】【F:blog-admin/public/categories.js†L1-L205】
+- **Frontmatter parity**: Extracted shared parsing utilities to `scripts/lib/frontmatter.js` and wired the admin API to reuse them, reducing drift between CLI scripts, VitePress helpers, and server mutations。【F:scripts/lib/frontmatter.js†L1-L200】【F:blog-admin/server.mjs†L136-L162】
+- **Latest-link source of truth**: VitePress config now trusts the precomputed `categories.nav.json` entries instead of scanning the blog tree on startup, so admin-provided `latestLink`/`fallback` values decide menu routing in all environments。【F:docs/.vitepress/config.ts†L90-L156】
+- **Publisher safeguards**: `npm run new:post` requires `--cat` and refuses to emit `categories: []`, ensuring every new article contributes to column metadata and nav fallbacks.【F:scripts/new-post.mjs†L18-L48】
+- **Tooling gates**: Added `npm run lint` (Biome) and `npm run typecheck` on top of the docs build; keep them green before shipping automation or admin changes。【F:package.json†L6-L28】【F:biome.json†L1-L11】【F:tsconfig.json†L1-L23】
 
 ## Open Issues & Follow-ups
 - **Search build**: `pagefind` still lacks a darwin-arm64 binary; decide whether to vendor an ARM build, gate the plugin locally, or swap to another search solution.
@@ -36,7 +40,6 @@ Keep this document updated after each major iteration to maintain a reliable han
 - **Empty-category detection**: when the target `to` route matches a category nav item whose `routes` array contains no dated entries (only the fallback stub), treat the category as empty and stop the navigation.
 - **User messaging & overrides**: emit a cancelable `CustomEvent` named `xl:nav-empty-category` on `window` before blocking the route. The event `detail` carries `{ category, navItem, to, message, allowNavigation }` where `message` defaults to “该栏目暂无文章，敬请期待。” and `allowNavigation` starts as `false`. Listeners can `preventDefault()` to suppress the stock alert, mutate `detail.message` to customize the text, or flip `detail.allowNavigation = true` to proceed with the navigation.
 - **Default handling**: if no listener cancels the event and `allowNavigation` remains `false`, invoke `window.alert(detail.message)` and return `false` from the guard so the router halts the transition. When `allowNavigation` is toggled to `true`, return `true` so the navigation continues and `setupCategoryNavPersistence`'s `onAfterRouteChange` still updates the persisted link after the route settles.
-
 
 
 
