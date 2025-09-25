@@ -99,8 +99,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
       const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
-      const precomputed = normalizeLink(item?.latestLink || '')
-      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
+      const resolved = normalizeLink(item?.latestLink || '')
       const link = resolved || fallbackLink
       return {
         text: item?.text || title || '分类',
@@ -128,7 +127,7 @@ const pagefindCommandParts = [
   `"${pagefindExcludeSelectors.join(',')}"`
 ]
 pagefindCommandParts.push(pagefindForceLanguage ? `"${pagefindForceLanguage}"` : '-')
-const pagefindSearch: Record<string, any> = {
+const pagefindSearch: Record<string, unknown> = {
   excludeSelector: pagefindExcludeSelectors,
   indexingCommand: pagefindCommandParts.join(' ')
 }
@@ -153,8 +152,8 @@ const blogTheme = getThemeConfig({
   search: pagefindSearch,
   hotArticle: false,
   homeTags: false,
-  recommend: { showDate: true },
-})
+  recommend: { showDate: true }
+} as any)
 
 export default defineConfig({
   extends: blogTheme,
@@ -203,133 +202,6 @@ export default defineConfig({
   }
 })
 
-function resolveLatestCategoryArticle(category: string) {
-  if (!category) return '/blog/'
-  const blogRoot = path.resolve(process.cwd(), 'docs/blog')
-  const stack: string[] = [blogRoot]
-  let latest: { time: number; link: string } | null = null
-  while (stack.length) {
-    const current = stack.pop()!
-    let entries: fs.Dirent[] = []
-    try {
-      entries = fs.readdirSync(current, { withFileTypes: true })
-    } catch {
-      continue
-    }
-    for (const entry of entries) {
-      if (entry.name.startsWith('.')) continue
-      const fullPath = path.join(current, entry.name)
-      if (entry.isDirectory()) {
-        stack.push(fullPath)
-        continue
-      }
-      if (!entry.isFile() || !entry.name.endsWith('.md')) continue
-      const block = extractFrontmatterBlock(fullPath)
-      if (!block) continue
-      const categories = parseFrontmatterArray(block, 'categories')
-      if (!categories.includes(category)) continue
-      if (parseFrontmatterBoolean(block, 'publish') === false) continue
-      if (parseFrontmatterBoolean(block, 'draft') === true) continue
-      const time = parseFrontmatterDate(block, 'date')
-      if (!Number.isFinite(time)) continue
-      const route = normalizeLink(buildRouteFromPath(fullPath))
-      if (!route) continue
-      if (!latest || time > latest.time) {
-        latest = { time, link: route }
-      }
-    }
-  }
-  return latest?.link || '/blog/'
-}
-
-function extractFrontmatterBlock(filePath: string) {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8')
-    const match = /^---\s*([\s\S]*?)\s*---/m.exec(content)
-    return match ? match[1] : ''
-  } catch {
-    return ''
-  }
-}
-
-function parseFrontmatterArray(block: string, key: string) {
-  if (!block) return [] as string[]
-  const inline = new RegExp(`^${key}\s*:\s*\[(.*)\]\s*$`, 'm').exec(block)
-  if (inline) {
-    const raw = inline[1].trim()
-    if (!raw) return []
-    return raw
-      .split(',')
-      .map((value) => value.trim().replace(/^['"]|['"]$/g, ''))
-      .filter(Boolean)
-  }
-  const lines = block.split(/\r?\n/)
-  const index = lines.findIndex((line) => line.trim().startsWith(`${key}:`))
-  if (index === -1) return []
-  const head = lines[index]
-  const inlineValue = head.split(':').slice(1).join(':').trim()
-  if (inlineValue) {
-    const normalized = inlineValue.trim()
-    if (normalized.startsWith('[') && normalized.endsWith(']')) {
-      return normalized
-        .slice(1, -1)
-        .split(',')
-        .map((value) => value.trim().replace(/^['"]|['"]$/g, ''))
-        .filter(Boolean)
-    }
-    return [normalized.replace(/^['"]|['"]$/g, '')]
-  }
-  const values: string[] = []
-  for (let i = index + 1; i < lines.length; i++) {
-    const line = lines[i]
-    if (!/^\s+/.test(line)) break
-    const match = /^\s*-\s*(.*)$/.exec(line)
-    if (!match) continue
-    const value = match[1].trim().replace(/^['"]|['"]$/g, '')
-    if (value) values.push(value)
-  }
-  return values
-}
-
-function parseFrontmatterBoolean(block: string, key: string) {
-  if (!block) return undefined
-  const match = new RegExp(`^${key}\s*:\s*(true|false)\s*$`, 'm').exec(block)
-  if (!match) return undefined
-  return match[1] === 'true'
-}
-
-function parseFrontmatterString(block: string, key: string) {
-  if (!block) return ''
-  const match = new RegExp(`^${key}\s*:\s*(.*)$`, 'm').exec(block)
-  if (!match) return ''
-  const value = match[1].trim()
-  if (!value) return ''
-  return value.replace(/^['"]|['"]$/g, '')
-}
-
-function parseFrontmatterDate(block: string, key: string) {
-  const value = parseFrontmatterString(block, key)
-  if (!value) return Number.NaN
-  const normalized = value.replace(/\//g, '-').replace(' ', 'T')
-  const date = new Date(normalized)
-  if (Number.isFinite(date.getTime())) return date.getTime()
-  const fallback = new Date(value)
-  return fallback.getTime()
-}
-
-function buildRouteFromPath(filePath: string) {
-  const docsRoot = path.resolve(process.cwd(), 'docs')
-  let relative = path.relative(docsRoot, filePath).replace(/\\/g, '/')
-  if (!relative) return ''
-  if (relative.endsWith('index.md')) {
-    relative = relative.slice(0, -'index.md'.length)
-  } else if (relative.endsWith('.md')) {
-    relative = relative.slice(0, -'.md'.length)
-  }
-  if (!relative.startsWith('/')) relative = `/${relative}`
-  return relative || ''
-}
-
 function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
@@ -368,7 +240,7 @@ function overrideSugaratComponents() {
   }
   return {
     name: 'xl-override-sugarat-components',
-    enforce: 'pre',
+    enforce: 'pre' as const,
     resolveId(source: string, importer?: string) {
       if (!importer) return null
       const imp = importer.replace(/\\/g, '/')

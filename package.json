@@ -14,11 +14,17 @@
     "post:archive": "node scripts/post-archive.mjs",
     "post:remove": "node scripts/post-remove.mjs",
     "docs:aliases": "node scripts/gen-alias-redirects.mjs",
-    "deploy:local": "node scripts/deploy-local.mjs"
+    "deploy:local": "node scripts/deploy-local.mjs",
+    "lint": "biome lint",
+    "format": "biome format",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/node": "^20.12.7",
     "@sugarat/theme": "*",
+    "@biomejs/biome": "^1.8.3",
     "sass-embedded": "^1.92.1",
+    "typescript": "^5.4.5",
     "vitepress": "^1.3.4"
   }
 }

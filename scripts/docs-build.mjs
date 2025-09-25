@@ -6,10 +6,9 @@ if (!Number.isFinite(limit) || limit < 1) {
   env.P_LIMT_MAX = '4'
 }
 
-const result = spawnSync('npx vitepress build docs', {
+const result = spawnSync('npx', ['vitepress', 'build', 'docs'], {
   stdio: 'inherit',
-  env,
-  shell: true
+  env
 })
 
 if (result.status !== 0) {

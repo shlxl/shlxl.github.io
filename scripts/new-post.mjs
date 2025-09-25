@@ -15,6 +15,11 @@ const date  = getArg('--date')  || formatNow(TZ);
 let slug    = getArg('--slug')  || slugify(title);
 if(!slug) slug = 'post-' + formatNow(TZ).replace(/[^\d]/g,'');
 
+if(!cat){
+  console.error('[new-post] 需要通过 --cat 指定栏目名称（如 --cat "工程实践"）。');
+  process.exit(1);
+}
+
 const year = date.slice(0,4);
 const columnDir = resolveColumnDir(cat);
 const outDir = columnDir ? path.join(BLOG_DIR, columnDir) : path.join(BLOG_DIR, year);
@@ -32,7 +37,7 @@ const fm = [
   `date: "${date}"`,
   `description: "${escapeYaml(desc)}"`,
   `tags: [ ${tags.map(s=>`"${escapeYaml(s)}"`).join(', ')} ]`,
-  cat ? `categories: [ "${escapeYaml(cat)}" ]` : 'categories: []',
+  `categories: [ "${escapeYaml(cat)}" ]`,
   cover ? `cover: "${escapeYaml(cover)}"` : null,
   'publish: true',
   'top: 1',

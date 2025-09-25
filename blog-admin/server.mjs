@@ -6,6 +6,13 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import {
+  frontmatterToObject,
+  parseFrontmatterArray,
+  parseFrontmatterBoolean,
+  parseFrontmatterContent,
+  parseFrontmatterString
+} from '../scripts/lib/frontmatter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -127,22 +134,31 @@ const slugOf = p=> path.basename(p).replace(/\.md$/i,'');
 
 // ---- frontmatter utils ----
 function parseFM(txt=''){
-  const m = /^---\s*([\s\S]*?)\s*---/m.exec(txt);
+  const { block } = parseFrontmatterContent(txt);
   const fm = {title:'',date:'',publish:undefined,draft:undefined,tags:[],categories:[],cover:'',list:undefined,hidden:undefined,type:undefined};
-  if(!m) return fm;
-  const h = m[1];
-  const get = k=>{ const re=new RegExp('^\\s*'+k+'\\s*:\\s*(.*)$','mi'); const mm=re.exec(h); return mm? mm[1].trim() : '' };
-  const list = k=> get(k).replace(/^\[|\]$/g,'').split(',').map(s=>s.trim().replace(/^["']|["']$/g,'')).filter(Boolean);
-  fm.title = get('title').replace(/^["']|["']$/g,'');
-  fm.date = get('date').replace(/^["']|["']$/g,'');
-  fm.cover = get('cover').replace(/^["']|["']$/g,'');
-  fm.publish = (/^\s*publish\s*:\s*(true|false)/mi.exec(h)||[])[1];
-  fm.draft = (/^\s*draft\s*:\s*(true|false)/mi.exec(h)||[])[1];
-  fm.list = (/^\s*list\s*:\s*(true|false|0|1)/mi.exec(h)||[])[1];
-  fm.hidden = (/^\s*hidden\s*:\s*(true|false)/mi.exec(h)||[])[1];
-  fm.type = (get('type') || '').replace(/^['"]|['"]$/g,'');
-  try{ fm.tags = list('tags'); }catch{}; try{ fm.categories = list('categories'); }catch{};
+  if(!block) return fm;
+  const base = frontmatterToObject(block);
+  fm.title = parseFrontmatterString(block, 'title');
+  fm.date = parseFrontmatterString(block, 'date');
+  fm.cover = parseFrontmatterString(block, 'cover');
+  fm.type = typeof base.type === 'string' ? String(base.type).trim() || undefined : undefined;
+  fm.tags = parseFrontmatterArray(block, 'tags');
+  fm.categories = parseFrontmatterArray(block, 'categories');
+  fm.publish = parseFrontmatterBoolean(block, 'publish');
+  fm.draft = parseFrontmatterBoolean(block, 'draft');
+  fm.list = normalizeTriState(base.list);
+  fm.hidden = normalizeTriState(base.hidden);
   return fm;
+}
+function normalizeTriState(value){
+  if(value===undefined || value===null || value==='') return undefined;
+  if(typeof value === 'boolean') return value;
+  if(typeof value === 'number') return value !== 0;
+  const str = String(value).trim().toLowerCase();
+  if(!str) return undefined;
+  if(str==='true' || str==='1' || str==='yes') return true;
+  if(str==='false' || str==='0' || str==='no') return false;
+  return undefined;
 }
 function updateFrontmatter(file, patch={}){
   const FM = /^---\s*([\s\S]*?)\s*---/m;
@@ -462,8 +478,8 @@ function collectCategoryUsage(category){
     posts.push({
       rel,
       title: fm.title || slugOf(file),
-      publish: fm.publish === 'true',
-      draft: fm.draft === 'true',
+      publish: fm.publish === true,
+      draft: fm.draft === true,
       isLocal: rel.startsWith('_local/'),
       categories: list
     });
@@ -578,8 +594,8 @@ async function apiList(req,res){
       abs:  f,
       title: fm.title || path.basename(f).replace(/\.md$/i,''),
       date: fm.date || '',
-      publish: fm.publish === 'true',
-      draft: fm.draft === 'true',
+      publish: fm.publish === true,
+      draft: fm.draft === true,
       tags: fm.tags || [],
       categories: fm.categories || [],
       cover: fm.cover || '',
@@ -873,7 +889,7 @@ async function apiUpdateMeta(req,res){
     if(isSection(file)){
       const relFile = relOf(file);
       const dir = normalizeDirKey(relFile.replace(/\/?index\.md$/i,''));
-      if(dir) touchRegistryEntry(dir, { title: afterFm.title || beforeFm.title || path.basename(dir), publish: afterFm.publish === 'true' });
+      if(dir) touchRegistryEntry(dir, { title: afterFm.title || beforeFm.title || path.basename(dir), publish: afterFm.publish === true });
       const from = String(beforeFm.title||'').trim();
       const to = String(afterFm.title||'').trim();
       if(from && to && from !== to){
@@ -939,7 +955,7 @@ function collectCategoryOverview(){
     }
     const iso = new Date(ts).toISOString();
     const title = fm.title || slugOf(file);
-    const isPublished = fm.publish === 'true' && fm.draft !== 'true';
+    const isPublished = fm.publish === true && fm.draft !== true;
     for(const categoryName of list){
       if(!categoryName) continue;
       const bucket = getCategoryBucket(stats, categoryName);

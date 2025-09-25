@@ -169,9 +169,9 @@ function handleRouteChange(
 
 function updateNavItemLink(state: CategoryNavState, route: string, siteData: SiteDataRef) {
   if (!route || state.currentLink === route) return false
-  const site = siteData.value || {}
-  const themeConfig = (site as any).themeConfig || {}
-  const nav = Array.isArray(themeConfig.nav) ? themeConfig.nav : []
+  const site = (siteData.value || {}) as { themeConfig?: Record<string, unknown> }
+  const themeConfig = site.themeConfig || {}
+  const nav = Array.isArray((themeConfig as any).nav) ? [...(themeConfig as any).nav] : []
   const index = state.navIndex
   const navEntry = nav[index]
   if (!navEntry || typeof navEntry !== 'object') {
@@ -192,13 +192,11 @@ function updateNavItemLink(state: CategoryNavState, route: string, siteData: Sit
   }
   const updatedNav = nav.slice()
   updatedNav[index] = { ...(navEntry as NavRecord), link: route }
-  siteData.value = {
-    ...(site as Record<string, any>),
-    themeConfig: {
-      ...themeConfig,
-      nav: updatedNav
-    }
+  site.themeConfig = {
+    ...themeConfig,
+    nav: updatedNav
   }
+  siteData.value = site as any
   state.currentLink = route
   return true
 }

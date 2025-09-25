@@ -16,12 +16,18 @@ const props = defineProps<{
 
 const router = useRouter()
 const link = computed(() => withBase(props.route))
-function handleSkipDoc() { router.go(link.value) }
+function handleSkipDoc(event: MouseEvent) {
+  if (event.defaultPrevented) return
+  if (event.button !== 0) return
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+  event.preventDefault()
+  router.go(link.value)
+}
 const showTime = computed(() => String(props.date || '').replace(/-/g, '/').slice(0, 16))
 </script>
 
 <template>
-  <a class="blog-item" :href="link" @click.prevent="handleSkipDoc">
+  <a class="blog-item" :href="link" @click="handleSkipDoc">
     <i v-show="!!pin" class="pin" />
     <div class="info-container">
       <div class="info-part">
