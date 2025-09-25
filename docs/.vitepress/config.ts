@@ -3,6 +3,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import type { CategoryNavItem } from '../../scripts/lib/category-types'
+import {
+  extractFrontmatterBlockFile,
+  parseFrontmatterArray,
+  parseFrontmatterBoolean,
+  parseFrontmatterDate
+} from '../../scripts/lib/frontmatter.js'
 
 const deployBase = process.env.DEPLOY_BASE || '/'
 
@@ -99,7 +105,8 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
       const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
-      const resolved = normalizeLink(item?.latestLink || '')
+      const precomputed = normalizeLink(item?.latestLink || '')
+      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
       const link = resolved || fallbackLink
       return {
         text: item?.text || title || '分类',
@@ -205,6 +212,58 @@ export default defineConfig({
 function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
+}
+
+function resolveLatestCategoryArticle(category: string) {
+  if (!category) return '/blog/'
+  const blogRoot = path.resolve(process.cwd(), 'docs/blog')
+  const stack: string[] = [blogRoot]
+  let latest: { time: number; link: string } | null = null
+  while (stack.length) {
+    const current = stack.pop()!
+    let entries: fs.Dirent[] = []
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true })
+    } catch {
+      continue
+    }
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue
+      const fullPath = path.join(current, entry.name)
+      if (entry.isDirectory()) {
+        stack.push(fullPath)
+        continue
+      }
+      if (!entry.isFile() || !entry.name.endsWith('.md')) continue
+      const block = extractFrontmatterBlockFile(fullPath)
+      if (!block) continue
+      const categories = parseFrontmatterArray(block, 'categories')
+      if (!categories.includes(category)) continue
+      if (parseFrontmatterBoolean(block, 'publish') === false) continue
+      if (parseFrontmatterBoolean(block, 'draft') === true) continue
+      const time = parseFrontmatterDate(block, 'date')
+      if (!Number.isFinite(time)) continue
+      const route = normalizeLink(buildRouteFromPath(fullPath))
+      if (!route) continue
+      if (!latest || time > latest.time) {
+        latest = { time, link: route }
+      }
+    }
+  }
+  return latest?.link || '/blog/'
+}
+
+function buildRouteFromPath(filePath: string) {
+  const docsRoot = path.resolve(process.cwd(), 'docs')
+  let relative = path.relative(docsRoot, filePath).replace(/\\/g, '/')
+  if (!relative) return ''
+  if (relative.endsWith('index.md')) {
+    relative = relative.slice(0, -'index.md'.length)
+  } else if (relative.endsWith('.md')) {
+    relative = relative.slice(0, -'.md'.length)
+  }
+  if (!relative.startsWith('/')) relative = `/${relative}`
+  return relative || ''
 }
 
 function faviconIcoFallback() {

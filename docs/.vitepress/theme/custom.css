@@ -131,6 +131,41 @@ html.dark {
   padding: 0;
 }
 
+/* 文档页侧栏与正文卡片一致 */
+.blog-theme-layout #VPContent:not(.is-home) aside.VPSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.blog-theme-layout #VPContent:not(.is-home) aside.VPSidebar .curtain {
+  background: var(--nav-bgc);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: none;
+  border: 1px solid rgba(var(--bg-gradient-home), 0.25);
+  margin-bottom: 8px;
+}
+
+.blog-theme-layout #VPContent:not(.is-home) aside.VPSidebar .sidebar {
+  background: var(--vp-c-bg);
+  border-radius: var(--xl-radius);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: var(--xl-shadow);
+  padding: 24px 20px;
+}
+
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc .vp-doc {
+  background: var(--vp-c-bg);
+  border-radius: var(--xl-radius);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: var(--xl-shadow);
+  padding: 28px;
+}
+
 /* 博客文章页背景与博客首页保持一致 */
 .blog-theme-layout #VPContent:not(.is-home) {
   position: relative;

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2025-09-24T10:06:37.755Z",
+  "updatedAt": "2025-09-25T09:53:25.085Z",
   "items": [
     {
       "dir": "engineering",
@@ -23,34 +23,14 @@
       "updatedAt": "2025-09-24T09:53:14.750Z"
     },
     {
-      "dir": "pet",
-      "title": "宠物",
-      "menuLabel": "宠物",
+      "dir": "test",
+      "title": "测试",
+      "menuLabel": "测试",
       "publish": true,
       "menuEnabled": true,
       "menuOrder": 4,
-      "createdAt": "2025-09-24T09:09:58.948Z",
-      "updatedAt": "2025-09-24T09:09:58.948Z"
-    },
-    {
-      "dir": "note",
-      "title": "学习笔记",
-      "menuLabel": "笔记",
-      "publish": true,
-      "menuEnabled": true,
-      "menuOrder": 5,
-      "createdAt": "2025-09-24T09:50:07.388Z",
-      "updatedAt": "2025-09-24T09:50:07.388Z"
-    },
-    {
-      "dir": "test",
-      "title": "test",
-      "menuLabel": "test",
-      "publish": true,
-      "menuEnabled": true,
-      "menuOrder": 6,
-      "createdAt": "2025-09-24T10:06:37.755Z",
-      "updatedAt": "2025-09-24T10:06:37.755Z"
+      "createdAt": "2025-09-25T09:53:25.085Z",
+      "updatedAt": "2025-09-25T09:53:25.085Z"
     }
   ]
 }
