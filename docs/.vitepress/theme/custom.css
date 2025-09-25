@@ -131,3 +131,35 @@ html.dark {
   padding: 0;
 }
 
+/* 博客文章页背景与博客首页保持一致 */
+.blog-theme-layout #VPContent:not(.is-home) {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse, rgba(var(--bg-gradient-home), 1) 0%, rgba(var(--bg-gradient-home), 0) 700%);
+}
+
+.blog-theme-layout #VPContent:not(.is-home)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('./bg-pattern.png');
+  background-repeat: repeat;
+  min-height: 100%;
+  pointer-events: none;
+}
+
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc,
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc main,
+.blog-theme-layout #VPContent:not(.is-home) .VPSidebar,
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc aside {
+  background: transparent;
+}
+
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc .vp-doc,
+.blog-theme-layout #VPContent:not(.is-home) .VPDoc .outline {
+  background: var(--vp-c-bg);
+  border-radius: var(--xl-radius);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: var(--xl-shadow);
+}
