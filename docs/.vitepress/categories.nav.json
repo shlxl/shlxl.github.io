@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-09-25T09:53:25.086Z",
+  "updatedAt": "2025-09-25T10:43:19.650Z",
   "items": [
     {
       "text": "工程",
@@ -18,11 +18,11 @@
       "menuOrder": 3
     },
     {
-      "text": "测试",
-      "category": "测试",
-      "dir": "test",
-      "link": "/blog/test/",
-      "fallback": "/blog/test/",
+      "text": "生活",
+      "category": "阳光生活",
+      "dir": "mylife",
+      "link": "/blog/mylife/",
+      "fallback": "/blog/mylife/",
       "menuOrder": 4
     }
   ]
