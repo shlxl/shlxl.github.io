@@ -11,6 +11,7 @@ node blog-admin/server.mjs  # 127.0.0.1:5174 管理后台（默认密码 admin�
 ```
 
 > ⚠️ 构建命令 `npm run docs:build` 在 Apple Silicon 上会因 Pagefind 缺少 `darwin-arm64` 二进制而失败。目前的做法是：在本地记录该限制或手动跳过 Pagefind，CI 仍能正常产出索引。
+> ⚠️ 导航依赖 `docs/.vitepress/categories.nav.json`，后台新增/调整栏目后请重新跑一次 `npm run docs:build` 或重启 `npm run docs:dev`，否则开发服务器会持有旧菜单缓存。
 
 ## 目录结构速览
 
@@ -20,9 +21,8 @@ docs/
   ├─ blog/
   │   ├─ guides/        # 职业攻略栏目
   │   ├─ engineering/   # 工程实践栏目
-  │   ├─ creative/      # 创作手记栏目
-  │   ├─ life/          # 生活记录栏目
-  │   └─ resources/     # 资源精选栏目
+  │   ├─ pet/           # 示例：宠物栏目（可按需增减）
+  │   └─ note/          # 示例：学习笔记栏目（可按需增减）
   └─ public/            # 静态资源（/images/...）
 scripts/
   ├─ lib/columns.js     # 栏目标题 → 目录映射
@@ -31,8 +31,8 @@ scripts/
   └─ post-promote.mjs   # 草稿转正式（按栏目落盘）
 ```
 
-每个栏目文件夹内的 `index.md` 负责渲染栏目首页，并动态读取 `pagesData` 中的对应文章，无需手工维护“现有内容”列表。
-> 注意：`guides/` 栏目不再保留 `index.md`，导航中的“攻略”菜单会自动跳转到 `categories: [职业攻略]` 的最新文章。请不要恢复旧的栏目首页或随意改动 frontmatter，否则链接会指向不存在的页面。
+每个栏目文件夹内的 `index.md` 负责渲染栏目首页，并动态读取 `pagesData` 中的对应文章（若该栏目选择保留首页）。导航数据由后台写入 `docs/.vitepress/categories.nav.json`，在 VitePress 启动时加载；栏目为空时会自动回退到 `/blog/`，避免点击导航落到 404。
+> 注意：`guides/` 栏目仍不保留 `index.md`，导航中的“攻略”菜单依靠 `categories.nav.json` 的 `latestLink` 定位到 `categories: [职业攻略]` 的最新文章。不要复原栏目首页或手工改写导航链接。
 
 ## 内容工作流
 
@@ -53,7 +53,7 @@ npm run docs:aliases             # 生成别名跳转页
 
 1. `node blog-admin/server.mjs`
 2. 浏览器打开 `http://127.0.0.1:5174`，默认密码 `admin`（建议在部署环境设置 `ADMIN_PASSWORD`）。
-3. “新建草稿”支持直接选择栏目；栏目列表来源于后台“分类管理”页（Categories Manager）。
+3. “新建草稿”支持直接选择栏目；栏目列表来源于后台“分类管理”页（Categories Manager）。创建分类后默认会写入目录并触发导航同步，空栏目会把导航按钮导向 `/blog/`。
 4. 所有 API 均要求 Bearer Token，登录态过期后会自动回退到登录页。
 
 ## 构建与发布
@@ -71,7 +71,6 @@ npm run docs:aliases             # 生成别名跳转页
 | 后台“新建草稿”缺少栏目选项 | 先在后台“分类管理”创建并上架栏目；列表会自动同步到草稿面板。 |
 | 发布的文章没有展示在栏目页 | 确认 frontmatter 的 `categories` 包含栏目名称（与栏目首页 `index.md` 中的标题一致）。 |
 | 本地预览看到旧内容 | 先执行 `npm run docs:build`，或删除 `docs/.vitepress/dist/` 后重新构建。 |
-| “攻略” 菜单跳到 404 或 HTML 页面 | 确认最新 `职业攻略` 文章存在且 frontmatter 写成 `categories: [职业攻略]`，不要恢复 `guides/index.md` 或手工改导航链接；菜单会自动指向该文章。 |
+| “攻略” 菜单跳到 404 或 HTML 页面 | 确认最新 `职业攻略` 文章存在且 frontmatter 写成 `categories: [职业攻略]`，不要恢复 `guides/index.md` 或手工改导航链接；菜单会自动指向该文章，栏目为空时会回退 `/blog/`。 |
 
 如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。
-
