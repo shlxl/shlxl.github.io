@@ -16,7 +16,7 @@ let slug    = getArg('--slug')  || slugify(title);
 if(!slug) slug = 'post-' + formatNow(TZ).replace(/[^\d]/g,'');
 
 if(!cat){
-  console.error('[new-post] 需要通过 --cat 指定栏目名称（如 --cat "工程实践"）。');
+  console.error('[new-post] 需要通过 --cat 指定分类名称（如 --cat "工程实践"）。');
   process.exit(1);
 }
 

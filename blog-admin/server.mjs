@@ -840,7 +840,7 @@ async function apiRemove(req,res){
             instructions: [
               '1. 运行“分类批处理”任务：重命名或移除该分类。',
               '2. 确认所有文章的 categories frontmatter 已完成迁移。',
-              '3. 再次尝试删除栏目 index.md。'
+              '3. 再次尝试删除分类 index.md。'
             ],
             jobEndpoint: '/api/categories/rewrite'
           };

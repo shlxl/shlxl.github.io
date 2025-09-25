@@ -53,6 +53,6 @@ fs.writeFileSync(dst,newTxt,'utf8');
 fs.unlinkSync(src);
 console.log(`✅ 已发布到: ${dst}`);
 if(!columnDir){
-  console.log('ℹ️ 未找到匹配栏目，已回退至按年份归档。');
+  console.log('ℹ️ 未找到匹配分类，已回退至按年份归档。');
 }
 console.log('提示: 若改过 slug，请在新文 frontmatter 写 aliases: 并运行 npm run docs:aliases');

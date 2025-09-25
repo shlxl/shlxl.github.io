@@ -110,7 +110,7 @@ async function handleCategoryChecklist(checklist){
 function syncColumnSelect(categories){
   const select = $('#column');
   if(!select) return;
-  const placeholder = select.dataset.placeholder || '选择栏目';
+  const placeholder = select.dataset.placeholder || '选择分类';
   const current = select.value;
   select.innerHTML = '';
   const seen = new Set();
