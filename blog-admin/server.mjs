@@ -1253,8 +1253,8 @@ function buildCategoryNavItems(){
       const latestLink = best?.rel ? relToRoute(best.rel) : '';
       const latestUpdatedAt = best?.at || '';
       const latestTitle = best?.title || '';
-      const link = latestLink || baseLink;
       const fallback = latestLink || fallbackLink;
+      const link = latestLink || fallbackLink;
       return {
         text: item.menuLabel || item.title || dir || '博客',
         category,

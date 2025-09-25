@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-09-25T01:36:39.002Z",
+  "updatedAt": "2025-09-25T01:56:52.180Z",
   "items": [
     {
       "text": "工程",
@@ -31,7 +31,7 @@
       "text": "宠物",
       "category": "宠物",
       "dir": "pet",
-      "link": "/blog/pet/",
+      "link": "/blog/",
       "fallback": "/blog/",
       "menuOrder": 4,
       "latestLink": "",
@@ -44,7 +44,7 @@
       "text": "笔记",
       "category": "学习笔记",
       "dir": "note",
-      "link": "/blog/note/",
+      "link": "/blog/",
       "fallback": "/blog/",
       "menuOrder": 5,
       "latestLink": "",
@@ -52,19 +52,6 @@
       "latestTitle": "",
       "postCount": 0,
       "publishedCount": 0
-    },
-    {
-      "text": "test",
-      "category": "test",
-      "dir": "test",
-      "link": "/blog/test/test2",
-      "fallback": "/blog/test/test2",
-      "menuOrder": 6,
-      "latestLink": "/blog/test/test2",
-      "latestUpdatedAt": "2025-09-24T10:08:51.000Z",
-      "latestTitle": "test2",
-      "postCount": 1,
-      "publishedCount": 1
     }
   ]
 }
