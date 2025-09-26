@@ -191,7 +191,7 @@ export default defineConfig({
     plugins: [faviconIcoFallback(), overrideSugaratComponents()],
     resolve: {
       alias: {
-        '@sugarat-theme-styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
+        '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
         '@sugarat/theme/src/components/BlogItem.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogItem.vue'),
         '@sugarat/theme/src/components/BlogArticleAnalyze.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogArticleAnalyze.vue'),
         '@sugarat/theme/src/components/BlogHotArticle.vue': path.resolve(process.cwd(), 'docs/.vitepress/theme/BlogHotArticle.vue'),
