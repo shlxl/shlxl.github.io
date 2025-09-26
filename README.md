@@ -82,4 +82,3 @@ npm run docs:aliases             # 生成别名跳转页
 
 ## 未完成任务（2025-09-27）
 
-- （暂无）“文章目录”竖线已在 `.VPDocAsideOutline .content::after` 恢复显示，后续主题样式调整后需再次复测桌面与移动断点。
