@@ -21,4 +21,4 @@ Use Conventional Commit prefixes observed in history (`feat(admin):`, `fix(ci):`
 
 ## Progress Log
 
-- 2025-09-23: 已在 `.VPDocAsideOutline .content` 上重设目录样式并恢复伪元素分隔线，桌面与移动断点均能看见竖线；后续若再调整主题请记得复测断点表现。
+- 2025-09-27: 再次排查目录样式后仍未看到 `.VPDocAsideOutline .content` 上的分隔线，需继续调试主题覆盖；保留该项为未完成任务并在后续迭代先复测不同断点。
