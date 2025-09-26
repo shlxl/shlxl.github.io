@@ -79,3 +79,7 @@ npm run docs:aliases             # 生成别名跳转页
 | 后台同步导航后链接仍旧老旧 | 新配置会直接读取 `docs/.vitepress/categories.nav.json`，请确认后台同步成功并重启 `npm run docs:dev`，无需等待额外的目录扫描。 |
 
 如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。
+
+## 未完成任务（2025-09-22）
+
+- 文章目录竖线：已将分隔线伪元素移动到 `.VPDocAsideOutline .content`，但实际页面仍未出现竖线。需要重新检查主题样式层级、断点媒体查询以及伪元素尺寸，确认分隔线在桌面与移动视图都能正常渲染。

@@ -153,16 +153,20 @@ html.dark {
 /* 文章目录与正文去除卡片外框 */
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar,
 .blog-theme-layout .VPContent:not(.is-home) .VPDoc .vp-doc,
-.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline {
+.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline,
+.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content {
   background: transparent;
   border: none;
   box-shadow: none;
   padding: 0;
   border-radius: 0;
+}
+
+.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content {
   position: relative;
 }
 
-.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline::after {
+.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content::after {
   content: '';
   position: absolute;
   top: 0;
@@ -174,7 +178,7 @@ html.dark {
 }
 
 @media (min-width: 1200px) {
-  .blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline::after {
+  .blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content::after {
     right: 8px;
   }
 }
