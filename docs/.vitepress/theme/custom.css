@@ -167,10 +167,16 @@ html.dark {
   position: absolute;
   top: 0;
   bottom: 0;
-  right: -24px;
+  right: 0;
   width: 1px;
   background: var(--vp-c-divider);
   pointer-events: none;
+}
+
+@media (min-width: 1200px) {
+  .blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline::after {
+    right: 8px;
+  }
 }
 
 /* 博客侧边栏导航分隔线与背景对齐 */
