@@ -159,6 +159,18 @@ html.dark {
   box-shadow: none;
   padding: 0;
   border-radius: 0;
+  position: relative;
+}
+
+.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -24px;
+  width: 1px;
+  background: var(--vp-c-divider);
+  pointer-events: none;
 }
 
 /* 博客侧边栏导航分隔线与背景对齐 */
