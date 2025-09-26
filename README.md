@@ -79,3 +79,7 @@ npm run docs:aliases             # 生成别名跳转页
 | 后台同步导航后链接仍旧老旧 | 新配置会直接读取 `docs/.vitepress/categories.nav.json`，请确认后台同步成功并重启 `npm run docs:dev`，无需等待额外的目录扫描。 |
 
 如需进一步了解贡献流程，请阅读 [`AGENTS.md`](./AGENTS.md)。
+
+## 未完成任务（2025-09-27）
+
+- 恢复“文章目录”竖线：继续排查 `.VPDocAsideOutline .content::after` 伪元素在移动与桌面断点都未渲染的问题，待找出主题覆盖冲突并验证 `npm run docs:build` 后的展示效果。

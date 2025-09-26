@@ -1,4 +1,4 @@
-# Development Progress – 2025-09-22
+# Development Progress – 2025-09-27
 
 This note summarizes the current state of the personal site project and highlights the next engineering priorities.
 
@@ -17,6 +17,7 @@ This note summarizes the current state of the personal site project and highligh
 - **Tooling gates**: Added `npm run lint` (Biome) and `npm run typecheck` on top of the docs build; keep them green before shipping automation or admin changes。【F:package.json†L6-L28】【F:biome.json†L1-L11】【F:tsconfig.json†L1-L23】
 
 ## Open Issues & Follow-ups
+- **Outline divider regression**: `.VPDocAsideOutline .content::after` 仍未在移动或桌面端渲染竖线，需要继续定位主题覆盖冲突并验证伪元素的位置。
 - **Search build**: `pagefind` still lacks a darwin-arm64 binary; decide whether to vendor an ARM build, gate the plugin locally, or swap to another search solution.
 - **Column metadata**: consider storing slugs (not only titles) inside column index frontmatter to avoid ambiguous matches or renamed sections.
 - **Testing**: add integration smoke tests (e.g., headless login + draft creation) once the admin flow stabilizes.
