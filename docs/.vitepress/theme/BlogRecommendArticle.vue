@@ -148,7 +148,14 @@ function handleNavigate(target: { href: string }) {
 }
 
 .catalog__num {
-  display: none;
+  display: inline-flex;
+  min-width: 2ch;
+  padding-right: 4px;
+  justify-content: flex-end;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--vp-c-text-3);
+  transition: color 0.2s ease;
 }
 
 .catalog__body {
@@ -181,6 +188,11 @@ function handleNavigate(target: { href: string }) {
 .catalog__item.active .catalog__body {
   color: var(--vp-c-brand-1);
   font-weight: 600;
+}
+
+.catalog__item:hover .catalog__num,
+.catalog__item.active .catalog__num {
+  color: var(--vp-c-brand-1);
 }
 
 .catalog__item:hover .catalog__date,
