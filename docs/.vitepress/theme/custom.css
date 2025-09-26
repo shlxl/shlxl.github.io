@@ -161,6 +161,22 @@ html.dark {
   border-radius: 0;
 }
 
+/* 博客侧边栏导航分隔线与背景对齐 */
+.blog-theme-layout .VPNavBar.has-sidebar .divider,
+.blog-theme-layout .VPNavBar.has-sidebar .divider.is-1440 {
+  padding-left: 0;
+}
+
+.blog-theme-layout .VPNavBar.has-sidebar .divider .divider-line,
+.blog-theme-layout .VPNavBar.has-sidebar .divider.is-1440 .divider-line {
+  margin-left: 0;
+  width: 100%;
+}
+
+.blog-theme-layout .VPNavBar.has-sidebar .content-body {
+  background-color: var(--vp-nav-bg, var(--vp-c-bg));
+}
+
 /* 博客文章页背景与博客首页保持一致 */
 .blog-theme-layout .VPContent:not(.is-home) {
   position: relative;
