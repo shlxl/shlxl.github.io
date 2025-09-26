@@ -3,11 +3,20 @@ import type { EnhanceAppContext, PageData, Theme as VitePressTheme } from 'vitep
 import { inBrowser } from 'vitepress'
 import './custom.css'
 
+const blogBackgroundTexture = new URL(
+  '@sugarat-theme-styles/bg.png',
+  import.meta.url
+).href
+
 const extendedTheme: VitePressTheme = {
   ...Theme,
   enhanceApp(ctx) {
     Theme.enhanceApp?.(ctx)
     if (inBrowser) {
+      document.documentElement.style.setProperty(
+        '--blog-bg-texture',
+        `url(${blogBackgroundTexture})`
+      )
       setupCategoryNavPersistence(ctx)
     }
   }

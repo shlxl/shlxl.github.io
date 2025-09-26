@@ -4,6 +4,7 @@
   --vp-c-brand-2: #C18F6D;
   --vp-c-brand-3: #8C5E45;
   --xl-accent: #F59E0B; /* amber */
+  --blog-bg-texture: none;
 
   /* 卡片与阴影 */
   --xl-radius: 14px;
@@ -165,7 +166,11 @@ html.dark {
 .blog-theme-layout #VPContent:not(.is-home) {
   position: relative;
   min-height: 100vh;
-  background: radial-gradient(ellipse, rgba(var(--bg-gradient-home), 1) 0%, rgba(var(--bg-gradient-home), 0) 700%);
+  background-image: radial-gradient(
+      ellipse,
+      rgba(var(--bg-gradient-home), 1) 0%,
+      rgba(var(--bg-gradient-home), 0) 700%
+    );
 }
 
 .blog-theme-layout #VPContent:not(.is-home)::before {
@@ -173,7 +178,7 @@ html.dark {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url('./bg-pattern.png');
+  background-image: var(--blog-bg-texture, none);
   background-repeat: repeat;
   min-height: 100%;
   pointer-events: none;
