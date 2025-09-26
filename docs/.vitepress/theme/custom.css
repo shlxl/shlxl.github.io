@@ -222,17 +222,16 @@ html.dark {
     );
     left: 0;
     width: 1px;
-    height: calc(
-      100vh -
-        (
-          var(--vp-nav-height) +
-          var(--vp-layout-top-height, 0px) +
-          var(--vp-doc-top-height, 0px) +
-          48px
-        )
-    );
+    bottom: 32px;
     display: block;
     background: linear-gradient(var(--vp-c-gutter), var(--vp-c-divider));
     pointer-events: none;
+    transform: translateX(-32px);
+  }
+
+  .blog-theme-layout #VPContent:not(.is-home) .VPDoc .aside.left-aside::before {
+    left: auto;
+    right: 0;
+    transform: translateX(32px);
   }
 }
