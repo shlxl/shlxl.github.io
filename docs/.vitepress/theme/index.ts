@@ -1,5 +1,5 @@
 import Theme from '@sugarat/theme'
-import textureUrl from '@sugarat-theme-styles/bg.png?url'
+import textureUrl from '@sugarat/theme/src/styles/bg.png?url'
 import type { EnhanceAppContext, PageData, Theme as VitePressTheme } from 'vitepress'
 import { inBrowser } from 'vitepress'
 import './custom.css'

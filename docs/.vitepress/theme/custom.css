@@ -4,7 +4,6 @@
   --vp-c-brand-2: #C18F6D;
   --vp-c-brand-3: #8C5E45;
   --xl-accent: #F59E0B; /* amber */
-  --blog-bg-texture: none;
 
   /* 卡片与阴影 */
   --xl-radius: 14px;
@@ -178,6 +177,7 @@ html.dark {
   position: fixed;
   inset: 0;
   z-index: -1;
+  background-image: var(--blog-bg-texture, none);
   background-repeat: repeat;
   min-height: 100%;
   pointer-events: none;
