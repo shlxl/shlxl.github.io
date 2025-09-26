@@ -22,3 +22,4 @@ Use Conventional Commit prefixes observed in history (`feat(admin):`, `fix(ci):`
 ## Progress Log
 
 - 2025-09-27: 再次排查目录样式后仍未看到 `.VPDocAsideOutline .content` 上的分隔线，需继续调试主题覆盖；保留该项为未完成任务并在后续迭代先复测不同断点。
+
