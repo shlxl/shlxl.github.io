@@ -18,3 +18,8 @@ There is no standalone unit-test suite; treat `npm run docs:build` as the regres
 
 ## Commit & Pull Request Guidelines
 Use Conventional Commit prefixes observed in history (`feat(admin):`, `fix(ci):`, `chore(docs):`). Each PR should describe scope, link any related GitHub issue, and list affected paths (`docs/blog/...`, `scripts/...`). Include screenshots or preview URLs when altering layout. Note known platform quirks—such as Pagefind binaries on Apple Silicon—in the PR description so reviewers understand deviations.
+
+## Progress Log
+
+- 2025-09-27: 再次排查目录样式后仍未看到 `.VPDocAsideOutline .content` 上的分隔线，需继续调试主题覆盖；保留该项为未完成任务并在后续迭代先复测不同断点。
+- 2025-09-27: 已将竖线伪元素移动到 `.VPDocAsideOutline .content::after` 并复测桌面、平板断点，当前显示恢复正常；主题覆盖再次调整时记得复测。
