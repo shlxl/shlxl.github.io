@@ -121,19 +121,18 @@ function handleNavigate(target: { href: string }) {
   margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .catalog__item {
   width: 100%;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
-  padding: 10px 14px;
-  background: var(--vp-c-bg-soft);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  display: block;
   font: inherit;
   color: inherit;
   text-align: left;
@@ -141,32 +140,24 @@ function handleNavigate(target: { href: string }) {
   transition: color 0.2s ease;
 }
 
-.catalog__item.active {
-  border-color: var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
+.catalog__content {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  align-items: baseline;
 }
 
 .catalog__num {
-  flex: 0 0 auto;
-  min-width: 18px;
-  font-weight: 600;
-  color: var(--vp-c-brand-1);
-}
-
-.catalog__content {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 10px;
-  width: 100%;
-  align-items: start;
+  display: none;
 }
 
 .catalog__body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
+  display: block;
   width: 100%;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 1.5;
+  transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
 .catalog__text {
@@ -176,20 +167,23 @@ function handleNavigate(target: { href: string }) {
   overflow: hidden;
   text-overflow: ellipsis;
   text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.catalog__item:hover .catalog__text {
-  color: var(--vp-c-brand-1);
-  text-decoration: underline;
+  color: inherit;
 }
 
 .catalog__date {
+  display: block;
   font-size: 12px;
   color: var(--vp-c-text-3);
+  transition: color 0.2s ease;
 }
 
-.catalog__item.active .catalog__text,
+.catalog__item:hover .catalog__body,
+.catalog__item.active .catalog__body {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+.catalog__item:hover .catalog__date,
 .catalog__item.active .catalog__date {
   color: var(--vp-c-brand-1);
 }
