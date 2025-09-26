@@ -178,7 +178,6 @@ html.dark {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: var(--blog-bg-texture, none);
   background-repeat: repeat;
   min-height: 100%;
   pointer-events: none;
