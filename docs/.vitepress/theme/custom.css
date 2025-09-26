@@ -226,12 +226,12 @@ html.dark {
     display: block;
     background: linear-gradient(var(--vp-c-gutter), var(--vp-c-divider));
     pointer-events: none;
-    transform: translateX(-32px);
+    transform: translateX(-64px);
   }
 
   .blog-theme-layout #VPContent:not(.is-home) .VPDoc .aside.left-aside::before {
     left: auto;
     right: 0;
-    transform: translateX(32px);
+    transform: translateX(64px);
   }
 }
