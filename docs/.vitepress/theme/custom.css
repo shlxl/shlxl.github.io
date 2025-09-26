@@ -217,7 +217,8 @@ html.dark {
     top: calc(
       var(--vp-nav-height) +
       var(--vp-layout-top-height, 0px) +
-      var(--vp-doc-top-height, 0px)
+      var(--vp-doc-top-height, 0px) +
+      48px
     );
     left: 0;
     width: 1px;
@@ -226,7 +227,8 @@ html.dark {
         (
           var(--vp-nav-height) +
           var(--vp-layout-top-height, 0px) +
-          var(--vp-doc-top-height, 0px)
+          var(--vp-doc-top-height, 0px) +
+          48px
         )
     );
     display: block;
