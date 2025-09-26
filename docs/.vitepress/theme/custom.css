@@ -165,7 +165,11 @@ html.dark {
 .blog-theme-layout #VPContent:not(.is-home) {
   position: relative;
   min-height: 100vh;
-  background: radial-gradient(ellipse, rgba(var(--bg-gradient-home), 1) 0%, rgba(var(--bg-gradient-home), 0) 700%);
+  background-image: radial-gradient(
+      ellipse,
+      rgba(var(--bg-gradient-home), 1) 0%,
+      rgba(var(--bg-gradient-home), 0) 700%
+    );
 }
 
 .blog-theme-layout #VPContent:not(.is-home)::before {
@@ -173,7 +177,7 @@ html.dark {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url('./bg-pattern.png');
+  background-image: url('~@sugarat/theme/src/styles/bg.png');
   background-repeat: repeat;
   min-height: 100%;
   pointer-events: none;
