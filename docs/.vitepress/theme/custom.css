@@ -131,6 +131,31 @@ html.dark {
   padding: 0;
 }
 
+/* 博客首页头像卡片与列表联动间距 */
+.blog-theme-layout .content-wrapper {
+  --blog-info-top-gap: 16px;
+  --blog-info-top-offset: calc(var(--vp-nav-height) + var(--blog-info-top-gap));
+}
+
+.blog-theme-layout .content-wrapper .blog-info-wrapper {
+  top: var(--blog-info-top-offset);
+}
+
+.blog-theme-layout .content-wrapper .blog-list-wrapper {
+  padding-top: var(--blog-info-top-gap);
+}
+
+@media (max-width: 959.98px) {
+  .blog-theme-layout .content-wrapper {
+    --blog-info-top-gap: 0px;
+    --blog-info-top-offset: 20px;
+  }
+
+  .blog-theme-layout .content-wrapper .blog-list-wrapper {
+    padding-top: 0;
+  }
+}
+
 /* 文档页侧栏与正文卡片一致 */
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar {
   display: flex;
