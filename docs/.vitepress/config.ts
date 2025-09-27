@@ -98,7 +98,14 @@ if (pagefindForceLanguage) {
   pagefindSearch.forceLanguage = pagefindForceLanguage
 }
 
-const mailIcon = {
+const mailIcon: { svg: string } = {
+  svg: [
+    '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">',
+    '  <path fill="currentColor" d="M3 4h18a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm0 2v.217l9 5.4 9-5.4V6ZM21 8.783l-8.553 5.13a1 1 0 0 1-1.894 0L3 8.783V19H21Z" />',
+    '</svg>'
+  ].join('\n')
+}
+
 const blogTheme = getThemeConfig({
   timeZone: 0,
   author: '小凌',
