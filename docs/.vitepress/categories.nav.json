@@ -1,29 +1,57 @@
 {
-  "updatedAt": "2025-09-25T10:43:19.650Z",
+  "updatedAt": "2025-09-27T09:23:14.219Z",
   "items": [
     {
       "text": "工程",
       "category": "工程实践",
       "dir": "engineering",
-      "link": "/blog/engineering/",
-      "fallback": "/blog/engineering/",
-      "menuOrder": 2
+      "link": "/blog/engineering/web-admin-split-practice",
+      "fallback": "/blog/engineering/web-admin-split-practice",
+      "menuOrder": 2,
+      "latestLink": "/blog/engineering/web-admin-split-practice",
+      "latestUpdatedAt": "2025-09-25T04:00:00.000Z",
+      "latestTitle": "前后台未分离到分治的工程实践指南",
+      "postCount": 5,
+      "publishedCount": 5
     },
     {
       "text": "攻略",
       "category": "职业攻略",
       "dir": "guides",
-      "link": "/blog/guides/",
-      "fallback": "/blog/guides/",
-      "menuOrder": 3
+      "link": "/blog/guides/d2r-necromancer-guide",
+      "fallback": "/blog/guides/d2r-necromancer-guide",
+      "menuOrder": 3,
+      "latestLink": "/blog/guides/d2r-necromancer-guide",
+      "latestUpdatedAt": "2025-09-14T11:00:00.000Z",
+      "latestTitle": "死灵法师 - 掌控生死（D2R职业攻略系列之七）",
+      "postCount": 7,
+      "publishedCount": 7
     },
     {
       "text": "生活",
       "category": "阳光生活",
       "dir": "mylife",
-      "link": "/blog/mylife/",
-      "fallback": "/blog/mylife/",
-      "menuOrder": 4
+      "link": "/blog/mylife/life",
+      "fallback": "/blog/mylife/life",
+      "menuOrder": 4,
+      "latestLink": "/blog/mylife/life",
+      "latestUpdatedAt": "2025-09-25T10:43:54.000Z",
+      "latestTitle": "life",
+      "postCount": 1,
+      "publishedCount": 1
+    },
+    {
+      "text": "职场",
+      "category": "艰辛职场",
+      "dir": "workplace",
+      "link": "/blog/",
+      "fallback": "/blog/",
+      "menuOrder": 5,
+      "latestLink": "",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
     }
   ]
 }

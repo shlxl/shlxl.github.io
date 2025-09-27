@@ -1,58 +1,93 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { program } from 'commander';
 import { resolveColumnDir } from './lib/columns.js';
+import { extractFrontmatterBlockFromContent, parseFrontmatterString, parseFrontmatterArray } from './lib/frontmatter.js';
 
-const slug=process.argv.slice(2).find(a=>!a.startsWith('--'));
-const setDate=process.argv.includes('--set-date');
-if(!slug){ console.error('用法: npm run post:promote -- <slug> [--set-date]'); process.exit(1); }
+const BLOG_DIR = 'docs/blog';
+const LOCAL_SUBDIR = process.env.LOCAL_SUBDIR || '_local';
 
-const src=path.resolve('docs/blog/_local', `${slug}.md`);
-if(!fs.existsSync(src)){ console.error('未找到草稿: '+src); process.exit(2); }
-let txt=fs.readFileSync(src,'utf8');
-const fm=/^---\s*([\s\S]*?)\s*---/m; const m=fm.exec(txt); if(!m){ console.error('缺少 frontmatter: '+src); process.exit(3); }
-let head=m[1];
-function put(key,val){ const re=new RegExp(`^\\s*${key}\\s*:.*$`,'m'); if(re.test(head)) head=head.replace(re,`${key}: ${val}`); else head+=`\n${key}: ${val}`; }
-put('publish','true');
-put('draft','false');
-if(setDate){ const now=new Date(); const pad=n=>String(n).padStart(2,'0'); const date=`${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`; put('date',`\"${date}\"`); }
-
-function extractPrimaryCategory(block=''){
-  const arrayMatch = block.match(/^\s*categories\s*:\s*\[(.*?)\]/m);
-  if(arrayMatch){
-    const raw = arrayMatch[1]
-      .split(',')
-      .map(s=>s.replace(/["']/g,'').trim())
-      .filter(Boolean);
-    if(raw.length) return raw[0];
+function findLocalDraft(slug) {
+  const localDir = path.join(BLOG_DIR, LOCAL_SUBDIR);
+  if (!fs.existsSync(localDir)) return null;
+  const files = fs.readdirSync(localDir);
+  const target = `${slug}.md`;
+  if (files.includes(target)) {
+    return path.join(localDir, target);
   }
-  const singleMatch = block.match(/^\s*categories\s*:\s*(.+)$/m);
-  if(singleMatch){
-    return singleMatch[1].replace(/["']/g,'').trim();
-  }
-  return '';
+  return null;
 }
 
-const year=(/\b(\d{4})\/(?:\d{2})\//.exec(head)||[])[1] || String(new Date().getFullYear());
-const primaryCategory = extractPrimaryCategory(head);
-const columnDir = resolveColumnDir(primaryCategory);
-const dstDir = columnDir
-  ? path.resolve('docs/blog', columnDir)
-  : path.resolve('docs/blog', year);
-
-fs.mkdirSync(dstDir,{recursive:true});
-const dst=path.join(dstDir, `${slug}.md`);
-
-if(fs.existsSync(dst)){
-  console.error('目标文件已存在: '+dst);
-  process.exit(4);
+function formatNow(tz = 'Asia/Shanghai') {
+  const d = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-const newTxt=txt.replace(fm,`---\n${head.trim()}\n---`);
-fs.writeFileSync(dst,newTxt,'utf8');
-fs.unlinkSync(src);
-console.log(`✅ 已发布到: ${dst}`);
-if(!columnDir){
-  console.log('ℹ️ 未找到匹配分类，已回退至按年份归档。');
+program
+  .argument('<slug>', 'The slug of the post to promote')
+  .option('--set-date', 'Set the post date to the current time');
+
+program.parse(process.argv);
+
+const slug = program.args[0];
+const options = program.opts();
+
+console.log(`[debug] 正在发布 slug: ${slug}`);
+
+const localFile = findLocalDraft(slug);
+
+if (!localFile) {
+  console.error(`❌ 在 ${LOCAL_SUBDIR} 中找不到草稿: ${slug}.md`);
+  process.exit(1);
 }
-console.log('提示: 若改过 slug，请在新文 frontmatter 写 aliases: 并运行 npm run docs:aliases');
+
+console.log(`[debug] 找到了草稿文件: ${localFile}`);
+
+const content = fs.readFileSync(localFile, 'utf8');
+console.log(`[debug] 文件内容:\n---\n${content}\n---`);
+
+const fm = extractFrontmatterBlockFromContent(content);
+
+if (!fm) {
+  console.error('❌ frontmatter 解析失败');
+  process.exit(1);
+}
+
+console.log(`[debug] 解析出的 frontmatter 块:\n---\n${fm}\n---`);
+
+const categories = parseFrontmatterArray(fm, 'categories');
+console.log(`[debug] 解析出的 categories 数组:`, categories);
+
+const cat = categories[0] || '';
+console.log(`[debug] 使用的分类是: '${cat}'`);
+
+if (!cat) {
+  console.error('❌ 草稿需要设置 categories 才能发布');
+  process.exit(1);
+}
+
+const date = options.setDate ? formatNow() : parseFrontmatterString(fm, 'date') || formatNow();
+const year = date.slice(0, 4);
+const columnDir = resolveColumnDir(cat);
+const outDir = columnDir ? path.join(BLOG_DIR, columnDir) : path.join(BLOG_DIR, year);
+const outFile = path.join(outDir, `${slug}.md`);
+
+if (fs.existsSync(outFile)) {
+  console.error(`❌ 正式目录中已存在同名文章: ${outFile}`);
+  process.exit(2);
+}
+
+let newContent = content.replace(/draft:\s*true/g, 'draft: false');
+newContent = newContent.replace(/publish:\s*false/g, 'publish: true');
+
+if (options.setDate) {
+  newContent = newContent.replace(/date:.*/, `date: ${date}`);
+}
+
+fs.mkdirSync(outDir, { recursive: true });
+fs.writeFileSync(outFile, newContent, 'utf8');
+fs.unlinkSync(localFile);
+
+console.log(`✅ 文章已发布: ${outFile}`);

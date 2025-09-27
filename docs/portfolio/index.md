@@ -13,8 +13,8 @@ publish: false
     <h3>D2R 职业攻略</h3>
     <p>暗黑破坏神 2 重制版的职业攻略与构筑整理，覆盖装备路线、技能加点与刷图效率建议。</p>
     <div class="xl-links">
-      <a class="xl-chip" href="https://github.com/lxlcool3000/D2R-GUIDE" target="_blank" rel="noreferrer">GitHub</a>
-      <a class="xl-chip" href="https://lxlcool3000.github.io/D2R-GUIDE/" target="_blank" rel="noreferrer">Demo</a>
+      <a class="xl-chip" href="https://github.com/shlxl/D2R-GUIDE" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="xl-chip" href="https://shlxl.github.io/D2R-GUIDE/" target="_blank" rel="noreferrer">Demo</a>
     </div>
   </div>
 
@@ -22,7 +22,7 @@ publish: false
     <h3>Indigo UI</h3>
     <p>基于 Vite/Vue 的轻量组件库，强调简洁设计与深色模式适配。</p>
     <div class="xl-links">
-      <a class="xl-chip" href="https://github.com/lxlcool3000" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="xl-chip" href="https://github.com/shlxl" target="_blank" rel="noreferrer">GitHub</a>
       <a class="xl-chip" href="#" target="_blank" rel="noreferrer">Demo</a>
     </div>
   </div>
