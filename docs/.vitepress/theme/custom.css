@@ -132,13 +132,7 @@ html.dark {
 }
 
 /* 博客首页头像卡片顶部对齐列表 */
-.blog-theme-layout .content-wrapper .blog-info-wrapper {
-  top: var(--vp-nav-height);
-}
 
-@media (max-width: 959.98px) {
-  .blog-theme-layout .content-wrapper .blog-info-wrapper {
-    top: 20px;
   }
 }
 
