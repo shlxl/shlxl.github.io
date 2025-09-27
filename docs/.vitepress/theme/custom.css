@@ -161,6 +161,46 @@ html.dark {
   border-radius: 0;
 }
 
+@media (min-width: 960px) {
+  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar {
+    position: relative;
+    padding-right: 16px;
+    margin-right: 16px;
+  }
+
+  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -16px;
+    width: 1px;
+    background: var(--vp-c-divider);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .blog-theme-layout .VPSidebar .sidebar .card-header {
+    padding-left: 30px;
+  }
+
+  .blog-theme-layout .VPSidebar .sidebar .card-header .title .svg-icon {
+    margin-left: -18px;
+  }
+
+  .blog-theme-layout
+    .VPSidebar .sidebar:has(.recommend-container.hide-num)
+    .card-header {
+    padding-left: 0;
+  }
+
+  .blog-theme-layout
+    .VPSidebar .sidebar:has(.recommend-container.hide-num)
+    .card-header .title .svg-icon {
+    margin-left: 0;
+  }
+}
+
 /* 博客侧边栏导航分隔线与背景对齐 */
 .blog-theme-layout .VPNavBar.has-sidebar .divider,
 .blog-theme-layout .VPNavBar.has-sidebar .divider.is-1440 {
