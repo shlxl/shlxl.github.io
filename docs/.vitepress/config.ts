@@ -21,56 +21,12 @@ if (!Number.isFinite(limit) || limit < 1) {
 
 const { getThemeConfig } = await import('@sugarat/theme/node')
 
-/* ADMIN NAV START */
-const adminGeneratedNav = [
-  {
-    "text": "工程实践",
-    "category": "工程实践",
-    "dir": "engineering",
-    "link": "/blog/engineering/",
-    "fallback": "/blog/",
-    "menuOrder": 1,
-    "latestLink": "/blog/engineering/dev-progress-20250917",
-    "latestUpdatedAt": "2025-09-17T02:30:00.000Z",
-    "latestTitle": "开发进展快照：栏目驱动与后台准入落地",
-    "postCount": 4,
-    "publishedCount": 4
-  },
-  {
-    "text": "职业攻略",
-    "category": "职业攻略",
-    "dir": "guides",
-    "link": "/blog/guides/",
-    "fallback": "/blog/",
-    "menuOrder": 2,
-    "latestLink": "/blog/guides/d2r-necromancer-guide",
-    "latestUpdatedAt": "2025-09-14T11:00:00.000Z",
-    "latestTitle": "死灵法师 - 掌控生死（D2R职业攻略系列之七）",
-    "postCount": 7,
-    "publishedCount": 7
-  },
-  {
-    "text": "宠物",
-    "category": "宠物",
-    "dir": "pet",
-    "link": "/blog/pet/",
-    "fallback": "/blog/",
-    "menuOrder": 3,
-    "latestLink": "/blog/pet/cat",
-    "latestUpdatedAt": "2025-09-24T09:10:47.000Z",
-    "latestTitle": "cat",
-    "postCount": 1,
-    "publishedCount": 1
-  }
-]
-/* ADMIN NAV END */
+const adminNavSource = resolveAdminNavItems()
 
-const adminNavSource = resolveAdminNavItems(adminGeneratedNav as CategoryNavItem[])
-
-function resolveAdminNavItems(fallback: CategoryNavItem[]) {
+function resolveAdminNavItems() {
   const fileNav = loadAdminNavFromFile()
   if (fileNav.length) return fileNav
-  return fallback
+  return []
 }
 
 function loadAdminNavFromFile(): CategoryNavItem[] {
