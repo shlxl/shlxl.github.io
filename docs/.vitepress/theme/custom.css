@@ -153,34 +153,12 @@ html.dark {
 /* 文章目录与正文去除卡片外框 */
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar,
 .blog-theme-layout .VPContent:not(.is-home) .VPDoc .vp-doc,
-.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline,
-.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content {
+.blog-theme-layout .VPContent:not(.is-home) .VPDoc .outline {
   background: transparent;
   border: none;
   box-shadow: none;
   padding: 0;
   border-radius: 0;
-}
-
-.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content {
-  position: relative;
-}
-
-.blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 1px;
-  background: var(--vp-c-divider);
-  pointer-events: none;
-}
-
-@media (min-width: 1200px) {
-  .blog-theme-layout .VPContent:not(.is-home) .VPDocAsideOutline .content::after {
-    right: 8px;
-  }
 }
 
 /* 博客侧边栏导航分隔线与背景对齐 */
