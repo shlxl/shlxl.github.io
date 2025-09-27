@@ -305,13 +305,11 @@ async function main(){
 
   $('#btn-create').addEventListener('click', async ()=>{
     const column = $('#column').value.trim();
-    const extraCat = $('#cat').value.trim();
-    const category = column || extraCat;
     const p={
       title:$('#title').value.trim(),
       desc:$('#desc').value.trim(),
       tags:$('#tags').value.trim(),
-      cat:category,
+      cat:column,
       slug:$('#slug').value.trim(),
       cover:$('#cover').value.trim()
     };
@@ -321,7 +319,6 @@ async function main(){
       toast('草稿已创建');
       $('#slug').value='';
       $('#column').value='';
-      $('#cat').value='';
       await refresh();
     }
     catch(e){ showError(e); }
