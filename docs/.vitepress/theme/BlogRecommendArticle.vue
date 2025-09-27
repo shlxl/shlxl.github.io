@@ -113,6 +113,7 @@ function handleNavigate(target: { href: string }) {
 
 .catalog__title {
   margin: 0 0 16px;
+  padding-left: calc(2ch + 12px);
   font-size: 18px;
   font-weight: 600;
 }
