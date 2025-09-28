@@ -199,8 +199,7 @@ function adminNavWatcherPlugin() {
           server.ws.send({ type: 'full-reload' })
         } catch {}
       }
-      const handleFsEvent = async (event, file) => {
-        if (event !== 'change') return
+      const handleFsEvent = async (file?: string) => {
         if (!file || path.resolve(file) !== target) return
         broadcastUpdate()
         if (restarting) return
@@ -215,9 +214,14 @@ function adminNavWatcherPlugin() {
         }
       }
       server.watcher.add(target)
-      server.watcher.on('change', handleFsEvent)
+      const events: Array<'add' | 'change'> = ['add', 'change']
+      for (const eventName of events) {
+        server.watcher.on(eventName, handleFsEvent)
+      }
       server.httpServer?.once('close', () => {
-        server.watcher.off('change', handleFsEvent)
+        for (const eventName of events) {
+          server.watcher.off(eventName, handleFsEvent)
+        }
       })
     }
   }
