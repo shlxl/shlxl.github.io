@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import type { PluginOption } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -11,6 +12,7 @@ import {
 } from '../../scripts/lib/frontmatter.js'
 
 const deployBase = process.env.DEPLOY_BASE || '/'
+const docsRoot = path.resolve(process.cwd(), 'docs')
 
 // @sugarat/theme-shared requires a positive concurrency value; some hosts
 // (including the Codex sandbox) report 0 CPUs, so guard with a sane default.
@@ -60,10 +62,15 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
-      const precomputed = normalizeLink(item?.latestLink || '')
-      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
-      const link = resolved || fallbackLink
+      const fallbackSource = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
+      const fallbackLink = ensureExistingRoute(fallbackSource)
+      const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
+      const resolved = ensureExistingRoute(
+        title ? resolveLatestCategoryArticle(title) : '',
+        precomputed,
+        fallbackLink
+      )
+      const link = ensureExistingRoute(resolved, fallbackLink)
       return {
         text: item?.text || title || '分类',
         link,
@@ -125,6 +132,10 @@ const blogTheme = getThemeConfig({
   homeTags: false,
   recommend: { showDate: true }
 } as any)
+const blog = blogTheme?.themeConfig?.blog as
+  | { pagesData?: Array<{ route?: string }> }
+  | undefined
+const blogUnlinkRestartPlugin = createBlogUnlinkRestartPlugin(blog, docsRoot)
 
 export default defineConfig({
   extends: blogTheme,
@@ -152,7 +163,12 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
+    plugins: [
+      faviconIcoFallback(),
+      overrideSugaratComponents(),
+      adminNavWatcherPlugin(),
+      blogUnlinkRestartPlugin
+    ],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -228,9 +244,78 @@ function adminNavWatcherPlugin() {
 }
 
 
+function createBlogUnlinkRestartPlugin(
+  blogSource: { pagesData?: Array<{ route?: string }> } | undefined,
+  sharedDocsRoot: string
+): PluginOption {
+  return {
+    name: 'blog-unlink-restart',
+    apply: 'serve' as const,
+    configureServer(server) {
+      const docsRoot = sharedDocsRoot
+      let restartTimer: NodeJS.Timeout | null = null
+      const normalizeBlogRoute = (value: string) => {
+        if (!value) return ''
+        let route = String(value).trim()
+        if (!route) return ''
+        route = route.replace(/\\/g, '/')
+        const hashIndex = route.indexOf('#')
+        if (hashIndex >= 0) route = route.slice(0, hashIndex)
+        const queryIndex = route.indexOf('?')
+        if (queryIndex >= 0) route = route.slice(0, queryIndex)
+        route = route.replace(/(?:(^|\/)index)?\.(?:md|html)$/, '$1')
+        route = route.replace(/\/+/g, '/')
+        if (!route.startsWith('/')) route = `/${route}`
+        if (route.length > 1 && route.endsWith('/')) route = route.slice(0, -1)
+        return route
+      }
+      const queueRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer)
+        restartTimer = setTimeout(async () => {
+          restartTimer = null
+          try {
+            await server.restart()
+          } catch (err) {
+            console.warn('[vite] failed to restart after blog unlink', err)
+          } finally {
+            try {
+              server.ws.send({ type: 'full-reload' })
+            } catch {}
+          }
+        }, 200)
+      }
+      const handler = (file?: string) => {
+        if (!file || !file.endsWith('.md')) return
+        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
+        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
+        const route = normalizeBlogRoute(relative)
+        const pagesData = Array.isArray(blogSource?.pagesData) ? blogSource.pagesData : null
+        if (route && pagesData && pagesData.length) {
+          for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const existing = pagesData[index]
+            if (normalizeBlogRoute(existing?.route ?? '') === route) {
+              pagesData.splice(index, 1)
+            }
+          }
+        }
+        queueRestart()
+      }
+      server.watcher.on('unlink', handler)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('unlink', handler)
+        if (restartTimer) {
+          clearTimeout(restartTimer)
+          restartTimer = null
+        }
+      })
+    }
+  }
+}
+
+
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
-  const blogRoot = path.resolve(process.cwd(), 'docs/blog')
+  const blogRoot = path.join(docsRoot, 'blog')
   const stack: string[] = [blogRoot]
   let latest: { time: number; link: string } | null = null
   while (stack.length) {
@@ -268,7 +353,6 @@ function resolveLatestCategoryArticle(category: string) {
 }
 
 function buildRouteFromPath(filePath: string) {
-  const docsRoot = path.resolve(process.cwd(), 'docs')
   let relative = path.relative(docsRoot, filePath).replace(/\\/g, '/')
   if (!relative) return ''
   if (relative.endsWith('index.md')) {
@@ -278,6 +362,32 @@ function buildRouteFromPath(filePath: string) {
   }
   if (!relative.startsWith('/')) relative = `/${relative}`
   return relative || ''
+}
+
+function resolveFileForRoute(route: string) {
+  if (!route) return null
+  let normalized = normalizeLink(route)
+  if (!normalized) return null
+  normalized = normalized.replace(/[?#].*$/, '').replace(/\/+/g, '/')
+  let relative = normalized.slice(1)
+  if (relative.endsWith('/')) relative = relative.slice(0, -1)
+  const directPath = path.join(docsRoot, `${relative}.md`)
+  if (fs.existsSync(directPath)) return directPath
+  const indexPath = path.join(docsRoot, relative, 'index.md')
+  if (fs.existsSync(indexPath)) return indexPath
+  return null
+}
+
+function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
+  const options = [candidate, ...fallbacks, '/blog/']
+  for (const option of options) {
+    const normalized = normalizeLink(option || '')
+    if (!normalized) continue
+    if (resolveFileForRoute(normalized)) {
+      return normalized
+    }
+  }
+  return '/blog/'
 }
 
 function faviconIcoFallback() {
