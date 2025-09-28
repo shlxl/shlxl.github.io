@@ -62,7 +62,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackSource = normalizeBlogRouteCandidate(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
       const resolved = ensureExistingRoute(
@@ -166,7 +165,6 @@ export default defineConfig({
       faviconIcoFallback(),
       overrideSugaratComponents(),
       adminNavWatcherPlugin(),
-      blogUnlinkRestartPlugin()
     ],
     resolve: {
       alias: {
@@ -265,9 +263,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
       const toRoute = (input: string) => {
         const cleaned = input.replace(/^\/+/, '')
         if (!cleaned) return ''
-        const candidate = normalizeBlogRouteCandidate(`/${cleaned}`)
-        if (!candidate.startsWith('/blog/')) return ''
-        return candidate
       }
 
       const queueRestart = () => {
@@ -297,8 +292,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
         const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
         if (pagesData?.length) {
           for (let index = pagesData.length - 1; index >= 0; index -= 1) {
-            const existing = normalizeBlogRouteCandidate(String(pagesData[index]?.route || ''))
-            if (existing && existing === route) {
               pagesData.splice(index, 1)
             }
           }
@@ -388,24 +381,8 @@ function resolveFileForRoute(route: string) {
 function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
   const options = [candidate, ...fallbacks, '/blog/']
   for (const option of options) {
-    const normalized = normalizeBlogRouteCandidate(option || '')
-    if (!normalized) continue
-    const filePath = resolveFileForRoute(normalized)
-    if (!filePath) continue
-    if (!isRoutePublished(filePath)) continue
-    return normalized
   }
   return '/blog/'
-}
-
-function isRoutePublished(filePath: string) {
-  if (!filePath.endsWith('.md')) return true
-  if (!filePath.includes(`${path.sep}blog${path.sep}`)) return true
-  const block = extractFrontmatterBlockFile(filePath)
-  if (!block) return true
-  if (parseFrontmatterBoolean(block, 'publish') === false) return false
-  if (parseFrontmatterBoolean(block, 'draft') === true) return false
-  return true
 }
 
 function faviconIcoFallback() {
