@@ -12,6 +12,7 @@ import {
 } from '../../scripts/lib/frontmatter.js'
 
 const deployBase = process.env.DEPLOY_BASE || '/'
+const docsRoot = path.resolve(process.cwd(), 'docs')
 
 // @sugarat/theme-shared requires a positive concurrency value; some hosts
 // (including the Codex sandbox) report 0 CPUs, so guard with a sane default.
@@ -61,10 +62,15 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
-      const precomputed = normalizeLink(item?.latestLink || '')
-      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
-      const link = resolved || fallbackLink
+      const fallbackSource = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
+      const fallbackLink = ensureExistingRoute(fallbackSource)
+      const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
+      const resolved = ensureExistingRoute(
+        title ? resolveLatestCategoryArticle(title) : '',
+        precomputed,
+        fallbackLink
+      )
+      const link = ensureExistingRoute(resolved, fallbackLink)
       return {
         text: item?.text || title || '分类',
         link,
@@ -129,7 +135,6 @@ const blogTheme = getThemeConfig({
 const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
-
 
 export default defineConfig({
   extends: blogTheme,
@@ -236,13 +241,9 @@ function adminNavWatcherPlugin() {
   }
 }
 
-
-
-
-
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
-  const blogRoot = path.resolve(process.cwd(), 'docs/blog')
+  const blogRoot = path.join(docsRoot, 'blog')
   const stack: string[] = [blogRoot]
   let latest: { time: number; link: string } | null = null
   while (stack.length) {
@@ -280,7 +281,6 @@ function resolveLatestCategoryArticle(category: string) {
 }
 
 function buildRouteFromPath(filePath: string) {
-  const docsRoot = path.resolve(process.cwd(), 'docs')
   let relative = path.relative(docsRoot, filePath).replace(/\\/g, '/')
   if (!relative) return ''
   if (relative.endsWith('index.md')) {
@@ -290,6 +290,32 @@ function buildRouteFromPath(filePath: string) {
   }
   if (!relative.startsWith('/')) relative = `/${relative}`
   return relative || ''
+}
+
+function resolveFileForRoute(route: string) {
+  if (!route) return null
+  let normalized = normalizeLink(route)
+  if (!normalized) return null
+  normalized = normalized.replace(/[?#].*$/, '').replace(/\/+/g, '/')
+  let relative = normalized.slice(1)
+  if (relative.endsWith('/')) relative = relative.slice(0, -1)
+  const directPath = path.join(docsRoot, `${relative}.md`)
+  if (fs.existsSync(directPath)) return directPath
+  const indexPath = path.join(docsRoot, relative, 'index.md')
+  if (fs.existsSync(indexPath)) return indexPath
+  return null
+}
+
+function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
+  const options = [candidate, ...fallbacks, '/blog/']
+  for (const option of options) {
+    const normalized = normalizeLink(option || '')
+    if (!normalized) continue
+    if (resolveFileForRoute(normalized)) {
+      return normalized
+    }
+  }
+  return '/blog/'
 }
 
 function faviconIcoFallback() {
