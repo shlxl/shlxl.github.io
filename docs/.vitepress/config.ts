@@ -235,52 +235,7 @@ function adminNavWatcherPlugin() {
   }
 }
 
-function blogUnlinkRestartPlugin() {
-  return {
-    name: 'blog-unlink-restart',
-    apply: 'serve' as const,
-    configureServer(server) {
-      const docsRoot = path.resolve(process.cwd(), 'docs')
-      let restartTimer: NodeJS.Timeout | null = null
-      const queueRestart = () => {
-        if (restartTimer) clearTimeout(restartTimer)
-        restartTimer = setTimeout(async () => {
-          restartTimer = null
-          try {
-            await server.restart()
-          } catch (err) {
-            console.warn('[vite] failed to restart after blog unlink', err)
 
-      const handler = (file?: string) => {
-        if (!file) return
-        const absolute = path.resolve(file)
-        if (!absolute.endsWith('.md')) return
-
-        if (Array.isArray(blog?.pagesData)) {
-          const pages = blog.pagesData
-          const index = pages.findIndex((item) => {
-            if (!item) return false
-
-            return existing === route
-          })
-          if (index >= 0) {
-            pages.splice(index, 1)
-          }
-        }
-        queueRestart()
-
-      }
-      server.watcher.on('unlink', handler)
-      server.httpServer?.once('close', () => {
-        server.watcher.off('unlink', handler)
-        if (restartTimer) {
-          clearTimeout(restartTimer)
-          restartTimer = null
-        }
-      })
-    }
-  }
-}
 
 
 function resolveLatestCategoryArticle(category: string) {
