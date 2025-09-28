@@ -113,25 +113,84 @@ const mailIcon: { svg: string } = {
   ].join('\n')
 }
 
-const blogTheme = getThemeConfig({
-  timeZone: 0,
-  author: '小凌',
-  home: {
-    name: '小凌',
-    motto: '记录与分享，让代码有温度',
-    inspiring: 'Keep learning, keep creating.',
-    logo: '/avatar-avatar.png',
-    pageSize: 6
-  },
-  socialLinks: [
-    { icon: 'github', link: 'https://github.com/lxlcool3000' },
-    { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
-  ],
-  search: pagefindSearch,
-  hotArticle: false,
-  homeTags: false,
-  recommend: { showDate: true }
-} as any)
+const blogTheme = patchThemeReloadPlugin(
+  getThemeConfig({
+    timeZone: 0,
+    author: '小凌',
+    home: {
+      name: '小凌',
+      motto: '记录与分享，让代码有温度',
+      inspiring: 'Keep learning, keep creating.',
+      logo: '/avatar-avatar.png',
+      pageSize: 6
+    },
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/lxlcool3000' },
+      { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
+    ],
+    search: pagefindSearch,
+    hotArticle: false,
+    homeTags: false,
+    recommend: { showDate: true }
+  } as any)
+)
+function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
+  const plugins = theme?.vite?.plugins
+  if (!Array.isArray(plugins)) return theme
+  for (const plugin of plugins) {
+    if (!plugin || typeof plugin !== 'object') continue
+    if ((plugin as any).name !== '@sugarat/theme-reload') continue
+    const reloadPlugin = plugin as {
+      configureServer?: (server: any) => void
+    }
+    const original = reloadPlugin.configureServer?.bind(reloadPlugin)
+    if (!original) continue
+    reloadPlugin.configureServer = (server: any) => {
+      const watcher = server?.watcher
+      if (!watcher || typeof watcher.on !== 'function') {
+        return original(server)
+      }
+      const originalOn = watcher.on.bind(watcher)
+      watcher.on = (event: string, handler: (...args: any[]) => unknown) => {
+        if (typeof handler !== 'function') {
+          return originalOn(event, handler)
+        }
+        if (event === 'change') {
+          return originalOn(event, async (file: string, ...rest: any[]) => {
+            if (file && !fs.existsSync(file)) {
+              return
+            }
+            try {
+              await handler(file, ...rest)
+            } catch (err: any) {
+              if (err?.code === 'ENOENT') return
+              throw err
+            }
+          })
+        }
+        if (event === 'unlink') {
+          return originalOn(event, async (...args: any[]) => {
+            try {
+              await handler(...args)
+            } catch (err: any) {
+              if (err?.code === 'ENOENT') return
+              throw err
+            }
+          })
+        }
+        return originalOn(event, handler)
+      }
+      try {
+        return original(server)
+      } finally {
+        watcher.on = originalOn
+      }
+    }
+    break
+  }
+  return theme
+}
+
 const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
