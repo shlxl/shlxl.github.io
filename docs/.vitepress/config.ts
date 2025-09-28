@@ -62,6 +62,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
+      const fallbackSource = item?.fallback || item?.link || ''
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
       const resolved = ensureExistingRoute(
@@ -69,7 +70,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-      const link = ensureExistingRoute(resolved, fallbackLink)
+      const link = ensureExistingRoute(item?.link || resolved, fallbackLink)
       return {
         text: item?.text || title || '分类',
         link,
@@ -164,6 +165,7 @@ export default defineConfig({
     plugins: [
       faviconIcoFallback(),
       overrideSugaratComponents(),
+      blogUnlinkRestartPlugin(),
       adminNavWatcherPlugin(),
     ],
     resolve: {
@@ -259,7 +261,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
     configureServer(server) {
       const docsRoot = path.resolve(process.cwd(), 'docs')
       let restartTimer: NodeJS.Timeout | null = null
-      }
 
       const queueRestart = () => {
         if (restartTimer) clearTimeout(restartTimer)
@@ -282,10 +283,14 @@ function blogUnlinkRestartPlugin(): PluginOption {
         const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
         if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
 
+        const route = normalizeBlogRouteCandidate(buildRouteFromPath(file))
+        if (!route || !route.startsWith('/blog')) return
 
         const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
         if (pagesData?.length) {
           for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const pageRoute = normalizeBlogRouteCandidate(String(pagesData[index]?.route || ''))
+            if (pageRoute && pageRoute === route) {
               pagesData.splice(index, 1)
             }
           }
@@ -375,7 +380,10 @@ function resolveFileForRoute(route: string) {
 function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
   const options = [candidate, ...fallbacks, '/blog/']
   for (const option of options) {
-
+    const normalized = normalizeLink(String(option || ''))
+    if (!normalized) continue
+    const filePath = resolveFileForRoute(normalized)
+    if (filePath) return normalized
   }
   return '/blog/'
 }
