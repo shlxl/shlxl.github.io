@@ -129,61 +129,6 @@ const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
 
-function blogUnlinkRestartPlugin() {
-  return {
-    name: 'blog-unlink-restart',
-    apply: 'serve' as const,
-    configureServer(server) {
-      const docsRoot = path.resolve(process.cwd(), 'docs')
-      let restartTimer: NodeJS.Timeout | null = null
-      const normalizeRoute = (value: string) => {
-        const normalized = String(value || '').replace(/\\/g, '/')
-        const trimmed = normalized.startsWith('/')
-          ? normalized.slice(1)
-          : normalized
-        return '/' + trimmed.replace(/\.md$/, '')
-      }
-      const queueRestart = () => {
-        if (restartTimer) clearTimeout(restartTimer)
-        restartTimer = setTimeout(async () => {
-          restartTimer = null
-          try {
-            await server.restart()
-          } catch (err) {
-            console.warn('[vite] failed to restart after blog unlink', err)
-          } finally {
-            try {
-              server.ws.send({ type: 'full-reload' })
-            } catch {}
-          }
-        }, 200)
-      }
-      const handler = (file?: string) => {
-        if (!file || !file.endsWith('.md')) return
-        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
-        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
-        const route = normalizeRoute(relative)
-        if (Array.isArray(blog?.pagesData) && blog.pagesData.length) {
-          for (let index = blog.pagesData.length - 1; index >= 0; index -= 1) {
-            const existing = blog.pagesData[index]
-            if (normalizeRoute(existing?.route ?? '') === route) {
-              blog.pagesData.splice(index, 1)
-            }
-          }
-        }
-        queueRestart()
-      }
-      server.watcher.on('unlink', handler)
-      server.httpServer?.once('close', () => {
-        server.watcher.off('unlink', handler)
-        if (restartTimer) {
-          clearTimeout(restartTimer)
-          restartTimer = null
-        }
-      })
-    }
-  }
-}
 
 export default defineConfig({
   extends: blogTheme,
@@ -290,6 +235,8 @@ function adminNavWatcherPlugin() {
     }
   }
 }
+
+
 
 
 function resolveLatestCategoryArticle(category: string) {
