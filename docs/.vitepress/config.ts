@@ -250,22 +250,7 @@ function blogUnlinkRestartPlugin() {
             await server.restart()
           } catch (err) {
             console.warn('[vite] failed to restart after blog unlink', err)
-          } finally {
-            try {
-              server.ws.send({ type: 'full-reload' })
-            } catch {}
-          }
-        }, 200)
-      }
-      const normalizeBlogRoute = (value: string) => {
-        const normalized = String(value || '')
-          .replace(/\\/g, '/')
-          .replace(/^\/+/, '')
-        const withoutExt = normalized.endsWith('.md')
-          ? normalized.slice(0, -'.md'.length)
-          : normalized
-        return withoutExt ? `/${withoutExt}` : '/'
-      }
+
       const handler = (file?: string) => {
         if (!file) return
         const absolute = path.resolve(file)
@@ -274,12 +259,12 @@ function blogUnlinkRestartPlugin() {
         if (!relativeRaw || relativeRaw.startsWith('..') || path.isAbsolute(relativeRaw)) return
         const relative = relativeRaw.replace(/\\/g, '/')
         if (!relative.startsWith('blog/')) return
-        const route = normalizeBlogRoute(relative)
+
         if (Array.isArray(blog?.pagesData)) {
           const pages = blog.pagesData
           const index = pages.findIndex((item) => {
             if (!item) return false
-            const existing = normalizeBlogRoute(String(item.route || ''))
+
             return existing === route
           })
           if (index >= 0) {
@@ -287,6 +272,7 @@ function blogUnlinkRestartPlugin() {
           }
         }
         queueRestart()
+
       }
       server.watcher.on('unlink', handler)
       server.httpServer?.once('close', () => {
