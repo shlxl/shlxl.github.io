@@ -130,6 +130,7 @@ const blog = blogTheme?.themeConfig?.blog as
   | undefined
 
 
+
 export default defineConfig({
   extends: blogTheme,
   lang: 'zh-CN',
