@@ -125,6 +125,9 @@ const blogTheme = getThemeConfig({
   homeTags: false,
   recommend: { showDate: true }
 } as any)
+const blog = blogTheme?.themeConfig?.blog as
+  | { pagesData?: Array<{ route?: string }> }
+  | undefined
 
 export default defineConfig({
   extends: blogTheme,
@@ -152,7 +155,12 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
+    plugins: [
+      faviconIcoFallback(),
+      overrideSugaratComponents(),
+      adminNavWatcherPlugin(),
+      blogUnlinkRestartPlugin()
+    ],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -221,6 +229,66 @@ function adminNavWatcherPlugin() {
       server.httpServer?.once('close', () => {
         for (const eventName of events) {
           server.watcher.off(eventName, handleFsEvent)
+        }
+      })
+    }
+  }
+}
+
+function blogUnlinkRestartPlugin() {
+  return {
+    name: 'blog-unlink-restart',
+    apply: 'serve' as const,
+    configureServer(server) {
+      const docsRoot = path.resolve(process.cwd(), 'docs')
+      let restartTimer: NodeJS.Timeout | null = null
+      const queueRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer)
+        restartTimer = setTimeout(async () => {
+          restartTimer = null
+          try {
+            await server.restart()
+          } catch (err) {
+            console.warn('[vite] failed to restart after blog unlink', err)
+          } finally {
+            try {
+              server.ws.send({ type: 'full-reload' })
+            } catch {}
+          }
+        }, 200)
+      }
+      const normalizeRoute = (value: string) => {
+        const cleaned = String(value || '')
+          .replace(/\\/g, '/')
+          .replace(/^\/+/, '')
+        return `/${cleaned.replace(/\.md$/, '')}`
+      }
+      const handler = (file?: string) => {
+        if (!file) return
+        const absolute = path.resolve(file)
+        if (!absolute.endsWith('.md')) return
+        const relative = path.relative(docsRoot, absolute).replace(/\\/g, '/')
+        if (!relative.startsWith('blog/')) return
+        const route = '/' + relative.replace(/\.md$/, '')
+        if (Array.isArray(blog?.pagesData)) {
+          const pages = blog.pagesData
+          const index = pages.findIndex((item) => {
+            if (!item) return false
+            const existing = normalizeRoute(item.route ?? '')
+            return existing === route
+          })
+          if (index >= 0) {
+            pages.splice(index, 1)
+          }
+        }
+        queueRestart()
+      }
+      server.watcher.on('unlink', handler)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('unlink', handler)
+        if (restartTimer) {
+          clearTimeout(restartTimer)
+          restartTimer = null
         }
       })
     }
