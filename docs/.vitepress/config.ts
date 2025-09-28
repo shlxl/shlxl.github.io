@@ -125,6 +125,9 @@ const blogTheme = getThemeConfig({
   homeTags: false,
   recommend: { showDate: true }
 } as any)
+const blog = blogTheme?.themeConfig?.blog as
+  | { pagesData?: Array<{ route?: string }> }
+  | undefined
 
 export default defineConfig({
   extends: blogTheme,
@@ -152,7 +155,12 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
+    plugins: [
+      faviconIcoFallback(),
+      overrideSugaratComponents(),
+      adminNavWatcherPlugin(),
+      blogUnlinkRestartPlugin()
+    ],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -226,6 +234,71 @@ function adminNavWatcherPlugin() {
     }
   }
 }
+
+  function blogUnlinkRestartPlugin() {
+    return {
+      name: 'blog-unlink-restart',
+      apply: 'serve' as const,
+      configureServer(server) {
+        const docsRoot = path.resolve(process.cwd(), 'docs')
+        let restartTimer: NodeJS.Timeout | null = null
+        const queueRestart = () => {
+          if (restartTimer) clearTimeout(restartTimer)
+          restartTimer = setTimeout(async () => {
+            restartTimer = null
+            try {
+              await server.restart()
+            } catch (err) {
+              console.warn('[vite] failed to restart after blog unlink', err)
+            } finally {
+              try {
+                server.ws.send({ type: 'full-reload' })
+              } catch {}
+            }
+          }, 200)
+        }
+        const normalizeBlogRoute = (value: string) => {
+          const normalized = String(value || '')
+            .replace(/\\/g, '/')
+            .replace(/^\/+/, '')
+          if (!normalized) return '/'
+          let route = normalized
+          if (route.endsWith('index.md')) {
+            route = route.slice(0, -'index.md'.length)
+          } else if (route.endsWith('.md')) {
+            route = route.slice(0, -'.md'.length)
+          }
+          if (!route.startsWith('/')) {
+            route = `/${route}`
+          }
+          return route || '/'
+        }
+        const handler = (file?: string) => {
+          if (!file || !file.endsWith('.md')) return
+          const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
+          if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
+          const route = normalizeBlogRoute(relative)
+          if (Array.isArray(blog?.pagesData) && blog.pagesData.length) {
+            const pages = blog.pagesData
+            let index = pages.findIndex((item) => normalizeBlogRoute(item?.route ?? '') === route)
+            while (index >= 0) {
+              pages.splice(index, 1)
+              index = pages.findIndex((item) => normalizeBlogRoute(item?.route ?? '') === route)
+            }
+          }
+          queueRestart()
+        }
+        server.watcher.on('unlink', handler)
+        server.httpServer?.once('close', () => {
+          server.watcher.off('unlink', handler)
+          if (restartTimer) {
+            clearTimeout(restartTimer)
+            restartTimer = null
+          }
+        })
+      }
+    }
+  }
 
 
 function resolveLatestCategoryArticle(category: string) {
