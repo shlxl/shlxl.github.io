@@ -36,8 +36,13 @@ function createCoverSVG(title, outPath) {
   fs.writeFileSync(outPath, svg, 'utf8');
 }
 
+if (typeof program.argument === 'function') {
+  program.argument('[title]', 'Post title');
+} else if (typeof program.arguments === 'function') {
+  program.arguments('[title]');
+}
+
 program
-  .argument('[title]', 'Post title')
   .option('-t, --title <string>', 'Post title')
   .option('-d, --desc <string>', 'Post description', '待补充摘要...')
   .option('--tags <string>', 'Comma-separated tags', '')

@@ -31,8 +31,13 @@
   }
 
   // Commander setup
+  if (typeof program.argument === 'function') {
+    program.argument('[title]', 'Post title');
+  } else if (typeof program.arguments === 'function') {
+    program.arguments('[title]');
+  }
+
   program
-    .argument('[title]', 'Post title')
     .option('-t, --title <string>', 'Post title')
     .option('-d, --desc <string>', 'Post description', '')
     .option('--tags <string>', 'Comma-separated tags', '')

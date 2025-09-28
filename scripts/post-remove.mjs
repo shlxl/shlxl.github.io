@@ -27,8 +27,13 @@ function stamp() {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
 
+if (typeof program.argument === 'function') {
+  program.argument('<slug>', 'The slug of the post to remove');
+} else if (typeof program.arguments === 'function') {
+  program.arguments('<slug>');
+}
+
 program
-  .argument('<slug>', 'The slug of the post to remove')
   .option('--hard', 'Permanently delete the post');
 
 program.parse(process.argv);

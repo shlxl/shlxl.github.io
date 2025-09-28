@@ -20,8 +20,11 @@ function findMdBySlug(dir, slug) {
   return '';
 }
 
-program
-  .argument('<slug>', 'The slug of the post to archive');
+if (typeof program.argument === 'function') {
+  program.argument('<slug>', 'The slug of the post to archive');
+} else if (typeof program.arguments === 'function') {
+  program.arguments('<slug>');
+}
 
 program.parse(process.argv);
 

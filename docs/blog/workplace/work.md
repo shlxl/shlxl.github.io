@@ -1,10 +1,10 @@
 ---
-title: "我的测试文章"
-date: "2025/09/27 18:51:53"
+title: "work"
+date: 2025/09/28 11:57:37
 description: "待补充摘要..."
-tags: []
-categories: [工程实践]
-cover: "/images/my-test-post-cover.svg"
+tags: [work]
+categories: [艰辛职场]
+cover: "/images/work-cover.svg"
 publish: true
 draft: false
 ---

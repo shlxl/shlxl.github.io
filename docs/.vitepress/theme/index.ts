@@ -13,6 +13,8 @@ const extendedTheme: VitePressTheme = {
         '--blog-bg-texture',
         `url(${textureUrl})`
       )
+      setupNavHmrAutoReload(ctx)
+      setupNavPolling(ctx)
       setupCategoryNavPersistence(ctx)
     }
   }
@@ -67,6 +69,136 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   }
 
   handleRouteChange(states, ctx.router.route.data, siteData, base)
+}
+
+function setupNavHmrAutoReload(ctx: EnhanceAppContext) {
+  const hot = (import.meta as any).hot
+  if (!hot) return
+  const siteData = ctx.siteData
+  hot.on('xl-nav-update', async () => {
+    try {
+      const url = new URL('/.vitepress/categories.nav.json', window.location.origin)
+      url.searchParams.set('t', Date.now().toString())
+      const res = await fetch(url.toString())
+      if (!res.ok) return
+      const payload = await res.json()
+      if (!payload || !Array.isArray(payload.items)) return
+      if (applyNavPayload(payload, siteData)) {
+        console.info('[xl-nav] navigation refreshed via HMR')
+      }
+    } catch (err) {
+      console.warn('[xl-nav] failed to refresh navigation', err)
+    }
+  })
+}
+
+let navPollingTimer = 0
+
+function setupNavPolling(ctx: EnhanceAppContext) {
+  if (typeof window === 'undefined') return
+  const env = (import.meta as any).env
+  if (!(env && env.DEV)) return
+  if (navPollingTimer) return
+  const siteData = ctx.siteData
+  const run = async () => {
+    try {
+      const url = new URL('/.vitepress/categories.nav.json', window.location.origin)
+      url.searchParams.set('t', Date.now().toString())
+      const res = await fetch(url.toString())
+      if (!res.ok) return
+      const payload = await res.json()
+      if (payload && Array.isArray(payload.items)) {
+        if (applyNavPayload(payload, siteData)) {
+          console.info('[xl-nav] navigation refreshed via polling')
+        }
+      }
+    } catch (err) {
+      console.warn('[xl-nav] polling failed', err)
+    }
+  }
+  navPollingTimer = window.setInterval(run, 5000)
+  window.addEventListener('beforeunload', () => {
+    if (navPollingTimer) {
+      clearInterval(navPollingTimer)
+      navPollingTimer = 0
+    }
+  })
+  run()
+}
+
+let lastNavUpdateStamp = ''
+
+function applyNavPayload(payload: { updatedAt?: string; items: NavRecord[] }, siteData: SiteDataRef) {
+  const stamp = String(payload?.updatedAt || '')
+  if (stamp && stamp === lastNavUpdateStamp) return false
+  const items = Array.isArray(payload?.items) ? payload.items : []
+  const site = siteData.value
+  const themeConfig = site.themeConfig || {}
+  const currentNav = Array.isArray((themeConfig as any).nav) ? (themeConfig as any).nav : []
+  const { prefix, suffix } = splitStaticNavSections(currentNav)
+  const nextNav = [...prefix, ...items, ...suffix]
+  const nextThemeConfig = { ...themeConfig, nav: nextNav }
+  const base = siteData.value.base || '/'
+  pruneStaleNavStorage(items, base)
+  site.themeConfig = nextThemeConfig
+  siteData.value = { ...site, themeConfig: nextThemeConfig }
+  window.dispatchEvent(new CustomEvent('xl-nav-updated', { detail: { items, updatedAt: stamp } }))
+  if (stamp) lastNavUpdateStamp = stamp
+  return true
+}
+
+function splitStaticNavSections(nav: NavRecord[]) {
+  if (!Array.isArray(nav) || !nav.length) return { prefix: [], suffix: [] }
+  let firstDynamic = nav.findIndex((item) => item && typeof item === 'object' && 'category' in item)
+  if (firstDynamic === -1) firstDynamic = nav.length
+  let lastDynamic = -1
+  for (let i = nav.length - 1; i >= 0; i--) {
+    const item = nav[i]
+    if (item && typeof item === 'object' && 'category' in item) {
+      lastDynamic = i
+      break
+    }
+  }
+  const prefix = nav.slice(0, firstDynamic)
+  const suffix = lastDynamic === -1 ? [] : nav.slice(lastDynamic + 1)
+  return { prefix, suffix }
+}
+
+function pruneStaleNavStorage(items: NavRecord[], base: string) {
+  if (typeof window === 'undefined' || !window.localStorage) return
+  const active = new Map<string, Set<string>>()
+  for (const item of items) {
+    if (!item || typeof item !== 'object') continue
+    const category = typeof item.category === 'string' ? item.category.trim() : ''
+    if (!category) continue
+    const allowed = active.get(category) || new Set<string>()
+    const link = normalizeRoute(String(item.link || ''), base)
+    const fallback = normalizeRoute(String(item.fallback || ''), base)
+    const latest = normalizeRoute(String(item.latestLink || ''), base)
+    if (link) allowed.add(link)
+    if (fallback) allowed.add(fallback)
+    if (latest) allowed.add(latest)
+    active.set(category, allowed)
+  }
+  try {
+    for (let i = window.localStorage.length - 1; i >= 0; i--) {
+      const key = window.localStorage.key(i) || ''
+      if (!key.startsWith(NAV_STORAGE_PREFIX)) continue
+      const category = key.slice(NAV_STORAGE_PREFIX.length)
+      const allowed = active.get(category)
+      if (!allowed || !allowed.size) {
+        window.localStorage.removeItem(key)
+        continue
+      }
+      const storedRaw = window.localStorage.getItem(key) || ''
+      const storedRoute = normalizeRoute(storedRaw, base)
+      if (!allowed.has(storedRoute)) {
+        window.localStorage.removeItem(key)
+      }
+    }
+  } catch (err) {
+    console.warn('[xl-nav] failed to prune nav storage', err)
+  }
 }
 
 function buildCategoryStates(navItems: NavRecord[], base: string) {

@@ -152,7 +152,7 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents()],
+    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -178,6 +178,51 @@ function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
 }
+function adminNavWatcherPlugin() {
+  const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
+  let restarting = false
+  return {
+    name: 'admin-nav-watcher',
+    apply: 'serve' as const,
+    configResolved(config) {
+      if (!config.configFileDependencies.includes(navPath)) {
+        config.configFileDependencies.push(navPath)
+      }
+    },
+    configureServer(server) {
+      const target = path.resolve(navPath)
+      const broadcastUpdate = () => {
+        try {
+          server.ws.send({ type: 'custom', event: 'xl-nav-update' })
+        } catch {}
+        try {
+          server.ws.send({ type: 'full-reload' })
+        } catch {}
+      }
+      const handleFsEvent = async (event, file) => {
+        if (event !== 'change') return
+        if (!file || path.resolve(file) !== target) return
+        broadcastUpdate()
+        if (restarting) return
+        restarting = true
+        console.log('[vite] categories.nav.json changed; restarting dev server to refresh navigation')
+        try {
+          await server.restart()
+          setTimeout(broadcastUpdate, 200)
+          setTimeout(broadcastUpdate, 600)
+        } finally {
+          restarting = false
+        }
+      }
+      server.watcher.add(target)
+      server.watcher.on('change', handleFsEvent)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('change', handleFsEvent)
+      })
+    }
+  }
+}
+
 
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'

@@ -25,8 +25,13 @@ function formatNow(tz = 'Asia/Shanghai') {
   return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
+if (typeof program.argument === 'function') {
+  program.argument('<slug>', 'The slug of the post to promote');
+} else if (typeof program.arguments === 'function') {
+  program.arguments('<slug>');
+}
+
 program
-  .argument('<slug>', 'The slug of the post to promote')
   .option('--set-date', 'Set the post date to the current time');
 
 program.parse(process.argv);
