@@ -62,7 +62,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackSource = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
       const resolved = ensureExistingRoute(
@@ -192,6 +191,17 @@ function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
 }
+
+function normalizeBlogRouteCandidate(route: string) {
+  let normalized = normalizeLink(String(route || ''))
+  if (!normalized) return ''
+  normalized = normalized.replace(/[?#].*$/, '').replace(/\\+/g, '/').replace(/\.(md|html?)$/i, '')
+  normalized = normalized.replace(/\/index$/i, '/').replace(/\/{2,}/g, '/')
+  if (normalized !== '/' && normalized.endsWith('//')) {
+    normalized = normalized.replace(/\/+$/, '/')
+  }
+  return normalized
+}
 function adminNavWatcherPlugin() {
   const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
   let restarting = false
@@ -253,7 +263,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
       const toRoute = (input: string) => {
         const cleaned = input.replace(/^\/+/, '')
         if (!cleaned) return ''
-        return '/' + cleaned.replace(/\.md$/, '')
       }
 
       const queueRestart = () => {
@@ -283,8 +292,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
         const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
         if (pagesData?.length) {
           for (let index = pagesData.length - 1; index >= 0; index -= 1) {
-            const existing = toRoute(String(pagesData[index]?.route || ''))
-            if (existing === route) {
               pagesData.splice(index, 1)
             }
           }
@@ -374,11 +381,6 @@ function resolveFileForRoute(route: string) {
 function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
   const options = [candidate, ...fallbacks, '/blog/']
   for (const option of options) {
-    const normalized = normalizeLink(option || '')
-    if (!normalized) continue
-    if (resolveFileForRoute(normalized)) {
-      return normalized
-    }
   }
   return '/blog/'
 }
