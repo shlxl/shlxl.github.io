@@ -259,10 +259,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
     configureServer(server) {
       const docsRoot = path.resolve(process.cwd(), 'docs')
       let restartTimer: NodeJS.Timeout | null = null
-
-      const toRoute = (input: string) => {
-        const cleaned = input.replace(/^\/+/, '')
-        if (!cleaned) return ''
       }
 
       const queueRestart = () => {
@@ -286,8 +282,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
         const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
         if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
 
-        const route = toRoute(relative)
-        if (!route) return
 
         const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
         if (pagesData?.length) {
@@ -381,6 +375,7 @@ function resolveFileForRoute(route: string) {
 function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
   const options = [candidate, ...fallbacks, '/blog/']
   for (const option of options) {
+
   }
   return '/blog/'
 }
