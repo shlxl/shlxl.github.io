@@ -129,6 +129,7 @@ const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
 
+
 export default defineConfig({
   extends: blogTheme,
   lang: 'zh-CN',
