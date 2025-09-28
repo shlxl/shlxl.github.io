@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import type { PluginOption } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -125,6 +126,10 @@ const blogTheme = getThemeConfig({
   homeTags: false,
   recommend: { showDate: true }
 } as any)
+const blog = blogTheme?.themeConfig?.blog as
+  | { pagesData?: Array<{ route?: string }> }
+  | undefined
+const blogUnlinkRestartPlugin = () => createBlogUnlinkRestartPlugin(blog)
 
 export default defineConfig({
   extends: blogTheme,
@@ -152,7 +157,12 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
+    plugins: [
+      faviconIcoFallback(),
+      overrideSugaratComponents(),
+      adminNavWatcherPlugin(),
+      blogUnlinkRestartPlugin()
+    ],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -221,6 +231,74 @@ function adminNavWatcherPlugin() {
       server.httpServer?.once('close', () => {
         for (const eventName of events) {
           server.watcher.off(eventName, handleFsEvent)
+        }
+      })
+    }
+  }
+}
+
+
+function createBlogUnlinkRestartPlugin(
+  blogSource: { pagesData?: Array<{ route?: string }> } | undefined
+): PluginOption {
+  return {
+    name: 'blog-unlink-restart',
+    apply: 'serve' as const,
+    configureServer(server) {
+      const docsRoot = path.resolve(process.cwd(), 'docs')
+      let restartTimer: NodeJS.Timeout | null = null
+      const normalizeBlogRoute = (value: string) => {
+        if (!value) return ''
+        let route = String(value).trim()
+        if (!route) return ''
+        route = route.replace(/\\/g, '/')
+        const hashIndex = route.indexOf('#')
+        if (hashIndex >= 0) route = route.slice(0, hashIndex)
+        const queryIndex = route.indexOf('?')
+        if (queryIndex >= 0) route = route.slice(0, queryIndex)
+        route = route.replace(/(?:(^|\/)index)?\.(?:md|html)$/, '$1')
+        route = route.replace(/\/+/g, '/')
+        if (!route.startsWith('/')) route = `/${route}`
+        if (route.length > 1 && route.endsWith('/')) route = route.slice(0, -1)
+        return route
+      }
+      const queueRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer)
+        restartTimer = setTimeout(async () => {
+          restartTimer = null
+          try {
+            await server.restart()
+          } catch (err) {
+            console.warn('[vite] failed to restart after blog unlink', err)
+          } finally {
+            try {
+              server.ws.send({ type: 'full-reload' })
+            } catch {}
+          }
+        }, 200)
+      }
+      const handler = (file?: string) => {
+        if (!file || !file.endsWith('.md')) return
+        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
+        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
+        const route = normalizeBlogRoute(relative)
+        const pagesData = Array.isArray(blogSource?.pagesData) ? blogSource.pagesData : null
+        if (route && pagesData && pagesData.length) {
+          for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const existing = pagesData[index]
+            if (normalizeBlogRoute(existing?.route ?? '') === route) {
+              pagesData.splice(index, 1)
+            }
+          }
+        }
+        queueRestart()
+      }
+      server.watcher.on('unlink', handler)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('unlink', handler)
+        if (restartTimer) {
+          clearTimeout(restartTimer)
+          restartTimer = null
         }
       })
     }
