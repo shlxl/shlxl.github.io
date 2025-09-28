@@ -242,6 +242,70 @@ function adminNavWatcherPlugin() {
 }
 
 
+function blogUnlinkRestartPlugin(): PluginOption {
+  return {
+    name: 'blog-unlink-restart',
+    apply: 'serve' as const,
+    configureServer(server) {
+      const docsRoot = path.resolve(process.cwd(), 'docs')
+      let restartTimer: NodeJS.Timeout | null = null
+
+      const toRoute = (input: string) => {
+        const cleaned = input.replace(/^\/+/, '')
+        if (!cleaned) return ''
+        return '/' + cleaned.replace(/\.md$/, '')
+      }
+
+      const queueRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer)
+        restartTimer = setTimeout(async () => {
+          restartTimer = null
+          try {
+            await server.restart()
+          } catch (err) {
+            console.warn('[vite] failed to restart after blog unlink', err)
+          } finally {
+            try {
+              server.ws.send({ type: 'full-reload' })
+            } catch {}
+          }
+        }, 200)
+      }
+
+      const handleUnlink = (file?: string) => {
+        if (!file || !file.endsWith('.md')) return
+        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
+        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
+
+        const route = toRoute(relative)
+        if (!route) return
+
+        const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
+        if (pagesData?.length) {
+          for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const existing = toRoute(String(pagesData[index]?.route || ''))
+            if (existing === route) {
+              pagesData.splice(index, 1)
+            }
+          }
+        }
+
+        queueRestart()
+      }
+
+      server.watcher.on('unlink', handleUnlink)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('unlink', handleUnlink)
+        if (restartTimer) {
+          clearTimeout(restartTimer)
+          restartTimer = null
+        }
+      })
+    }
+  }
+}
+
+
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
   const blogRoot = path.join(docsRoot, 'blog')
