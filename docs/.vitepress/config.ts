@@ -129,69 +129,7 @@ const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
 
-function blogUnlinkRestartPlugin() {
-  return {
-    name: 'blog-unlink-restart',
-    apply: 'serve' as const,
-    configureServer(server) {
-      const docsRoot = path.resolve(process.cwd(), 'docs')
-      let restartTimer: NodeJS.Timeout | null = null
-      const normalizeBlogRoute = (value: string) => {
-        if (!value) return ''
-        let route = String(value).trim()
-        if (!route) return ''
-        route = route.replace(/\\/g, '/')
-        const hashIndex = route.indexOf('#')
-        if (hashIndex >= 0) route = route.slice(0, hashIndex)
-        const queryIndex = route.indexOf('?')
-        if (queryIndex >= 0) route = route.slice(0, queryIndex)
-        route = route.replace(/(?:(^|\/)index)?\.(?:md|html)$/, '$1')
-        route = route.replace(/\/+/g, '/')
-        if (!route.startsWith('/')) route = `/${route}`
-        if (route.length > 1 && route.endsWith('/')) route = route.slice(0, -1)
-        return route
-      }
-      const queueRestart = () => {
-        if (restartTimer) clearTimeout(restartTimer)
-        restartTimer = setTimeout(async () => {
-          restartTimer = null
-          try {
-            await server.restart()
-          } catch (err) {
-            console.warn('[vite] failed to restart after blog unlink', err)
-          } finally {
-            try {
-              server.ws.send({ type: 'full-reload' })
-            } catch {}
-          }
-        }, 200)
-      }
-      const handler = (file?: string) => {
-        if (!file || !file.endsWith('.md')) return
-        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
-        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
-        const route = normalizeBlogRoute(relative)
-        if (route && Array.isArray(blog?.pagesData) && blog.pagesData.length) {
-          for (let index = blog.pagesData.length - 1; index >= 0; index -= 1) {
-            const existing = blog.pagesData[index]
-            if (normalizeBlogRoute(existing?.route ?? '') === route) {
-              blog.pagesData.splice(index, 1)
-            }
-          }
-        }
-        queueRestart()
-      }
-      server.watcher.on('unlink', handler)
-      server.httpServer?.once('close', () => {
-        server.watcher.off('unlink', handler)
-        if (restartTimer) {
-          clearTimeout(restartTimer)
-          restartTimer = null
-        }
-      })
-    }
-  }
-}
+
 
 export default defineConfig({
   extends: blogTheme,
@@ -298,6 +236,8 @@ function adminNavWatcherPlugin() {
     }
   }
 }
+
+
 
 
 function resolveLatestCategoryArticle(category: string) {
