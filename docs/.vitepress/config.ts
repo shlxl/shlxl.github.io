@@ -240,7 +240,6 @@ function adminNavWatcherPlugin() {
 
 
 
-
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
   const blogRoot = path.resolve(process.cwd(), 'docs/blog')
