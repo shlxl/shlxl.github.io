@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import type { PluginOption } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -130,7 +131,6 @@ const blog = blogTheme?.themeConfig?.blog as
   | undefined
 
 
-
 export default defineConfig({
   extends: blogTheme,
   lang: 'zh-CN',
@@ -236,6 +236,7 @@ function adminNavWatcherPlugin() {
     }
   }
 }
+
 
 
 
