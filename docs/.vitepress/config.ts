@@ -241,6 +241,7 @@ function adminNavWatcherPlugin() {
   }
 }
 
+
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
   const blogRoot = path.join(docsRoot, 'blog')
