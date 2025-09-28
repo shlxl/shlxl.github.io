@@ -161,7 +161,6 @@ export default defineConfig({
       faviconIcoFallback(),
       overrideSugaratComponents(),
       adminNavWatcherPlugin(),
-      blogUnlinkRestartPlugin()
     ],
     resolve: {
       alias: {
@@ -236,6 +235,7 @@ function adminNavWatcherPlugin() {
     }
   }
 }
+
 
 
 
