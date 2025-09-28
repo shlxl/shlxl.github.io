@@ -250,9 +250,7 @@ function blogUnlinkRestartPlugin() {
             await server.restart()
           } catch (err) {
             console.warn('[vite] failed to restart after blog unlink', err)
-          }
-        }, 200)
-      }
+
       const handler = (file?: string) => {
         if (!file) return
         const absolute = path.resolve(file)
@@ -261,12 +259,12 @@ function blogUnlinkRestartPlugin() {
         if (!relativeRaw || relativeRaw.startsWith('..') || path.isAbsolute(relativeRaw)) return
         const relative = relativeRaw.replace(/\\/g, '/')
         if (!relative.startsWith('blog/')) return
-        const route = '/' + relative.replace(/\.md$/, '')
+
         if (Array.isArray(blog?.pagesData)) {
           const pages = blog.pagesData
           const index = pages.findIndex((item) => {
             if (!item) return false
-            const existing = '/' + String(item.route || '').replace(/^\/+/, '').replace(/\.md$/, '')
+
             return existing === route
           })
           if (index >= 0) {
@@ -274,9 +272,7 @@ function blogUnlinkRestartPlugin() {
           }
         }
         queueRestart()
-        try {
-          server.ws.send({ type: 'full-reload' })
-        } catch {}
+
       }
       server.watcher.on('unlink', handler)
       server.httpServer?.once('close', () => {
