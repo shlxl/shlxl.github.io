@@ -45,16 +45,32 @@ interface CategoryRouteEntry {
 
 function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   const siteData = ctx.siteData
-  const themeConfig = siteData.value.themeConfig || {}
-  const navItems = Array.isArray(themeConfig.nav) ? themeConfig.nav : []
-  if (!navItems.length) return
 
-  const base = siteData.value.base || '/'
-  const states = buildCategoryStates(navItems, base)
-  if (!states.size) return
+  const resolveNavSource = () => {
+    const themeConfig = siteData.value.themeConfig || {}
+    const navItems = Array.isArray((themeConfig as any).nav) ? (themeConfig as any).nav : []
+    return { navItems, themeConfig }
+  }
 
-  populateCategoryRoutes(states, themeConfig, base)
-  applyInitialNavLinks(states, siteData, base)
+  let base = siteData.value.base || '/'
+  let { navItems, themeConfig } = resolveNavSource()
+  let states = buildCategoryStates(navItems, base)
+
+  if (states.size) {
+    populateCategoryRoutes(states, themeConfig, base)
+    applyInitialNavLinks(states, siteData, base)
+  }
+
+  const rebuildStates = () => {
+    base = siteData.value.base || '/'
+    const resolved = resolveNavSource()
+    const nextStates = buildCategoryStates(resolved.navItems, base)
+    if (nextStates.size) {
+      populateCategoryRoutes(nextStates, resolved.themeConfig, base)
+      applyInitialNavLinks(nextStates, siteData, base)
+    }
+    states = nextStates
+  }
 
   const previous = ctx.router.onAfterRouteChange
   ctx.router.onAfterRouteChange = async (to: string) => {
@@ -69,7 +85,19 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   }
 
   handleRouteChange(states, ctx.router.route.data, siteData, base)
+
+  if (typeof window !== 'undefined') {
+    if (navUpdateHandler) {
+      window.removeEventListener('xl-nav-updated', navUpdateHandler)
+    }
+    navUpdateHandler = () => {
+      rebuildStates()
+      handleRouteChange(states, ctx.router.route.data, siteData, base)
+    }
+    window.addEventListener('xl-nav-updated', navUpdateHandler)
+  }
 }
+
 
 function setupNavHmrAutoReload(ctx: EnhanceAppContext) {
   const hot = (import.meta as any).hot
@@ -93,6 +121,8 @@ function setupNavHmrAutoReload(ctx: EnhanceAppContext) {
 }
 
 let navPollingTimer = 0
+
+let navUpdateHandler: EventListener | null = null
 
 function setupNavPolling(ctx: EnhanceAppContext) {
   if (typeof window === 'undefined') return
