@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import type { PluginOption } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -11,6 +12,7 @@ import {
 } from '../../scripts/lib/frontmatter.js'
 
 const deployBase = process.env.DEPLOY_BASE || '/'
+const docsRoot = path.resolve(process.cwd(), 'docs')
 
 // @sugarat/theme-shared requires a positive concurrency value; some hosts
 // (including the Codex sandbox) report 0 CPUs, so guard with a sane default.
@@ -60,10 +62,15 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
-      const fallbackLink = normalizeLink(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
-      const precomputed = normalizeLink(item?.latestLink || '')
-      const resolved = precomputed || (title ? resolveLatestCategoryArticle(title) : '')
-      const link = resolved || fallbackLink
+      const fallbackSource = normalizeBlogRouteCandidate(String(item?.fallback || item?.link || '/blog/')) || '/blog/'
+      const fallbackLink = ensureExistingRoute(fallbackSource)
+      const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
+      const resolved = ensureExistingRoute(
+        title ? resolveLatestCategoryArticle(title) : '',
+        precomputed,
+        fallbackLink
+      )
+      const link = ensureExistingRoute(resolved, fallbackLink)
       return {
         text: item?.text || title || '分类',
         link,
@@ -125,6 +132,9 @@ const blogTheme = getThemeConfig({
   homeTags: false,
   recommend: { showDate: true }
 } as any)
+const blog = blogTheme?.themeConfig?.blog as
+  | { pagesData?: Array<{ route?: string }> }
+  | undefined
 
 export default defineConfig({
   extends: blogTheme,
@@ -152,7 +162,12 @@ export default defineConfig({
     outline: { label: '本页导航', level: 'deep' }
   },
   vite: {
-    plugins: [faviconIcoFallback(), overrideSugaratComponents(), adminNavWatcherPlugin()],
+    plugins: [
+      faviconIcoFallback(),
+      overrideSugaratComponents(),
+      adminNavWatcherPlugin(),
+      blogUnlinkRestartPlugin()
+    ],
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
@@ -177,6 +192,17 @@ export default defineConfig({
 function normalizeLink(link: string) {
   if (!link) return ''
   return link.startsWith('/') ? link : `/${link}`
+}
+
+function normalizeBlogRouteCandidate(route: string) {
+  let normalized = normalizeLink(String(route || ''))
+  if (!normalized) return ''
+  normalized = normalized.replace(/[?#].*$/, '').replace(/\\+/g, '/').replace(/\.(md|html?)$/i, '')
+  normalized = normalized.replace(/\/index$/i, '/').replace(/\/{2,}/g, '/')
+  if (normalized !== '/' && normalized.endsWith('//')) {
+    normalized = normalized.replace(/\/+$/, '/')
+  }
+  return normalized
 }
 function adminNavWatcherPlugin() {
   const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
@@ -228,9 +254,76 @@ function adminNavWatcherPlugin() {
 }
 
 
+function blogUnlinkRestartPlugin(): PluginOption {
+  return {
+    name: 'blog-unlink-restart',
+    apply: 'serve' as const,
+    configureServer(server) {
+      const docsRoot = path.resolve(process.cwd(), 'docs')
+      let restartTimer: NodeJS.Timeout | null = null
+
+      const normalizeBlogRoute = (input: string) => {
+        const cleaned = input.replace(/^\/+/, '')
+        if (!cleaned.startsWith('blog/')) return ''
+        return `/${cleaned.replace(/\.md$/, '')}`
+      }
+
+      const queueRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer)
+        restartTimer = setTimeout(async () => {
+          restartTimer = null
+          try {
+            await server.restart()
+          } catch (err) {
+            console.warn('[vite] failed to restart after blog unlink', err)
+          } finally {
+            try {
+              server.ws.send({ type: 'full-reload' })
+            } catch {}
+          }
+        }, 200)
+      }
+
+      const handleUnlink = (file?: string) => {
+        if (!file || !file.endsWith('.md')) return
+        const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
+        if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
+
+        const route = normalizeBlogRoute(relative)
+        if (!route) {
+          queueRestart()
+          return
+        }
+
+        const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
+        if (pagesData?.length) {
+          for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const existing = normalizeBlogRoute(String(pagesData[index]?.route || ''))
+            if (existing && existing === route) {
+              pagesData.splice(index, 1)
+            }
+          }
+        }
+
+        queueRestart()
+      }
+
+      server.watcher.on('unlink', handleUnlink)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('unlink', handleUnlink)
+        if (restartTimer) {
+          clearTimeout(restartTimer)
+          restartTimer = null
+        }
+      })
+    }
+  }
+}
+
+
 function resolveLatestCategoryArticle(category: string) {
   if (!category) return '/blog/'
-  const blogRoot = path.resolve(process.cwd(), 'docs/blog')
+  const blogRoot = path.join(docsRoot, 'blog')
   const stack: string[] = [blogRoot]
   let latest: { time: number; link: string } | null = null
   while (stack.length) {
@@ -268,7 +361,6 @@ function resolveLatestCategoryArticle(category: string) {
 }
 
 function buildRouteFromPath(filePath: string) {
-  const docsRoot = path.resolve(process.cwd(), 'docs')
   let relative = path.relative(docsRoot, filePath).replace(/\\/g, '/')
   if (!relative) return ''
   if (relative.endsWith('index.md')) {
@@ -278,6 +370,43 @@ function buildRouteFromPath(filePath: string) {
   }
   if (!relative.startsWith('/')) relative = `/${relative}`
   return relative || ''
+}
+
+function resolveFileForRoute(route: string) {
+  if (!route) return null
+  let normalized = normalizeLink(route)
+  if (!normalized) return null
+  normalized = normalized.replace(/[?#].*$/, '').replace(/\/+/g, '/')
+  let relative = normalized.slice(1)
+  if (relative.endsWith('/')) relative = relative.slice(0, -1)
+  const directPath = path.join(docsRoot, `${relative}.md`)
+  if (fs.existsSync(directPath)) return directPath
+  const indexPath = path.join(docsRoot, relative, 'index.md')
+  if (fs.existsSync(indexPath)) return indexPath
+  return null
+}
+
+function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
+  const options = [candidate, ...fallbacks, '/blog/']
+  for (const option of options) {
+    const normalized = normalizeBlogRouteCandidate(option || '')
+    if (!normalized) continue
+    const filePath = resolveFileForRoute(normalized)
+    if (!filePath) continue
+    if (!isRoutePublished(filePath)) continue
+    return normalized
+  }
+  return '/blog/'
+}
+
+function isRoutePublished(filePath: string) {
+  if (!filePath.endsWith('.md')) return true
+  if (!filePath.includes(`${path.sep}blog${path.sep}`)) return true
+  const block = extractFrontmatterBlockFile(filePath)
+  if (!block) return true
+  if (parseFrontmatterBoolean(block, 'publish') === false) return false
+  if (parseFrontmatterBoolean(block, 'draft') === true) return false
+  return true
 }
 
 function faviconIcoFallback() {
