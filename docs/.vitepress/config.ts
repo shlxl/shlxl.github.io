@@ -255,10 +255,6 @@ function blogUnlinkRestartPlugin() {
         if (!file) return
         const absolute = path.resolve(file)
         if (!absolute.endsWith('.md')) return
-        const relativeRaw = path.relative(docsRoot, absolute)
-        if (!relativeRaw || relativeRaw.startsWith('..') || path.isAbsolute(relativeRaw)) return
-        const relative = relativeRaw.replace(/\\/g, '/')
-        if (!relative.startsWith('blog/')) return
 
         if (Array.isArray(blog?.pagesData)) {
           const pages = blog.pagesData
