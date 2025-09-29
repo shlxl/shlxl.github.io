@@ -25,6 +25,11 @@ const { getThemeConfig } = await import('@sugarat/theme/node')
 
 const adminNavSource = resolveAdminNavItems()
 
+type CategoryLatestArticle = { time: number; link: string }
+
+const categoryLatestArticleIndex: Map<string, CategoryLatestArticle> = new Map()
+let categoryLatestArticleIndexPrimed = false
+
 function resolveAdminNavItems() {
   const fileNav = loadAdminNavFromFile()
   if (fileNav.length) return fileNav
@@ -52,6 +57,8 @@ function loadAdminNavFromFile(): CategoryNavItem[] {
 }
 
 function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
+  categoryLatestArticleIndexPrimed = false
+  categoryLatestArticleIndex.clear()
   return (navConfig || [])
     .slice()
     .sort((a, b) => {
@@ -75,14 +82,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
-      const fallbackSource = String(rawFallback || rawLink || '')
-      const fallbackLink = ensureExistingRoute(fallbackSource)
-      const resolvedCategoryLatest = normalizedCategory
-        ? resolveLatestCategoryArticle(normalizedCategory)
-        : ''
-      const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
-      const resolved = ensureExistingRoute(
-        precomputed,
         fallbackLink
       )
       const link = ensureExistingRoute(rawLink, fallbackLink)
@@ -93,7 +92,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         fallback: fallbackLink,
         fallbackLink,
         menuOrder: Number(rawMenuOrder ?? 0),
-        latestLink: resolved,
         latestUpdatedAt: rawLatestUpdatedAt,
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
@@ -384,13 +382,44 @@ function blogUnlinkRestartPlugin(): PluginOption {
     }
   }
 }
-
-
 function resolveLatestCategoryArticle(category: string) {
-  if (!category) return '/blog/'
+  const normalizedCategory = String(category || '').trim()
+  if (!normalizedCategory) return '/blog/'
+  if (!categoryLatestArticleIndexPrimed) {
+    primeLatestCategoryArticleIndex()
+  }
+
+  const current = categoryLatestArticleIndex.get(normalizedCategory)
+  if (isCategoryLatestEntryValid(normalizedCategory, current)) {
+    return current!.link
+  }
+
+  if (current) {
+    categoryLatestArticleIndex.delete(normalizedCategory)
+  }
+
+  primeLatestCategoryArticleIndex()
+
+  const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
+  if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
+    return refreshed!.link
+  }
+
+  return '/blog/'
+}
+
+function primeLatestCategoryArticleIndex() {
+  categoryLatestArticleIndexPrimed = true
+  categoryLatestArticleIndex.clear()
   const blogRoot = path.join(docsRoot, 'blog')
+  let rootStat: fs.Stats
+  try {
+    rootStat = fs.statSync(blogRoot)
+  } catch {
+    return
+  }
+  if (!rootStat.isDirectory()) return
   const stack: string[] = [blogRoot]
-  let latest: { time: number; link: string } | null = null
   while (stack.length) {
     const current = stack.pop()!
     let entries: fs.Dirent[] = []
@@ -409,20 +438,45 @@ function resolveLatestCategoryArticle(category: string) {
       if (!entry.isFile() || !entry.name.endsWith('.md')) continue
       const block = extractFrontmatterBlockFile(fullPath)
       if (!block) continue
-      const categories = parseFrontmatterArray(block, 'categories')
-      if (!categories.includes(category)) continue
       if (parseFrontmatterBoolean(block, 'publish') === false) continue
       if (parseFrontmatterBoolean(block, 'draft') === true) continue
       const time = parseFrontmatterDate(block, 'date')
       if (!Number.isFinite(time)) continue
       const route = normalizeLink(buildRouteFromPath(fullPath))
       if (!route) continue
-      if (!latest || time > latest.time) {
-        latest = { time, link: route }
+      const categories = parseFrontmatterArray(block, 'categories')
+      if (!categories.length) continue
+      for (const rawCategory of categories) {
+        const normalized = String(rawCategory || '').trim()
+        if (!normalized) continue
+        const existing = categoryLatestArticleIndex.get(normalized)
+        if (!existing || time > existing.time) {
+          categoryLatestArticleIndex.set(normalized, { time, link: route })
+        }
       }
     }
   }
-  return latest?.link || '/blog/'
+}
+
+function isCategoryLatestEntryValid(
+  category: string,
+  entry: CategoryLatestArticle | undefined
+) {
+  if (!entry || !entry.link) return false
+  const filePath = resolveFileForRoute(entry.link)
+  if (!filePath) return false
+  const block = extractFrontmatterBlockFile(filePath)
+  if (!block) return false
+  if (parseFrontmatterBoolean(block, 'publish') === false) return false
+  if (parseFrontmatterBoolean(block, 'draft') === true) return false
+  const categories = parseFrontmatterArray(block, 'categories')
+  if (!categories.length) return false
+  for (const rawCategory of categories) {
+    if (String(rawCategory || '').trim() === category) {
+      return true
+    }
+  }
+  return false
 }
 
 function buildRouteFromPath(filePath: string) {
