@@ -226,7 +226,8 @@ html.dark {
     border-radius: 0;
     position: relative;
     padding-right: 16px;
-    margin-right: 16px;
+    margin-left: 48px;
+    margin-right: -32px;
   }
 
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
@@ -234,7 +235,7 @@ html.dark {
     position: absolute;
     top: 0;
     bottom: 0;
-    right: -16px;
+    right: 0;
     width: 1px;
     background: var(--vp-c-divider);
     pointer-events: none;
