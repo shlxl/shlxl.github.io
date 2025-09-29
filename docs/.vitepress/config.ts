@@ -88,9 +88,14 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       const resolvedCategoryLatest = normalizedCategory
         ? resolveLatestCategoryArticle(normalizedCategory)
         : ''
+      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
       const latestLink = ensureExistingRoute(
         resolvedCategoryLatest,
         rawLatestLink,
+        fallbackLink
+      )
+      const link = ensureExistingRoute(rawLink, latestLink, fallbackLink)
+
       const normalizedNavItem: CategoryNavItem = {
         text: navText,
         category: normalizedCategory,
@@ -101,7 +106,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         latestUpdatedAt: rawLatestUpdatedAt,
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
-        publishedCount: rawPublishedCount,
+        publishedCount: rawPublishedCount
       }
 
       return normalizedNavItem
@@ -396,6 +401,7 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
+}
 function primeLatestCategoryArticleIndex() {
   categoryLatestArticleIndexPrimed = true
   categoryLatestArticleIndex.clear()
@@ -499,7 +505,7 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (!filePath) continue
+    if (filePath) return normalized
   }
   return '/blog/'
 }
