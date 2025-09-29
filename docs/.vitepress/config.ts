@@ -61,22 +61,20 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
     })
     .map((item) => {
-      const title = String(item?.category || item?.text || '').trim()
-      const fallbackSource = item?.fallback || item?.link || ''
       const fallbackLink = ensureExistingRoute(fallbackSource)
-      const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
+      const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
       const resolved = ensureExistingRoute(
         title ? resolveLatestCategoryArticle(title) : '',
         precomputed,
         fallbackLink
       )
         category: title,
-        dir: item?.dir || '',
+        dir: rawDir,
         latestLink: resolved,
-        latestUpdatedAt: item?.latestUpdatedAt || '',
-        latestTitle: item?.latestTitle || '',
-        postCount: item?.postCount ?? 0,
-        publishedCount: item?.publishedCount ?? 0
+        latestUpdatedAt: rawLatestUpdatedAt,
+        latestTitle: rawLatestTitle,
+        postCount: rawPostCount,
+        publishedCount: rawPublishedCount
       }
     })
 }
