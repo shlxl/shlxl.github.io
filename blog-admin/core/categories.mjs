@@ -467,19 +467,13 @@ function buildCategoryNavItems() {
       const category = title || String(item.menuLabel || item.dir || '博客').trim();
       const stats = usage.get(title) || usage.get(category) || null;
       const latestPublished = stats?.latestPublished || null;
-      const latestAny = stats?.latestAny || null;
-      const latestLink = latestPublished?.rel ? relToRoute(latestPublished.rel) : '';
-      const best = latestPublished || latestAny;
-      const latestUpdatedAt = best?.at || '';
-      const latestTitle = best?.title || '';
-      const fallback = latestLink || fallbackLink;
-      const link = latestLink || fallbackLink;
       return {
         text: item.menuLabel || item.title || dir || '博客',
         category,
         dir,
         link,
         fallback,
+        fallbackLink,
         menuOrder: Number(item.menuOrder) || 0,
         latestLink,
         latestUpdatedAt,

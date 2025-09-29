@@ -81,29 +81,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         postCount: rawPostCount,
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
-
-      const text = String(rawText || '').trim()
-      const category = String(rawCategory || '').trim()
-      const displayText = text || category || '博客'
-      const effectiveCategory = category || text
-      const latestCandidate = effectiveCategory
-        ? resolveLatestCategoryArticle(effectiveCategory)
-        : ''
-      const fallbackLink = ensureExistingRoute(
-        rawFallback,
-        rawLatestLink,
-        latestCandidate
-      )
-      const latestLink = ensureExistingRoute(
-        rawLatestLink,
-        fallbackLink,
-        latestCandidate
-      )
-      const link = ensureExistingRoute(rawLink, latestLink, fallbackLink)
-
-      return {
-        text: displayText,
-        category: category || displayText,
         dir: rawDir || '',
         link,
         fallback: fallbackLink,
