@@ -62,6 +62,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
     })
     .map((item) => {
       const title = String(item?.category || item?.text || '').trim()
+      const fallbackSource = item?.fallback || item?.link || ''
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
       const resolved = ensureExistingRoute(
@@ -69,10 +70,10 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-      const link = ensureExistingRoute(resolved, fallbackLink)
+      const normalizedLink = ensureExistingRoute(resolved, fallbackLink, item?.link || '')
       return {
         text: item?.text || title || '分类',
-        link,
+        link: normalizedLink,
         fallbackLink,
         category: title,
         dir: item?.dir || '',
@@ -112,25 +113,107 @@ const mailIcon: { svg: string } = {
   ].join('\n')
 }
 
-const blogTheme = getThemeConfig({
-  timeZone: 0,
-  author: '小凌',
-  home: {
-    name: '小凌',
-    motto: '记录与分享，让代码有温度',
-    inspiring: 'Keep learning, keep creating.',
-    logo: '/avatar-avatar.png',
-    pageSize: 6
-  },
-  socialLinks: [
-    { icon: 'github', link: 'https://github.com/lxlcool3000' },
-    { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
-  ],
-  search: pagefindSearch,
-  hotArticle: false,
-  homeTags: false,
-  recommend: { showDate: true }
-} as any)
+const blogTheme = patchThemeReloadPlugin(
+  getThemeConfig({
+    timeZone: 0,
+    author: '小凌',
+    home: {
+      name: '小凌',
+      motto: '记录与分享，让代码有温度',
+      inspiring: 'Keep learning, keep creating.',
+      logo: '/avatar-avatar.png',
+      pageSize: 6
+    },
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/lxlcool3000' },
+      { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
+    ],
+    search: pagefindSearch,
+    hotArticle: false,
+    homeTags: false,
+    recommend: { showDate: true }
+  } as any)
+)
+function isIgnorableFsError(err: unknown) {
+  return Boolean(
+    err &&
+    typeof err === 'object' &&
+    'code' in err &&
+    typeof (err as { code?: unknown }).code === 'string' &&
+    ((err as { code: string }).code === 'ENOENT' || (err as { code: string }).code === 'ENOTDIR')
+  )
+}
+
+function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
+  const plugins = theme?.vite?.plugins
+  if (!Array.isArray(plugins)) return theme
+  for (const plugin of plugins) {
+    if (!plugin || typeof plugin !== 'object') continue
+    if ((plugin as any).name !== '@sugarat/theme-reload') continue
+    const reloadPlugin = plugin as {
+      configureServer?: (server: any) => void
+    }
+    const original = reloadPlugin.configureServer?.bind(reloadPlugin)
+    if (!original) continue
+    reloadPlugin.configureServer = (server: any) => {
+      const watcher = server?.watcher
+      if (!watcher || typeof watcher.on !== 'function') {
+        return original(server)
+      }
+      const originalOn = watcher.on.bind(watcher)
+      watcher.on = (event: string, handler: (...args: any[]) => unknown) => {
+        if (typeof handler !== 'function') {
+          return originalOn(event, handler)
+        }
+        if (event === 'add') {
+          return originalOn(event, async (file: string, ...rest: any[]) => {
+            try {
+              if (file && !fs.existsSync(file)) {
+                return
+              }
+              await handler(file, ...rest)
+            } catch (err: any) {
+              if (isIgnorableFsError(err)) return
+              throw err
+            }
+          })
+        }
+        if (event === 'change') {
+          return originalOn(event, async (file: string, ...rest: any[]) => {
+            if (file && !fs.existsSync(file)) {
+              return
+            }
+            try {
+              await handler(file, ...rest)
+            } catch (err: any) {
+              if (isIgnorableFsError(err)) return
+              throw err
+            }
+          })
+        }
+        if (event === 'unlink') {
+          return originalOn(event, async (...args: any[]) => {
+            try {
+              await handler(...args)
+            } catch (err: any) {
+              if (isIgnorableFsError(err)) return
+              throw err
+            }
+          })
+        }
+        return originalOn(event, handler)
+      }
+      try {
+        return original(server)
+      } finally {
+        watcher.on = originalOn
+      }
+    }
+    break
+  }
+  return theme
+}
+
 const blog = blogTheme?.themeConfig?.blog as
   | { pagesData?: Array<{ route?: string }> }
   | undefined
@@ -164,6 +247,7 @@ export default defineConfig({
     plugins: [
       faviconIcoFallback(),
       overrideSugaratComponents(),
+      blogUnlinkRestartPlugin(),
       adminNavWatcherPlugin(),
     ],
     resolve: {
@@ -259,7 +343,6 @@ function blogUnlinkRestartPlugin(): PluginOption {
     configureServer(server) {
       const docsRoot = path.resolve(process.cwd(), 'docs')
       let restartTimer: NodeJS.Timeout | null = null
-      }
 
       const queueRestart = () => {
         if (restartTimer) clearTimeout(restartTimer)
@@ -282,10 +365,14 @@ function blogUnlinkRestartPlugin(): PluginOption {
         const relative = path.relative(docsRoot, file).replace(/\\/g, '/')
         if (!relative || relative.startsWith('..') || !relative.startsWith('blog/')) return
 
+        const route = normalizeBlogRouteCandidate(buildRouteFromPath(file))
+        if (!route || !route.startsWith('/blog')) return
 
         const pagesData = Array.isArray(blog?.pagesData) ? blog.pagesData : null
         if (pagesData?.length) {
           for (let index = pagesData.length - 1; index >= 0; index -= 1) {
+            const pageRoute = normalizeBlogRouteCandidate(String(pagesData[index]?.route || ''))
+            if (pageRoute && pageRoute === route) {
               pagesData.splice(index, 1)
             }
           }
@@ -375,7 +462,10 @@ function resolveFileForRoute(route: string) {
 function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string {
   const options = [candidate, ...fallbacks, '/blog/']
   for (const option of options) {
-
+    const normalized = normalizeLink(String(option || ''))
+    if (!normalized) continue
+    const filePath = resolveFileForRoute(normalized)
+    if (filePath) return normalized
   }
   return '/blog/'
 }
