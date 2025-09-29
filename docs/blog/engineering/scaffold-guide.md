@@ -1,9 +1,9 @@
 ---
-title: 站点内容脚手架与发布全指南（含博客与作品集）
+title: 站点内容脚手架指南
 date: 2025/09/14 10:20:00
 description: 以 new:post 脚手架为核心，整合博客新增、作品集维护、预览与推送规范，并附常用 Markdown 编辑技巧。
-tags: [脚手架, 自动化, 博客, 作品集]
-categories: [工程实践]
+tags: 脚手架,自动化,博客,作品集
+categories: 工程实践
 aliases:
   - /blog/scaffold-guide.html
   - /blog/scaffold-guide

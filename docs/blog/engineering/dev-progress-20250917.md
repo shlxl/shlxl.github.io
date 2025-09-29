@@ -1,9 +1,9 @@
 ---
-title: 开发进展快照：分类驱动与后台准入落地
+title: 开发进展快照
 date: 2025/09/17 10:30:00
 description: 总结后台准入、分类架构重写以及脚本联动的核心变更，并给出后续工程重点。
-tags: [进度, 工程实践, Admin]
-categories: [工程实践]
+tags: 进度,工程实践,Admin
+categories: 工程实践
 publish: true
 draft: false
 ---

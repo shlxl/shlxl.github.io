@@ -1,9 +1,9 @@
 ---
-title: 前后台未分离到分治的工程实践指南
+title: 前后台从分离到分治
 date: "2025/09/25 12:00:00"
 description: 以本仓库为例，梳理前台静态站与后台管理同仓但职责分治的工程化落地路径：目录组织、构建与发布、接口边界、安全与演进路线。
-tags: [工程实践, 架构, DevOps, 安全]
-categories: [工程实践]
+tags: 工程实践,架构,DevOps,安全
+categories: 工程实践
 publish: true
 draft: false
 ---

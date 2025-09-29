@@ -1,9 +1,9 @@
 ---
-title: 死灵法师 - 掌控生死（D2R职业攻略系列之七）
+title: 死灵法师·掌控生死
 date: 2025/09/14 19:00:00
 description: 召唤/白骨/毒三形态：新手友好的纯召开荒、组队诅咒与尸爆清场、PVM/PVP要点、MF路线与阶段装备配置。
-tags: [D2R, Necromancer, Summoner, Bone, Poison]
-categories: [职业攻略]
+tags: D2R,Necromancer,Summoner,Bone,Poison
+categories: 职业攻略
 aliases:
   - /blog/d2r-necromancer-guide.html
   - /blog/d2r-necromancer-guide

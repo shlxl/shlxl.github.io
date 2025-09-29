@@ -1,9 +1,9 @@
 ---
-title: 亚马逊 - 枪弓双绝女武神（D2R职业攻略系列之四）
+title: 亚马逊·枪弓双绝
 date: 2025/09/14 18:00:00
 description: 标枪电疗与弓物两大核心流派：开荒加点、属性分配、装备与佣兵、组队定位、PVM/PVP打法、MF路线与阶段装备配置。
-tags: [D2R, Amazon, Javazon, Bowazon]
-categories: [职业攻略]
+tags: D2R,Amazon,Javazon,Bowazon
+categories: 职业攻略
 aliases:
   - /blog/d2r-amazon-guide.html
   - /blog/d2r-amazon-guide

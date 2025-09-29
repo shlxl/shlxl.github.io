@@ -243,11 +243,20 @@ html.dark {
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
-    padding-left: 30px;
+    padding-left: 0px;
   }
+
+  /* Removed truncation styles from here, applied to .catalog__text instead */
 
   .blog-theme-layout .VPSidebar .sidebar .card-header .title .svg-icon {
     margin-left: -18px;
+  }
+
+  .catalog__text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 168px; /* Limit to the width of catalog__list */
   }
 
   .blog-theme-layout

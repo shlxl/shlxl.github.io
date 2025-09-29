@@ -1,16 +1,15 @@
 ---
-title: 博文生命周期管理：从草稿到发布的极简流程
+title: 博文生命周期管理
 date: 2025/09/16 12:52:00
 description: 把写→看→发→改→归档压到四步：Draft / Preview / Publish / Archive，避免 slug 与构建的坑。
-tags: [VitePress, 写作流程, 工程化]
-categories: [工程实践]
+tags: VitePress,写作流程,工程化
+categories: 工程实践
 publish: true
 draft: false
 aliases:
   - /blog/2025/lifecycle.html
   - /blog/2025/lifecycle
   - /blog/post-lifecycle.html
-
 ---
 
 > 目标：在不牺牲链接稳定性的前提下，把写作流程简化到**最少步骤**，线上线下一致、可回滚。
