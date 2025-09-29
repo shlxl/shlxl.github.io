@@ -61,6 +61,22 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
     })
     .map((item) => {
+      const {
+        text: rawText,
+        category: rawCategory,
+        dir: rawDir,
+        link: rawLink,
+        fallback: rawFallback,
+        menuOrder: rawMenuOrder,
+        latestLink: rawLatestLink,
+        latestUpdatedAt: rawLatestUpdatedAt,
+        latestTitle: rawLatestTitle,
+        postCount: rawPostCount,
+        publishedCount: rawPublishedCount
+      } = item || ({} as CategoryNavItem)
+
+      const title = String(rawText || rawCategory || '').trim()
+      const fallbackSource = String(rawFallback || rawLink || '')
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
       const resolved = ensureExistingRoute(
@@ -68,8 +84,16 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-        category: title,
-        dir: rawDir,
+      const link = ensureExistingRoute(rawLink, fallbackLink)
+
+      return {
+        text: rawText || rawCategory || '',
+        category: title || rawCategory || '',
+        dir: rawDir || '',
+        link,
+        fallback: fallbackLink,
+        fallbackLink,
+        menuOrder: Number(rawMenuOrder ?? 0),
         latestLink: resolved,
         latestUpdatedAt: rawLatestUpdatedAt,
         latestTitle: rawLatestTitle,
