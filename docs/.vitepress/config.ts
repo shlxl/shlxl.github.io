@@ -82,6 +82,32 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
+      const text = String(rawText || '').trim()
+      const category = String(rawCategory || '').trim()
+      const displayText = text || category || '博客'
+      const effectiveCategory = category || text
+      const latestCandidate = effectiveCategory
+        ? resolveLatestCategoryArticle(effectiveCategory)
+        : ''
+      const fallbackLink = ensureExistingRoute(
+        rawFallback,
+        rawLatestLink,
+        latestCandidate
+      )
+      const latestLink = ensureExistingRoute(
+        rawLatestLink,
+        fallbackLink,
+        latestCandidate
+      )
+      const link = ensureExistingRoute(rawLink, latestLink, fallbackLink)
+
+      const normalizedNavItem = {
+        text: displayText,
+        category: category || displayText,
+        dir: rawDir || '',
+        link,
+        fallback: fallbackLink,
+        fallbackLink,
         menuOrder: Number(rawMenuOrder ?? 0),
         latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
@@ -505,7 +531,13 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (filePath) return normalized
+    if (!filePath) continue
+    const block = extractFrontmatterBlockFile(filePath)
+    if (block) {
+      if (parseFrontmatterBoolean(block, 'publish') === false) continue
+      if (parseFrontmatterBoolean(block, 'draft') === true) continue
+    }
+    return normalized
   }
   return '/blog/'
 }
