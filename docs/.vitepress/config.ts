@@ -81,10 +81,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         postCount: rawPostCount,
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
-        dir: rawDir || '',
-        link,
-        fallback: fallbackLink,
-        fallbackLink,
+
         menuOrder: Number(rawMenuOrder ?? 0),
         latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
@@ -92,6 +89,8 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         postCount: rawPostCount,
         publishedCount: rawPublishedCount
       }
+
+      return normalizedNavItem
     })
 }
 
