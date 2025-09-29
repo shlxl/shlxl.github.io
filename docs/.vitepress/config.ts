@@ -85,17 +85,12 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       const displayText = String(rawText || '').trim()
       const normalizedCategory = String(rawCategory || '').trim() || displayText
       const navText = displayText || normalizedCategory
-      const computedFallback = ensureExistingRoute(rawFallback, rawLink)
       const resolvedCategoryLatest = normalizedCategory
         ? resolveLatestCategoryArticle(normalizedCategory)
         : ''
       const latestLink = ensureExistingRoute(
         resolvedCategoryLatest,
         rawLatestLink,
-        computedFallback
-      )
-      const link = latestLink || computedFallback
-
       const normalizedNavItem: CategoryNavItem = {
         text: navText,
         category: normalizedCategory,
@@ -107,8 +102,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
         publishedCount: rawPublishedCount,
-        fallback: computedFallback,
-        fallbackLink: computedFallback
       }
 
       return normalizedNavItem
@@ -403,26 +396,6 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
-
-  const current = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, current)) {
-    return current!.link
-  }
-
-  if (current) {
-    categoryLatestArticleIndex.delete(normalizedCategory)
-  }
-
-  primeLatestCategoryArticleIndex()
-
-  const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
-    return refreshed!.link
-  }
-
-  return '/blog/'
-}
-
 function primeLatestCategoryArticleIndex() {
   categoryLatestArticleIndexPrimed = true
   categoryLatestArticleIndex.clear()
@@ -527,9 +500,6 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
     if (!filePath) continue
-    if (shouldTreatRouteAsPublished(filePath)) {
-      return normalized
-    }
   }
   return '/blog/'
 }
