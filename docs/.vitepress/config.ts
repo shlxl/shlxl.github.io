@@ -77,9 +77,11 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
 
       const fallbackSource = String(rawFallback || rawLink || '')
       const fallbackLink = ensureExistingRoute(fallbackSource)
+      const resolvedCategoryLatest = normalizedCategory
+        ? resolveLatestCategoryArticle(normalizedCategory)
+        : ''
       const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
       const resolved = ensureExistingRoute(
-        canonicalCategory ? resolveLatestCategoryArticle(canonicalCategory) : '',
         precomputed,
         fallbackLink
       )
