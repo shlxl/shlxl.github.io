@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-09-29T08:24:59.006Z",
+  "updatedAt": "2025-09-29T11:18:08.425Z",
   "items": [
     {
       "text": "工程",
@@ -47,28 +47,14 @@
       "text": "职场",
       "category": "艰辛职场",
       "dir": "workplace",
-      "link": "/blog/workplace/wwww",
-      "fallback": "/blog/",
-      "fallbackLink": "/blog/",
-      "menuOrder": 5,
-      "latestLink": "/blog/workplace/wwww",
-      "latestUpdatedAt": "2025-09-29T08:18:15.000Z",
-      "latestTitle": "wwww",
-      "postCount": 1,
-      "publishedCount": 1
-    },
-    {
-      "text": "test",
-      "category": "test",
-      "dir": "test",
       "link": "/blog/",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
-      "menuOrder": 6,
+      "menuOrder": 5,
       "latestLink": "/blog/",
       "latestUpdatedAt": "",
       "latestTitle": "",
-      "postCount": 1,
+      "postCount": 0,
       "publishedCount": 0
     }
   ]
