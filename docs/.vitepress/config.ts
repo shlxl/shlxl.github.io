@@ -72,7 +72,7 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       )
       return {
         text: item?.text || title || '分类',
-        link,
+        link: normalizedLink,
         fallbackLink,
         category: title,
         dir: item?.dir || '',
