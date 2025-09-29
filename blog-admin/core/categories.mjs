@@ -465,13 +465,19 @@ function buildCategoryNavItems() {
       const fallbackLink = hasIndex ? baseLink : '/blog/';
       const title = String(item.title || '').trim();
       const category = title || String(item.menuLabel || item.dir || '博客').trim();
-      const stats = usage.get(title) || usage.get(category) || null;
-      const latestPublished = stats?.latestPublished || null;
-      return {
-        text: item.menuLabel || item.title || dir || '博客',
-        category,
-        dir,
-        link,
+                const stats = usage.get(title) || usage.get(category) || null;
+                const latestPublished = stats?.latestPublished || null;
+      
+                const latestLink = latestPublished ? relToRoute(latestPublished.rel) : fallbackLink;
+                const latestUpdatedAt = latestPublished?.at || '';
+                const latestTitle = latestPublished?.title || '';
+                const link = latestLink; // Default to latestLink
+                const fallback = fallbackLink; // Default to fallbackLink
+      
+                return {
+                  text: item.menuLabel || item.title || dir || '博客',
+                  category,
+                  dir,        link,
         fallback,
         fallbackLink,
         menuOrder: Number(item.menuOrder) || 0,
@@ -522,11 +528,14 @@ export function syncCategoryNavArtifacts(){
 
 export function safeSyncCategoryNav() {
   try {
+    console.log('[DEBUG] Attempting category nav sync...');
     const result = syncCategoryNavArtifacts();
+    console.log('[DEBUG] Category nav sync successful:', result);
     return { ok: true, ...result };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[admin] category nav sync failed', err);
+    console.log('[DEBUG] Category nav sync failed with error:', message);
     return { ok: false, error: message };
   }
 }
