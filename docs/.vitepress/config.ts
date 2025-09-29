@@ -61,16 +61,43 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
     })
     .map((item) => {
-      const fallbackLink = ensureExistingRoute(fallbackSource)
-      const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
-      const resolved = ensureExistingRoute(
-        title ? resolveLatestCategoryArticle(title) : '',
-        precomputed,
+      const {
+        text: rawText,
+        category: rawCategory,
+        dir: rawDir,
+        link: rawLink,
+        fallback: rawFallback,
+        menuOrder: rawMenuOrder,
+        latestLink: rawLatestLink,
+        latestUpdatedAt: rawLatestUpdatedAt,
+        latestTitle: rawLatestTitle,
+        postCount: rawPostCount,
+        publishedCount: rawPublishedCount
+      } = item || ({} as CategoryNavItem)
+
+      const displayText = String(rawText || '').trim()
+      const normalizedCategory = String(rawCategory || '').trim() || displayText
+      const navText = displayText || normalizedCategory
+      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
+      const resolvedCategoryLatest = normalizedCategory
+        ? resolveLatestCategoryArticle(normalizedCategory)
+        : ''
+      const latestLink = ensureExistingRoute(
+        resolvedCategoryLatest,
+        rawLatestLink,
         fallbackLink
       )
-        category: title,
-        dir: rawDir,
-        latestLink: resolved,
+      const link = ensureExistingRoute(rawLink, fallbackLink)
+
+      return {
+        text: navText,
+        category: normalizedCategory,
+        dir: rawDir || '',
+        link,
+        fallback: fallbackLink,
+        fallbackLink,
+        menuOrder: Number(rawMenuOrder ?? 0),
+        latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
