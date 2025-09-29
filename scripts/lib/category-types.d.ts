@@ -4,6 +4,7 @@ export interface CategoryNavItem {
   dir: string
   link: string
   fallback: string
+  fallbackLink?: string
   menuOrder: number
   latestLink?: string
   latestUpdatedAt?: string
