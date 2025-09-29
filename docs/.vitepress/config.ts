@@ -70,9 +70,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-      return {
-        text: item?.text || title || '分类',
-        link: normalizedLink,
         fallbackLink,
         category: title,
         dir: item?.dir || '',
