@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "docs:dev": "vitepress dev docs --open",
-    "docs:build": "node scripts/docs-build.mjs",
+    "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "new:post": "node scripts/new-post.mjs",
     "new:local": "node scripts/new-post-local.mjs",
