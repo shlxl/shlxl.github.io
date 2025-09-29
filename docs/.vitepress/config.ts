@@ -82,28 +82,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
-      const text = String(rawText || '').trim()
-      const category = String(rawCategory || '').trim()
-      const displayText = text || category || '博客'
-      const effectiveCategory = category || text
-      const latestCandidate = effectiveCategory
-        ? resolveLatestCategoryArticle(effectiveCategory)
-        : ''
-      const fallbackLink = ensureExistingRoute(
-        rawFallback,
-        rawLatestLink,
-        latestCandidate
-      )
-      const latestLink = ensureExistingRoute(
-        rawLatestLink,
-        fallbackLink,
-        latestCandidate
-      )
-      const link = ensureExistingRoute(rawLink, latestLink, fallbackLink)
-
-      const normalizedNavItem = {
-        text: displayText,
-        category: category || displayText,
         dir: rawDir || '',
         link,
         fallback: fallbackLink,
@@ -408,18 +386,6 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
-
-  const current = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, current)) {
-    return current!.link
-  }
-
-  if (current) {
-    categoryLatestArticleIndex.delete(normalizedCategory)
-  }
-
-  primeLatestCategoryArticleIndex()
-
   const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
   if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
     return refreshed!.link
