@@ -24,6 +24,10 @@ This note summarizes the current state of the personal site project and highligh
 - **Docs**: expand contributor guide with the new column automation flow and auth requirements for running `blog-admin/server.mjs` locally.
 - **Nav observability**: surface `safeSyncCategoryNav` errors beyond the toast path—consider CLI fallbacks or build-time checks，使导航生成失败不会被忽视（目前导航已经从 JSON 加载，若生成失败将落回内嵌列表但仍需提醒开发者）。【F:blog-admin/server.mjs†L1221-L1298】【F:blog-admin/public/categories.js†L1-L205】
 
+## Postmortems
+
+- **分类导航第 5 次修复失败复盘**：在尝试恢复 `fallbackLink` 时错误地把菜单展示文案 (`text`) 作为类别主键，导致 `resolveLatestCategoryArticle` 去查找并不存在的分类，所有导航回退都会掉回 `/blog/`。修复方案是恢复“先读 `category`，再降级到 `text`”的顺序，确保真实分类名称参与文章扫描，回退链接才能落在最新文章或预置首页上。【F:docs/.vitepress/config.ts†L64-L85】
+
 ## Category Registry & Menu Integration
 
 - Replaced the legacy sections surface with a category registry (schema v2) stored in `docs/.vitepress/categories.map.json`. Each entry records `dir`, `title`, `menuLabel`, `publish`, `menuEnabled`, `menuOrder`, plus created/updated timestamps, and all admin mutations flow through `server.mjs` helpers that read/write this registry.【F:blog-admin/server.mjs†L180-L379】

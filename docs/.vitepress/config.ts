@@ -110,8 +110,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         fallback: fallbackLink
       }
 
-      normalizedNavItem.fallbackLink = fallbackLink
-
       return normalizedNavItem
     })
 }
@@ -404,26 +402,6 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
-
-  const current = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, current)) {
-    return current!.link
-  }
-
-  if (current) {
-    categoryLatestArticleIndex.delete(normalizedCategory)
-  }
-
-  primeLatestCategoryArticleIndex()
-
-  const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
-    return refreshed!.link
-  }
-
-  return '/blog/'
-}
-
 function primeLatestCategoryArticleIndex() {
   categoryLatestArticleIndexPrimed = true
   categoryLatestArticleIndex.clear()
@@ -527,7 +505,13 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (filePath) return normalized
+    if (!filePath) continue
+    const block = extractFrontmatterBlockFile(filePath)
+    if (block) {
+      if (parseFrontmatterBoolean(block, 'publish') === false) continue
+      if (parseFrontmatterBoolean(block, 'draft') === true) continue
+    }
+    return normalized
   }
   return '/blog/'
 }
