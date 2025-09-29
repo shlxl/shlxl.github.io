@@ -134,6 +134,7 @@ const blogTheme = patchThemeReloadPlugin(
     recommend: { showDate: true }
   } as any)
 )
+
 function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
   const plugins = theme?.vite?.plugins
   if (!Array.isArray(plugins)) return theme
@@ -163,7 +164,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(file, ...rest)
             } catch (err: any) {
-              if (err?.code === 'ENOENT') return
               throw err
             }
           })
@@ -173,7 +173,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(...args)
             } catch (err: any) {
-              if (err?.code === 'ENOENT') return
               throw err
             }
           })
