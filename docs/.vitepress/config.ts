@@ -82,16 +82,32 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
+      const displayText = String(rawText || '').trim()
+      const normalizedCategory = String(rawCategory || '').trim() || displayText
+      const navText = displayText || normalizedCategory
+      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
+      const resolvedCategoryLatest = normalizedCategory
+        ? resolveLatestCategoryArticle(normalizedCategory)
+        : ''
+      const latestLink = ensureExistingRoute(
+        resolvedCategoryLatest,
+        rawLatestLink,
+        fallbackLink
+      )
+      const link = ensureExistingRoute(rawLink, fallbackLink)
+
+      const normalizedNavItem: CategoryNavItem = {
+        text: navText,
+        category: normalizedCategory,
         dir: rawDir || '',
         link,
-        fallback: fallbackLink,
-        fallbackLink,
         menuOrder: Number(rawMenuOrder ?? 0),
         latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
-        publishedCount: rawPublishedCount
+        publishedCount: rawPublishedCount,
+        fallback: fallbackLink
       }
 
       return normalizedNavItem
@@ -386,14 +402,6 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
-  const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
-    return refreshed!.link
-  }
-
-  return '/blog/'
-}
-
 function primeLatestCategoryArticleIndex() {
   categoryLatestArticleIndexPrimed = true
   categoryLatestArticleIndex.clear()
