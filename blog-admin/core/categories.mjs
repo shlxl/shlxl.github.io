@@ -467,11 +467,6 @@ function buildCategoryNavItems() {
       const category = title || String(item.menuLabel || item.dir || '博客').trim();
       const stats = usage.get(title) || usage.get(category) || null;
       const latestPublished = stats?.latestPublished || null;
-      const latestLink = latestPublished?.rel ? relToRoute(latestPublished.rel) : '';
-      const fallback = fallbackLink;
-      const link = latestLink || fallback;
-      const latestUpdatedAt = latestLink ? latestPublished?.at || '' : '';
-      const latestTitle = latestLink ? latestPublished?.title || '' : '';
       return {
         text: item.menuLabel || item.title || dir || '博客',
         category,
