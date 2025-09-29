@@ -82,23 +82,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
-      const displayText = String(rawText || '').trim()
-      const normalizedCategory = String(rawCategory || '').trim() || displayText
-      const navText = displayText || normalizedCategory
-      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
-      const resolvedCategoryLatest = normalizedCategory
-        ? resolveLatestCategoryArticle(normalizedCategory)
-        : ''
-      const latestLink = ensureExistingRoute(
-        resolvedCategoryLatest,
-        rawLatestLink,
-        fallbackLink
-      )
-      const link = ensureExistingRoute(rawLink, fallbackLink)
-
-      const normalizedNavItem: CategoryNavItem = {
-        text: navText,
-        category: normalizedCategory,
         dir: rawDir || '',
         link,
         fallback: fallbackLink,
@@ -403,18 +386,6 @@ function resolveLatestCategoryArticle(category: string) {
   if (!categoryLatestArticleIndexPrimed) {
     primeLatestCategoryArticleIndex()
   }
-
-  const current = categoryLatestArticleIndex.get(normalizedCategory)
-  if (isCategoryLatestEntryValid(normalizedCategory, current)) {
-    return current!.link
-  }
-
-  if (current) {
-    categoryLatestArticleIndex.delete(normalizedCategory)
-  }
-
-  primeLatestCategoryArticleIndex()
-
   const refreshed = categoryLatestArticleIndex.get(normalizedCategory)
   if (isCategoryLatestEntryValid(normalizedCategory, refreshed)) {
     return refreshed!.link
@@ -526,7 +497,13 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (filePath) return normalized
+    if (!filePath) continue
+    const block = extractFrontmatterBlockFile(filePath)
+    if (block) {
+      if (parseFrontmatterBoolean(block, 'publish') === false) continue
+      if (parseFrontmatterBoolean(block, 'draft') === true) continue
+    }
+    return normalized
   }
   return '/blog/'
 }
