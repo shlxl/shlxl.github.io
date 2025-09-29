@@ -134,15 +134,6 @@ const blogTheme = patchThemeReloadPlugin(
     recommend: { showDate: true }
   } as any)
 )
-function isIgnorableFsError(err: unknown) {
-  return Boolean(
-    err &&
-    typeof err === 'object' &&
-    'code' in err &&
-    typeof (err as { code?: unknown }).code === 'string' &&
-    ((err as { code: string }).code === 'ENOENT' || (err as { code: string }).code === 'ENOTDIR')
-  )
-}
 
 function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
   const plugins = theme?.vite?.plugins
@@ -165,19 +156,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
         if (typeof handler !== 'function') {
           return originalOn(event, handler)
         }
-        if (event === 'add') {
-          return originalOn(event, async (file: string, ...rest: any[]) => {
-            try {
-              if (file && !fs.existsSync(file)) {
-                return
-              }
-              await handler(file, ...rest)
-            } catch (err: any) {
-              if (isIgnorableFsError(err)) return
-              throw err
-            }
-          })
-        }
         if (event === 'change') {
           return originalOn(event, async (file: string, ...rest: any[]) => {
             if (file && !fs.existsSync(file)) {
@@ -186,7 +164,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(file, ...rest)
             } catch (err: any) {
-              if (isIgnorableFsError(err)) return
               throw err
             }
           })
@@ -196,7 +173,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(...args)
             } catch (err: any) {
-              if (isIgnorableFsError(err)) return
               throw err
             }
           })
