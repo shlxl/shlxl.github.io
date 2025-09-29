@@ -70,7 +70,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-      const link = ensureExistingRoute(item?.link || resolved, fallbackLink)
       return {
         text: item?.text || title || '分类',
         link,
