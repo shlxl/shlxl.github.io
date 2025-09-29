@@ -505,7 +505,13 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (filePath) return normalized
+    if (!filePath) continue
+    const block = extractFrontmatterBlockFile(filePath)
+    if (block) {
+      if (parseFrontmatterBoolean(block, 'publish') === false) continue
+      if (parseFrontmatterBoolean(block, 'draft') === true) continue
+    }
+    return normalized
   }
   return '/blog/'
 }
