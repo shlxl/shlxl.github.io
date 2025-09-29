@@ -94,7 +94,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         rawLatestLink,
         fallbackLink
       )
-      const link = ensureExistingRoute(rawLink, fallbackLink)
 
       const normalizedNavItem: CategoryNavItem = {
         text: navText,
@@ -107,7 +106,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         latestTitle: rawLatestTitle,
         postCount: rawPostCount,
         publishedCount: rawPublishedCount,
-        fallback: fallbackLink
       }
 
       return normalizedNavItem
@@ -506,14 +504,22 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
     if (!filePath) continue
-    const block = extractFrontmatterBlockFile(filePath)
-    if (block) {
-      if (parseFrontmatterBoolean(block, 'publish') === false) continue
-      if (parseFrontmatterBoolean(block, 'draft') === true) continue
-    }
-    return normalized
   }
   return '/blog/'
+}
+
+function shouldTreatRouteAsPublished(filePath: string) {
+  if (!filePath) return false
+  const normalized = path.resolve(filePath).replace(/\\/g, '/')
+  const blogRoot = path.resolve(docsRoot, 'blog').replace(/\\/g, '/')
+  if (!normalized.startsWith(blogRoot)) {
+    return true
+  }
+  const block = extractFrontmatterBlockFile(filePath)
+  if (!block) return true
+  if (parseFrontmatterBoolean(block, 'publish') === false) return false
+  if (parseFrontmatterBoolean(block, 'draft') === true) return false
+  return true
 }
 
 function faviconIcoFallback() {
