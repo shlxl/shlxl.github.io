@@ -148,6 +148,24 @@ html.dark {
   }
 }
 
+@media (max-width: 1023.98px) {
+  .blog-theme-layout .content-wrapper {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .blog-theme-layout .content-wrapper .blog-list-wrapper,
+  .blog-theme-layout .content-wrapper .blog-info-wrapper {
+    width: 100%;
+  }
+
+  .blog-theme-layout .content-wrapper .blog-info-wrapper {
+    margin-left: 0;
+    margin-top: 24px;
+  }
+}
+
 /* 文档页侧栏与正文卡片一致 */
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar {
   display: flex;
