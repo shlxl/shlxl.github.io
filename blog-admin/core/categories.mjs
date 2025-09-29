@@ -468,8 +468,8 @@ function buildCategoryNavItems() {
       const stats = usage.get(title) || usage.get(category) || null;
       const latestPublished = stats?.latestPublished || null;
       const latestAny = stats?.latestAny || null;
+      const latestLink = latestPublished?.rel ? relToRoute(latestPublished.rel) : '';
       const best = latestPublished || latestAny;
-      const latestLink = best?.rel ? relToRoute(best.rel) : '';
       const latestUpdatedAt = best?.at || '';
       const latestTitle = best?.title || '';
       const fallback = latestLink || fallbackLink;
