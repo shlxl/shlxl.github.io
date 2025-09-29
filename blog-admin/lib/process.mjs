@@ -2,15 +2,34 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { PROJECT_ROOT, SCRIPTS_DIR } from '../core/config.mjs';
 
-export function runCmd(cmd, args = [], opts = { cwd: PROJECT_ROOT }) {
+function isCmdLike(bin = '') {
+  return /\.(cmd|bat)$/i.test(bin);
+}
+
+export function runCmd(cmd, args = [], opts = {}) {
+  const cwd = opts?.cwd || PROJECT_ROOT;
+  const extraEnv = opts?.env || {};
+  const shellOverride = opts?.shell;
+  const isWindows = process.platform === 'win32';
+  const shouldUseShell = shellOverride ?? (isWindows && isCmdLike(cmd));
+
   return new Promise((resolve, reject) => {
-    const p = spawn(cmd, args, { cwd: opts.cwd, shell: process.platform === 'win32', env: process.env });
-    let out = '', err = '';
-    p.stdout.on('data', d => out += String(d));
-    p.stderr.on('data', d => err += String(d));
-    p.on('close', c => c === 0 ? resolve({ out, err }) : reject(Object.assign(new Error('fail'), { out, err, code: c })));
-    p.on('error', reject);
+    const child = spawn(cmd, args, {
+      cwd,
+      shell: shouldUseShell,
+      env: { ...process.env, ...extraEnv },
+      windowsHide: isWindows
+    });
+    let out = '';
+    let err = '';
+    child.stdout.on('data', d => { out += String(d); });
+    child.stderr.on('data', d => { err += String(d); });
+    child.on('close', code => {
+      if (code === 0) resolve({ out, err });
+      else reject(Object.assign(new Error('fail'), { out, err, code }));
+    });
+    child.on('error', reject);
   });
 }
 
-export const runNodeScript = (rel, args = []) => runCmd(process.execPath, [path.join(SCRIPTS_DIR, rel), ...args]);
+export const runNodeScript = (rel, args = []) => runCmd(process.execPath, [path.join(SCRIPTS_DIR, rel), ...args], { shell: false });
