@@ -82,27 +82,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
-      const displayText = String(rawText || '').trim()
-      const normalizedCategory = String(rawCategory || '').trim() || displayText
-      const navText = displayText || normalizedCategory
-      const computedFallback = ensureExistingRoute(rawFallback, rawLink)
-      const resolvedCategoryLatest = normalizedCategory
-        ? resolveLatestCategoryArticle(normalizedCategory)
-        : ''
-      const latestLink = ensureExistingRoute(
-        resolvedCategoryLatest,
-        rawLatestLink,
-        computedFallback
-      )
-      const link = ensureExistingRoute(rawLink, computedFallback)
-
-      const normalizedNavItem: CategoryNavItem = {
-        text: navText,
-        category: normalizedCategory,
-        dir: rawDir || '',
-        link,
-        fallback: computedFallback,
-        fallbackLink: computedFallback,
         menuOrder: Number(rawMenuOrder ?? 0),
         latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
