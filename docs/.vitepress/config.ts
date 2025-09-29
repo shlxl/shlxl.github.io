@@ -85,16 +85,12 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       const displayText = String(rawText || '').trim()
       const normalizedCategory = String(rawCategory || '').trim() || displayText
       const navText = displayText || normalizedCategory
-      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
       const resolvedCategoryLatest = normalizedCategory
         ? resolveLatestCategoryArticle(normalizedCategory)
         : ''
       const latestLink = ensureExistingRoute(
         resolvedCategoryLatest,
         rawLatestLink,
-        fallbackLink
-      )
-
       const normalizedNavItem: CategoryNavItem = {
         text: navText,
         category: normalizedCategory,
