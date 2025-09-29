@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { program } from 'commander';
+import { safeSyncCategoryNav } from '../blog-admin/core/categories.mjs';
 
 const BLOG_DIR = 'docs/blog';
 
@@ -56,3 +57,11 @@ if (/^\s*publish\s*:/m.test(fm)) {
 txt = txt.replace(/^---\s*([\s\S]*?)\s*---/, `---\n${fm.trim()}\n---`);
 fs.writeFileSync(file, txt, 'utf8');
 console.log(`[archive] 已下架：${file}`);
+
+console.log('[sync] 正在同步分类导航...');
+const syncResult = safeSyncCategoryNav();
+if (syncResult.ok) {
+  console.log(`✅ 分类导航已同步: ${syncResult.json}`);
+} else {
+  console.error(`❌ 分类导航同步失败: ${syncResult.error}`);
+}

@@ -16,7 +16,7 @@ import {
   moveToTrash
 } from './fs-utils.mjs';
 import { runNodeScript } from '../lib/process.mjs';
-import { registryEntryByDir, removeRegistryByDir, removeRegistryByTitle, touchRegistryEntry, renameRegistryTitle, collectCategoryUsage, rewriteCategoryReferences, normalizeDirKey } from './categories.mjs';
+import { registryEntryByDir, removeRegistryByDir, removeRegistryByTitle, touchRegistryEntry, renameRegistryTitle, collectCategoryUsage, rewriteCategoryReferences, normalizeDirKey, safeSyncCategoryNav } from './categories.mjs';
 
 // #region Core Post Functions
 export function listPosts() {
@@ -78,7 +78,8 @@ export async function updateMeta(rel, patch) {
     }
   }
 
-  return { file: relOf(file), rewrite };
+  const navSync = safeSyncCategoryNav();
+  return { file: relOf(file), rewrite, navSync };
 }
 
 export async function removePost(rel, hard) {
@@ -151,8 +152,12 @@ export async function archivePost(rel) {
 export async function republishPost(rel) {
   const t = rel ? path.join(BLOG_DIR, rel) : '';
   if (!t || !fs.existsSync(t)) throw new Error('target not found');
+  console.log(`[DEBUG] republishPost: Attempting to set publish flag for ${t} to true.`);
   setPublishFlag(t, true);
-  return { success: true };
+  console.log('[DEBUG] republishPost: Publish flag set. Calling nav sync...');
+  const navSync = safeSyncCategoryNav();
+  console.log('[DEBUG] republishPost: Nav sync result:', navSync);
+  return { success: true, navSync };
 }
 
 export async function promotePost(rel, setDate) {

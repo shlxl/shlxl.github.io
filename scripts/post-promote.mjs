@@ -4,6 +4,7 @@ import path from 'node:path';
 import { program } from 'commander';
 import { resolveColumnDir } from './lib/columns.js';
 import { extractFrontmatterBlockFromContent, parseFrontmatterString, parseFrontmatterArray } from './lib/frontmatter.js';
+import { safeSyncCategoryNav } from '../blog-admin/core/categories.mjs';
 
 const BLOG_DIR = 'docs/blog';
 const LOCAL_SUBDIR = process.env.LOCAL_SUBDIR || '_local';
@@ -96,3 +97,11 @@ fs.writeFileSync(outFile, newContent, 'utf8');
 fs.unlinkSync(localFile);
 
 console.log(`✅ 文章已发布: ${outFile}`);
+
+console.log('[sync] 正在同步分类导航...');
+const syncResult = safeSyncCategoryNav();
+if (syncResult.ok) {
+  console.log(`✅ 分类导航已同步: ${syncResult.json}`);
+} else {
+  console.error(`❌ 分类导航同步失败: ${syncResult.error}`);
+}

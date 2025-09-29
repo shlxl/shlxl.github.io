@@ -25,6 +25,11 @@ const { getThemeConfig } = await import('@sugarat/theme/node')
 
 const adminNavSource = resolveAdminNavItems()
 
+type CategoryLatestArticle = { time: number; link: string }
+
+const categoryLatestArticleIndex: Map<string, CategoryLatestArticle> = new Map()
+let categoryLatestArticleIndexPrimed = false
+
 function resolveAdminNavItems() {
   const fileNav = loadAdminNavFromFile()
   if (fileNav.length) return fileNav
@@ -52,6 +57,8 @@ function loadAdminNavFromFile(): CategoryNavItem[] {
 }
 
 function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
+  categoryLatestArticleIndexPrimed = false
+  categoryLatestArticleIndex.clear()
   return (navConfig || [])
     .slice()
     .sort((a, b) => {
@@ -61,28 +68,43 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
     })
     .map((item) => {
-      const title = String(item?.category || item?.text || '').trim()
-      const fallbackSource = item?.fallback || item?.link || ''
-      const fallbackLink = ensureExistingRoute(fallbackSource)
-      const precomputed = ensureExistingRoute(item?.latestLink || '', fallbackLink)
-      const resolved = ensureExistingRoute(
-        title ? resolveLatestCategoryArticle(title) : '',
-        precomputed,
-        fallbackLink
-      )
-      const link = ensureExistingRoute(item?.link || resolved, fallbackLink)
-      return {
-        text: item?.text || title || '分类',
+      const {
+        text: rawText,
+        category: rawCategory,
+        dir: rawDir,
+        link: rawLink,
+        fallback: rawFallback,
+        menuOrder: rawMenuOrder,
+        latestLink: rawLatestLink,
+        latestUpdatedAt: rawLatestUpdatedAt,
+        latestTitle: rawLatestTitle,
+        postCount: rawPostCount,
+        publishedCount: rawPublishedCount
+      } = item || ({} as CategoryNavItem)
+
+      const displayText = String(rawText || '').trim()
+      const normalizedCategory = String(rawCategory || '').trim() || displayText
+      const navText = displayText || normalizedCategory
+      const resolvedCategoryLatest = normalizedCategory
+        ? resolveLatestCategoryArticle(normalizedCategory)
+        : ''
+      const latestLink = ensureExistingRoute(
+        resolvedCategoryLatest,
+        rawLatestLink,
+      const normalizedNavItem: CategoryNavItem = {
+        text: navText,
+        category: normalizedCategory,
+        dir: rawDir || '',
         link,
-        fallbackLink,
-        category: title,
-        dir: item?.dir || '',
-        latestLink: resolved,
-        latestUpdatedAt: item?.latestUpdatedAt || '',
-        latestTitle: item?.latestTitle || '',
-        postCount: item?.postCount ?? 0,
-        publishedCount: item?.publishedCount ?? 0
+        menuOrder: Number(rawMenuOrder ?? 0),
+        latestLink,
+        latestUpdatedAt: rawLatestUpdatedAt,
+        latestTitle: rawLatestTitle,
+        postCount: rawPostCount,
+        publishedCount: rawPublishedCount,
       }
+
+      return normalizedNavItem
     })
 }
 
@@ -368,13 +390,24 @@ function blogUnlinkRestartPlugin(): PluginOption {
     }
   }
 }
-
-
 function resolveLatestCategoryArticle(category: string) {
-  if (!category) return '/blog/'
+  const normalizedCategory = String(category || '').trim()
+  if (!normalizedCategory) return '/blog/'
+  if (!categoryLatestArticleIndexPrimed) {
+    primeLatestCategoryArticleIndex()
+  }
+function primeLatestCategoryArticleIndex() {
+  categoryLatestArticleIndexPrimed = true
+  categoryLatestArticleIndex.clear()
   const blogRoot = path.join(docsRoot, 'blog')
+  let rootStat: fs.Stats
+  try {
+    rootStat = fs.statSync(blogRoot)
+  } catch {
+    return
+  }
+  if (!rootStat.isDirectory()) return
   const stack: string[] = [blogRoot]
-  let latest: { time: number; link: string } | null = null
   while (stack.length) {
     const current = stack.pop()!
     let entries: fs.Dirent[] = []
@@ -393,20 +426,45 @@ function resolveLatestCategoryArticle(category: string) {
       if (!entry.isFile() || !entry.name.endsWith('.md')) continue
       const block = extractFrontmatterBlockFile(fullPath)
       if (!block) continue
-      const categories = parseFrontmatterArray(block, 'categories')
-      if (!categories.includes(category)) continue
       if (parseFrontmatterBoolean(block, 'publish') === false) continue
       if (parseFrontmatterBoolean(block, 'draft') === true) continue
       const time = parseFrontmatterDate(block, 'date')
       if (!Number.isFinite(time)) continue
       const route = normalizeLink(buildRouteFromPath(fullPath))
       if (!route) continue
-      if (!latest || time > latest.time) {
-        latest = { time, link: route }
+      const categories = parseFrontmatterArray(block, 'categories')
+      if (!categories.length) continue
+      for (const rawCategory of categories) {
+        const normalized = String(rawCategory || '').trim()
+        if (!normalized) continue
+        const existing = categoryLatestArticleIndex.get(normalized)
+        if (!existing || time > existing.time) {
+          categoryLatestArticleIndex.set(normalized, { time, link: route })
+        }
       }
     }
   }
-  return latest?.link || '/blog/'
+}
+
+function isCategoryLatestEntryValid(
+  category: string,
+  entry: CategoryLatestArticle | undefined
+) {
+  if (!entry || !entry.link) return false
+  const filePath = resolveFileForRoute(entry.link)
+  if (!filePath) return false
+  const block = extractFrontmatterBlockFile(filePath)
+  if (!block) return false
+  if (parseFrontmatterBoolean(block, 'publish') === false) return false
+  if (parseFrontmatterBoolean(block, 'draft') === true) return false
+  const categories = parseFrontmatterArray(block, 'categories')
+  if (!categories.length) return false
+  for (const rawCategory of categories) {
+    if (String(rawCategory || '').trim() === category) {
+      return true
+    }
+  }
+  return false
 }
 
 function buildRouteFromPath(filePath: string) {
@@ -441,9 +499,23 @@ function ensureExistingRoute(candidate: string, ...fallbacks: string[]): string 
     const normalized = normalizeLink(String(option || ''))
     if (!normalized) continue
     const filePath = resolveFileForRoute(normalized)
-    if (filePath) return normalized
+    if (!filePath) continue
   }
   return '/blog/'
+}
+
+function shouldTreatRouteAsPublished(filePath: string) {
+  if (!filePath) return false
+  const normalized = path.resolve(filePath).replace(/\\/g, '/')
+  const blogRoot = path.resolve(docsRoot, 'blog').replace(/\\/g, '/')
+  if (!normalized.startsWith(blogRoot)) {
+    return true
+  }
+  const block = extractFrontmatterBlockFile(filePath)
+  if (!block) return true
+  if (parseFrontmatterBoolean(block, 'publish') === false) return false
+  if (parseFrontmatterBoolean(block, 'draft') === true) return false
+  return true
 }
 
 function faviconIcoFallback() {
