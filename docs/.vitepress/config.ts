@@ -70,7 +70,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-        fallbackLink,
         category: title,
         dir: item?.dir || '',
         latestLink: resolved,
