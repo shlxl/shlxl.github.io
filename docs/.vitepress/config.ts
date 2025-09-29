@@ -75,8 +75,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         publishedCount: rawPublishedCount
       } = item || ({} as CategoryNavItem)
 
-      const displayText = String(rawText || '').trim()
-      const canonicalCategory = String(rawCategory || '').trim() || displayText
       const fallbackSource = String(rawFallback || rawLink || '')
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
@@ -88,8 +86,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       const link = ensureExistingRoute(rawLink, fallbackLink)
 
       return {
-        text: displayText || canonicalCategory,
-        category: canonicalCategory,
         dir: rawDir || '',
         link,
         fallback: fallbackLink,
