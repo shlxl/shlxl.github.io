@@ -61,20 +61,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
       return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
     })
     .map((item) => {
-      const data = (item || {}) as Partial<CategoryNavItem>
-      const rawCategory = typeof data.category === 'string' ? data.category : ''
-      const rawText = typeof data.text === 'string' ? data.text : ''
-      const rawFallback = typeof data.fallback === 'string' ? data.fallback : ''
-      const rawLink = typeof data.link === 'string' ? data.link : ''
-      const rawLatestLink = typeof data.latestLink === 'string' ? data.latestLink : ''
-      const rawDir = typeof data.dir === 'string' ? data.dir : ''
-      const rawLatestUpdatedAt = typeof data.latestUpdatedAt === 'string' ? data.latestUpdatedAt : ''
-      const rawLatestTitle = typeof data.latestTitle === 'string' ? data.latestTitle : ''
-      const rawPostCount = Number.isFinite(data.postCount) ? Number(data.postCount) : 0
-      const rawPublishedCount = Number.isFinite(data.publishedCount) ? Number(data.publishedCount) : 0
-
-      const title = String(rawCategory || rawText || '').trim()
-      const fallbackSource = rawFallback || rawLink
       const fallbackLink = ensureExistingRoute(fallbackSource)
       const precomputed = ensureExistingRoute(rawLatestLink, fallbackLink)
       const resolved = ensureExistingRoute(
@@ -82,11 +68,6 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         precomputed,
         fallbackLink
       )
-      const linkTarget = ensureExistingRoute(resolved, fallbackLink, rawLink)
-      return {
-        text: rawText || title || '分类',
-        link: linkTarget,
-        fallbackLink: fallbackLink,
         category: title,
         dir: rawDir,
         latestLink: resolved,
@@ -146,15 +127,6 @@ const blogTheme = patchThemeReloadPlugin(
     recommend: { showDate: true }
   } as any)
 )
-function isIgnorableFsError(err: unknown) {
-  return Boolean(
-    err &&
-    typeof err === 'object' &&
-    'code' in err &&
-    typeof (err as { code?: unknown }).code === 'string' &&
-    ((err as { code: string }).code === 'ENOENT' || (err as { code: string }).code === 'ENOTDIR')
-  )
-}
 
 function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
   const plugins = theme?.vite?.plugins
@@ -177,19 +149,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
         if (typeof handler !== 'function') {
           return originalOn(event, handler)
         }
-        if (event === 'add') {
-          return originalOn(event, async (file: string, ...rest: any[]) => {
-            try {
-              if (file && !fs.existsSync(file)) {
-                return
-              }
-              await handler(file, ...rest)
-            } catch (err: any) {
-              if (isIgnorableFsError(err)) return
-              throw err
-            }
-          })
-        }
         if (event === 'change') {
           return originalOn(event, async (file: string, ...rest: any[]) => {
             if (file && !fs.existsSync(file)) {
@@ -198,7 +157,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(file, ...rest)
             } catch (err: any) {
-              if (isIgnorableFsError(err)) return
               throw err
             }
           })
@@ -208,7 +166,6 @@ function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(th
             try {
               await handler(...args)
             } catch (err: any) {
-              if (isIgnorableFsError(err)) return
               throw err
             }
           })
