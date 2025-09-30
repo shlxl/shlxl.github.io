@@ -320,8 +320,6 @@ html.dark {
 .blog-theme-layout .VPContent:not(.is-home)::before {
   content: '';
   position: absolute;
-  inset: 0;
-  height: 100%;
   z-index: -1;
   background-image: var(--blog-bg-texture, none);
   background-repeat: repeat;
