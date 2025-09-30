@@ -27,17 +27,6 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-color: var(--vp-c-bg);
-  background-image: var(--blog-bg-texture, none);
-  background-repeat: repeat;
-  opacity: 0.22;
-  pointer-events: none;
-}
-
-html.dark body::before {
-  opacity: 0.12;
-}
-
 /* 首页 Hero */
 .xl-hero {
   text-align: center;
