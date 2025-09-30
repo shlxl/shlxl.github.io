@@ -311,12 +311,7 @@ body::before {
   z-index: 0;
   min-height: 100vh;
   background: transparent;
-}
 
-.blog-theme-layout .VPContent::before {
-  content: '';
-  position: absolute;
-  inset: 0;
   z-index: -2;
   background-image: radial-gradient(
       ellipse,
@@ -325,20 +320,13 @@ body::before {
     ),
     var(--blog-bg-texture);
   background-repeat: no-repeat, repeat;
-  background-size: cover, auto;
-  background-position: center, top left;
-  pointer-events: none;
-}
 
-.blog-theme-layout .VPContent::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(var(--vp-nav-height, 64px) + 1px);
-  z-index: -1;
-  background-color: var(--vp-nav-bg, var(--vp-c-bg));
+
   pointer-events: none;
 }
 
