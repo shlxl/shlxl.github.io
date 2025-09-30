@@ -17,6 +17,27 @@ html.dark {
   --xl-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
+body {
+  position: relative;
+  background-color: var(--vp-c-bg);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--vp-c-bg);
+  background-image: var(--blog-bg-texture, none);
+  background-repeat: repeat;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+html.dark body::before {
+  opacity: 0.12;
+}
+
 /* 首页 Hero */
 .xl-hero {
   text-align: center;
@@ -315,17 +336,6 @@ html.dark {
       rgba(var(--bg-gradient-home), 1) 0%,
       rgba(var(--bg-gradient-home), 0) 700%
     );
-}
-
-.blog-theme-layout .VPContent:not(.is-home)::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image: var(--blog-bg-texture, none);
-  background-repeat: repeat;
-  min-height: 100%;
-  pointer-events: none;
 }
 
 .blog-theme-layout .VPContent:not(.is-home) .VPDoc,
