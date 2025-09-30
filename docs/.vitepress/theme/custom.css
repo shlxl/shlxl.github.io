@@ -319,12 +319,15 @@ html.dark {
 
 .blog-theme-layout .VPContent:not(.is-home)::before {
   content: '';
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   z-index: -1;
   background-image: var(--blog-bg-texture, none);
   background-repeat: repeat;
-  min-height: 100%;
   pointer-events: none;
 }
 
