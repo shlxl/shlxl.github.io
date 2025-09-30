@@ -299,25 +299,46 @@ body::before {
   background-color: var(--vp-nav-bg, var(--vp-c-bg));
 }
 
-/* 博客文章页背景与博客首页保持一致 */
-.blog-theme-layout .VPContent:not(.is-home) {
+.blog-theme-layout .VPNavBar.has-sidebar .title {
+  background-color: var(--vp-nav-bg, var(--vp-c-bg));
   position: relative;
+  z-index: 0;
+}
+
+/* 博客文章页背景与博客首页保持一致 */
+.blog-theme-layout .VPContent {
+  position: relative;
+  z-index: 0;
   min-height: 100vh;
+  background: transparent;
+}
+
+.blog-theme-layout .VPContent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
   background-image: radial-gradient(
       ellipse,
       rgba(var(--bg-gradient-home), 1) 0%,
       rgba(var(--bg-gradient-home), 0) 700%
-    );
+    ),
+    var(--blog-bg-texture);
+  background-repeat: no-repeat, repeat;
+  background-size: cover, auto;
+  background-position: center, top left;
+  pointer-events: none;
 }
 
-.blog-theme-layout .VPContent:not(.is-home)::before {
+.blog-theme-layout .VPContent::after {
   content: '';
   position: absolute;
-  inset: 0;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--vp-nav-height, 64px) + 1px);
   z-index: -1;
-  background-image: var(--blog-bg-texture);
-  background-repeat: repeat;
+  background-color: var(--vp-nav-bg, var(--vp-c-bg));
   pointer-events: none;
 }
 
