@@ -17,3 +17,4 @@ Use Conventional Commit prefixes such as `feat(admin):` or `chore(docs):` with p
 
 ## Security & Configuration Tips
 Never commit secrets or generated `docs/.vitepress/dist/` artifacts; rely on `.gitignore`. Store admin credentials in environment variables, and refresh `categories.nav.json` after taxonomy changes to keep navigation accurate.
+- Emergency removals: deleting or unpublishing a post only refreshes navigation; readers with the page already open must refresh manually, so treat urgent takedowns as already exposed content and plan communications accordingly.

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-09-29T14:56:43.045Z",
+  "updatedAt": "2025-10-01T20:56:24.634Z",
   "items": [
     {
       "text": "工程",
@@ -33,15 +33,15 @@
       "text": "生活",
       "category": "阳光生活",
       "dir": "mylife",
-      "link": "/blog/mylife/vvv",
+      "link": "/blog/",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
       "menuOrder": 4,
-      "latestLink": "/blog/mylife/vvv",
-      "latestUpdatedAt": "2025-09-29T12:22:40.000Z",
-      "latestTitle": "我和XXXX不得不说的故事",
-      "postCount": 1,
-      "publishedCount": 1
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
     },
     {
       "text": "职场",
@@ -51,6 +51,20 @@
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
       "menuOrder": 5,
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
+    },
+    {
+      "text": "测试",
+      "category": "测试",
+      "dir": "test",
+      "link": "/blog/",
+      "fallback": "/blog/",
+      "fallbackLink": "/blog/",
+      "menuOrder": 6,
       "latestLink": "/blog/",
       "latestUpdatedAt": "",
       "latestTitle": "",

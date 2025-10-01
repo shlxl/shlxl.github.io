@@ -1,15 +1,24 @@
 import { defineConfig } from 'vitepress'
-import type { PluginOption } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import type { CategoryNavItem } from '../../scripts/lib/category-types'
+import { safeSyncCategoryNav } from '../../blog-admin/core/categories.mjs'
 import {
   extractFrontmatterBlockFile,
   parseFrontmatterArray,
   parseFrontmatterBoolean,
   parseFrontmatterDate
 } from '../../scripts/lib/frontmatter.js'
+
+type PluginOption = {
+  name: string
+  apply?: 'serve' | 'build'
+  enforce?: 'pre' | 'post'
+  resolveId?: (source: string, importer?: string) => string | null | undefined
+  configureServer?: (server: any) => void
+  [key: string]: any
+}
 
 const deployBase = process.env.DEPLOY_BASE || '/'
 const docsRoot = path.resolve(process.cwd(), 'docs')
@@ -21,7 +30,10 @@ if (!Number.isFinite(limit) || limit < 1) {
   process.env.P_LIMT_MAX = '4'
 }
 
-const { getThemeConfig } = await import('@sugarat/theme/node')
+const sugaratTheme = await import('@sugarat/theme/node')
+
+patchLocalDraftFsGuard()
+primeCategoryNavSync()
 
 const adminNavSource = resolveAdminNavItems()
 
@@ -101,6 +113,8 @@ function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
         category: normalizedCategory,
         dir: rawDir || '',
         link,
+        fallback: fallbackLink,
+        fallbackLink,
         menuOrder: Number(rawMenuOrder ?? 0),
         latestLink,
         latestUpdatedAt: rawLatestUpdatedAt,
@@ -140,26 +154,28 @@ const mailIcon: { svg: string } = {
   ].join('\n')
 }
 
-const blogTheme = patchThemeReloadPlugin(
-  getThemeConfig({
-    timeZone: 0,
-    author: '小凌',
-    home: {
-      name: '小凌',
-      motto: '记录与分享，让代码有温度',
-      inspiring: 'Keep learning, keep creating.',
-      logo: '/avatar-avatar.png',
-      pageSize: 6
-    },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/lxlcool3000' },
-      { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
-    ],
-    search: pagefindSearch,
-    hotArticle: false,
-    homeTags: false,
-    recommend: { showDate: true }
-  } as any)
+const blogTheme = patchSugaratProvidePageData(
+  patchThemeReloadPlugin(
+    sugaratTheme.getThemeConfig({
+      timeZone: 0,
+      author: '小凌',
+      home: {
+        name: '小凌',
+        motto: '记录与分享，让代码有温度',
+        inspiring: 'Keep learning, keep creating.',
+        logo: '/avatar-avatar.png',
+        pageSize: 6
+      },
+      socialLinks: [
+        { icon: 'github', link: 'https://github.com/lxlcool3000' },
+        { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
+      ],
+      search: pagefindSearch,
+      hotArticle: false,
+      homeTags: false,
+      recommend: { showDate: true }
+    } as any)
+  )
 )
 
 function patchThemeReloadPlugin<T extends { vite?: { plugins?: unknown[] } }>(theme: T): T {
@@ -289,6 +305,78 @@ function normalizeBlogRouteCandidate(route: string) {
   }
   return normalized
 }
+
+function categoryNavAutoSyncPlugin(): PluginOption {
+  const blogRoot = path.resolve(docsRoot, 'blog').replace(/\\/g, '/')
+  let timer: NodeJS.Timeout | null = null
+  let syncing = false
+  let serverCtx: any = null
+
+  const broadcastUpdate = () => {
+    if (!serverCtx) return
+    try {
+      serverCtx.ws.send({ type: 'custom', event: 'xl-nav-update' })
+    } catch {}
+    try {
+      serverCtx.ws.send({ type: 'full-reload' })
+    } catch {}
+  }
+
+  const scheduleSync = () => {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      if (syncing) return
+      syncing = true
+      try {
+        const result = safeSyncCategoryNav()
+        if (result && result.ok === false) {
+          console.warn('[vite] category nav auto-sync failed:', result.error)
+        } else {
+          broadcastUpdate()
+        }
+      } catch (err) {
+        console.warn('[vite] category nav auto-sync failed', err)
+      } finally {
+        syncing = false
+      }
+    }, 120)
+  }
+
+  const shouldProcess = (file?: string) => {
+    if (!file) return false
+    const abs = path.resolve(file).replace(/\\/g, '/')
+    if (!abs.startsWith(blogRoot)) return false
+    return abs.endsWith('.md')
+  }
+
+  return {
+    name: 'xl-category-nav-auto-sync',
+    apply: 'serve' as const,
+    configureServer(server) {
+      serverCtx = server
+      const handleMutation = (file?: string) => {
+        if (!shouldProcess(file)) return
+        scheduleSync()
+      }
+
+      server.watcher.on('change', handleMutation)
+      server.watcher.on('unlink', handleMutation)
+
+      server.httpServer?.once('close', () => {
+        server.watcher.off('change', handleMutation)
+        server.watcher.off('unlink', handleMutation)
+        if (timer) {
+          clearTimeout(timer)
+          timer = null
+        }
+        serverCtx = null
+      })
+    }
+  }
+}
+
+
 function adminNavWatcherPlugin() {
   const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
   let restarting = false
@@ -566,5 +654,58 @@ function overrideSugaratComponents() {
       if (map[base]) return map[base]
       return null
     }
+  }
+}
+
+
+function patchLocalDraftFsGuard() {
+  const original = fs.promises?.readFile as typeof fs.promises.readFile | undefined;
+  if (!original) return;
+  if ((original as any).__xlLocalDraftGuard) return;
+
+  const localDraftRoot = path.resolve(process.cwd(), 'docs/blog/_local').replace(/\\/g, '/');
+
+  const wrapped: typeof fs.promises.readFile = (async (file: Parameters<typeof fs.promises.readFile>[0], ...rest: any[]) => {
+    try {
+      return await original.call(fs.promises, file as any, ...(rest as [any]));
+    } catch (error: any) {
+      if (error?.code === 'ENOENT') {
+        const target = typeof file === 'string'
+          ? path.resolve(file).replace(/\\/g, '/')
+          : '';
+        if (target && target.startsWith(localDraftRoot)) {
+          console.warn('[vitepress] skipped missing local draft', target);
+          const option = rest[0];
+          const encoding = typeof option === 'string'
+            ? option
+            : option && typeof option === 'object'
+              ? (option as { encoding?: BufferEncoding }).encoding
+              : undefined;
+          if (encoding) {
+            return '' as any;
+          }
+          return Buffer.alloc(0) as any;
+        }
+      }
+      throw error;
+    }
+  }) as typeof fs.promises.readFile;
+
+  (wrapped as any).__xlLocalDraftGuard = true;
+  fs.promises.readFile = wrapped;
+}
+
+function patchSugaratProvidePageData<T>(theme: T): T {
+  return theme;
+}
+
+function primeCategoryNavSync() {
+  try {
+    const result = safeSyncCategoryNav()
+    if (result && result.ok === false) {
+      console.warn('[vitepress] failed to prime category nav', result.error)
+    }
+  } catch (err) {
+    console.warn('[vitepress] failed to prime category nav', err)
   }
 }

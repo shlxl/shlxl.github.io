@@ -465,27 +465,43 @@ function buildCategoryNavItems() {
       const fallbackLink = hasIndex ? baseLink : '/blog/';
       const title = String(item.title || '').trim();
       const category = title || String(item.menuLabel || item.dir || '博客').trim();
-                const stats = usage.get(title) || usage.get(category) || null;
-                const latestPublished = stats?.latestPublished || null;
-      
-                const latestLink = latestPublished ? relToRoute(latestPublished.rel) : fallbackLink;
-                const latestUpdatedAt = latestPublished?.at || '';
-                const latestTitle = latestPublished?.title || '';
-                const link = latestLink; // Default to latestLink
-                const fallback = fallbackLink; // Default to fallbackLink
-      
-                return {
-                  text: item.menuLabel || item.title || dir || '博客',
-                  category,
-                  dir,        link,
-        fallback,
-        fallbackLink,
+      const stats = usage.get(title) || usage.get(category) || null;
+      const publishedCount = stats?.published || 0;
+      const hasPublished = publishedCount > 0;
+      const latestPublished = hasPublished ? stats?.latestPublished || null : null;
+
+      let fallbackRoute = hasIndex ? baseLink : '/blog/';
+      let latestLink = fallbackRoute;
+      let latestUpdatedAt = '';
+      let latestTitle = '';
+
+      if (hasPublished && latestPublished) {
+        const candidate = relToRoute(latestPublished.rel);
+        if (candidate) {
+          latestLink = candidate;
+        }
+        latestUpdatedAt = latestPublished.at || '';
+        latestTitle = latestPublished.title || '';
+      } else if (!hasPublished) {
+        fallbackRoute = '/blog/';
+        latestLink = fallbackRoute;
+      }
+
+      const link = hasPublished ? latestLink : '/blog/';
+
+      return {
+        text: item.menuLabel || item.title || dir || '博客',
+        category,
+        dir,
+        link,
+        fallback: fallbackRoute,
+        fallbackLink: fallbackRoute,
         menuOrder: Number(item.menuOrder) || 0,
         latestLink,
         latestUpdatedAt,
         latestTitle,
         postCount: stats?.total || 0,
-        publishedCount: stats?.published || 0
+        publishedCount
       };
     })
     .filter(Boolean)

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2025-09-29T14:56:43.011Z",
+  "updatedAt": "2025-10-01T20:56:24.613Z",
   "items": [
     {
       "dir": "engineering",
@@ -41,6 +41,16 @@
       "menuOrder": 5,
       "createdAt": "2025-09-27T09:23:14.187Z",
       "updatedAt": "2025-09-28T12:46:21.612Z"
+    },
+    {
+      "dir": "test",
+      "title": "测试",
+      "menuLabel": "测试",
+      "publish": true,
+      "menuEnabled": true,
+      "menuOrder": 6,
+      "createdAt": "2025-10-01T19:43:56.346Z",
+      "updatedAt": "2025-10-01T19:43:56.346Z"
     }
   ]
 }
