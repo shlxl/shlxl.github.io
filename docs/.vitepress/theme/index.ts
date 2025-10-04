@@ -375,26 +375,26 @@ function selectInitialRoute(state: CategoryNavState, stored: string) {
   if (stored) {
     clearStoredRoute(state)
   }
-  const latest = findLatestRoute(state)
-  return latest || state.fallback
+  const oldest = findEarliestRoute(state)
+  return oldest || state.fallback
 }
 
-function findLatestRoute(state: CategoryNavState) {
-  let latestRoute = ''
-  let latestTime = Number.NEGATIVE_INFINITY
+function findEarliestRoute(state: CategoryNavState) {
+  let earliestRoute = ''
+  let earliestTime = Number.POSITIVE_INFINITY
   let fallbackRoute = ''
   for (const entry of state.routes) {
     if (!entry.route) continue
     if (Number.isFinite(entry.time)) {
-      if (!Number.isFinite(latestTime) || entry.time > latestTime) {
-        latestTime = entry.time
-        latestRoute = entry.route
+      if (!Number.isFinite(earliestTime) || entry.time < earliestTime) {
+        earliestTime = entry.time
+        earliestRoute = entry.route
       }
     } else if (!fallbackRoute) {
       fallbackRoute = entry.route
     }
   }
-  return latestRoute || fallbackRoute
+  return earliestRoute || fallbackRoute
 }
 
 function buildStorageKey(category: string) {

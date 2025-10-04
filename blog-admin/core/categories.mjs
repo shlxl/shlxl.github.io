@@ -391,7 +391,7 @@ export function rewriteCategoryReferences({ from, to = '', mode = 'rename', dryR
 function getCategoryBucket(map, key) {
   let bucket = map.get(key);
   if (!bucket) {
-    bucket = { total: 0, published: 0, latestPublished: null, latestAny: null };
+    bucket = { total: 0, published: 0, latestPublished: null, latestAny: null, earliestPublished: null };
     map.set(key, bucket);
   }
   return bucket;
@@ -431,11 +431,88 @@ export function collectCategoryOverview() {
         if (!bucket.latestPublished || ts > bucket.latestPublished.time) {
           bucket.latestPublished = { time: ts, at: iso, rel, title };
         }
+        if (!bucket.earliestPublished || ts < bucket.earliestPublished.time) {
+          bucket.earliestPublished = { time: ts, at: iso, rel, title };
+        }
       }
     }
   }
   return stats;
 }
+
+function loadExistingCategoryNavSnapshot() {
+  try {
+    if (!fs.existsSync(CATEGORY_NAV_FILE)) return [];
+    const raw = fs.readFileSync(CATEGORY_NAV_FILE, 'utf8');
+    if (!raw.trim()) return [];
+    const parsed = JSON.parse(raw);
+    const items = Array.isArray(parsed?.items)
+      ? parsed.items
+      : Array.isArray(parsed)
+        ? parsed
+        : [];
+    if (!Array.isArray(items)) return [];
+    return items.filter(entry => entry && typeof entry === 'object');
+  } catch {
+    return [];
+  }
+}
+
+function normalizeRouteCandidate(route = '') {
+  let normalized = String(route || '').trim();
+  if (!normalized) return '';
+  normalized = normalized.split('\\').join('/');
+  normalized = normalized.replace(/[?#].*$/, '');
+  if (!normalized.startsWith('/')) normalized = '/' + normalized;
+  normalized = normalized.replace(/\/+/g, '/');
+  if (!normalized.startsWith('/blog')) return '';
+  return normalized;
+}
+
+function resolveRouteToFile(route) {
+  const normalized = normalizeRouteCandidate(route);
+  if (!normalized || normalized === '/blog/') return null;
+  let relative = normalized.slice('/blog/'.length);
+  if (!relative) return null;
+  if (relative.endsWith('/')) relative = relative.slice(0, -1);
+  if (!relative) return null;
+  const directPath = path.join(BLOG_DIR, `${relative}.md`);
+  if (fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {
+    return directPath;
+  }
+  const indexPath = path.join(BLOG_DIR, relative, 'index.md');
+  if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) {
+    return indexPath;
+  }
+  return null;
+}
+
+function isRoutePublishedForCategory(route, category) {
+  const normalizedCategory = String(category || '').trim();
+  if (!normalizedCategory) return false;
+  const file = resolveRouteToFile(route);
+  if (!file) return false;
+  let txt = '';
+  try {
+    txt = fs.readFileSync(file, 'utf8');
+  } catch {
+    return false;
+  }
+  const fm = parseFM(txt);
+  if (fm.publish !== true) return false;
+  if (fm.draft === true) return false;
+  const categories = (fm.categories || []).map(v => String(v || '').trim()).filter(Boolean);
+  return categories.includes(normalizedCategory);
+}
+
+function resolvePersistedCategoryLink(navItem, category) {
+  if (!navItem || typeof navItem !== 'object') return '';
+  const candidate = normalizeRouteCandidate(navItem.link || '');
+  if (!candidate || candidate === '/blog/') return '';
+  if (!isRoutePublishedForCategory(candidate, category)) return '';
+  return candidate;
+}
+
 // #endregion
 
 // #region Nav Sync
@@ -443,6 +520,20 @@ function buildCategoryNavItems() {
   const registry = loadCategoryRegistry();
   const blogRoot = path.resolve(BLOG_DIR);
   const usage = collectCategoryOverview();
+  const previousNav = loadExistingCategoryNavSnapshot();
+  const previousByDir = new Map();
+  const previousByCategory = new Map();
+  for (const entry of previousNav) {
+    if (!entry || typeof entry !== 'object') continue;
+    const dirKey = normalizeDirKey(entry.dir);
+    if (dirKey && !previousByDir.has(dirKey)) {
+      previousByDir.set(dirKey, entry);
+    }
+    const categoryKey = String(entry.category || '').trim();
+    if (categoryKey && !previousByCategory.has(categoryKey)) {
+      previousByCategory.set(categoryKey, entry);
+    }
+  }
   return registry.items
     .map(item => {
       if (item.menuEnabled === false) return null;
@@ -469,6 +560,11 @@ function buildCategoryNavItems() {
       const publishedCount = stats?.published || 0;
       const hasPublished = publishedCount > 0;
       const latestPublished = hasPublished ? stats?.latestPublished || null : null;
+      const earliestPublished = hasPublished ? stats?.earliestPublished || null : null;
+      const previousNavItem = hasPublished
+        ? previousByDir.get(dir) || previousByCategory.get(category) || null
+        : null;
+      const earliestLink = earliestPublished ? relToRoute(earliestPublished.rel) : '';
 
       let fallbackRoute = hasIndex ? baseLink : '/blog/';
       let latestLink = fallbackRoute;
@@ -487,7 +583,25 @@ function buildCategoryNavItems() {
         latestLink = fallbackRoute;
       }
 
-      const link = hasPublished ? latestLink : '/blog/';
+      let persistedLink = '';
+      if (hasPublished && previousNavItem) {
+        const candidate = resolvePersistedCategoryLink(previousNavItem, category);
+        if (candidate && candidate !== latestLink) {
+          persistedLink = candidate;
+        }
+      }
+
+      let link = fallbackRoute;
+
+      if (hasPublished) {
+        if (persistedLink) {
+          link = persistedLink;
+        } else if (earliestLink) {
+          link = earliestLink;
+        } else if (latestLink) {
+          link = latestLink;
+        }
+      }
 
       return {
         text: item.menuLabel || item.title || dir || '博客',
