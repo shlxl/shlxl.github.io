@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-04T09:46:40.847Z",
+  "updatedAt": "2025-10-04T09:53:13.807Z",
   "items": [
     {
       "text": "工程",
@@ -33,15 +33,15 @@
       "text": "生活",
       "category": "阳光生活",
       "dir": "mylife",
-      "link": "/blog/",
+      "link": "/blog/mylife/8",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
       "menuOrder": 4,
-      "latestLink": "/blog/",
-      "latestUpdatedAt": "",
-      "latestTitle": "",
+      "latestLink": "/blog/mylife/8",
+      "latestUpdatedAt": "2025-10-04T09:44:46.000Z",
+      "latestTitle": "国庆8天乐",
       "postCount": 1,
-      "publishedCount": 0
+      "publishedCount": 1
     }
   ]
 }
