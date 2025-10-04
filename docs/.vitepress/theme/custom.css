@@ -219,6 +219,13 @@ html.dark {
 
 @media (min-width: 960px) {
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar {
+    --xl-sidebar-fixed-width: calc(var(--vp-sidebar-width) - 64px);
+    --xl-sidebar-overflow-buffer: calc(
+      (var(--vp-sidebar-width) - var(--xl-sidebar-fixed-width)) / 2
+    );
+    flex: 0 0 var(--xl-sidebar-fixed-width);
+    width: var(--xl-sidebar-fixed-width);
+    min-width: var(--xl-sidebar-fixed-width);
     background: transparent;
     border: none;
     box-shadow: none;
@@ -227,7 +234,7 @@ html.dark {
     position: relative;
     padding-right: 16px;
     margin-left: 48px;
-    margin-right: -32px;
+    margin-right: calc(var(--xl-sidebar-overflow-buffer) * -1);
   }
 
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
@@ -235,7 +242,7 @@ html.dark {
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
+    right: var(--xl-sidebar-overflow-buffer);
     width: 1px;
     background: var(--vp-c-divider);
     pointer-events: none;
