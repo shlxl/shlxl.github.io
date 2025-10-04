@@ -322,4 +322,23 @@ html.dark {
     position: relative;
   }
 
+}\r\n\n
+
+/* 移除全站顶部导航分隔线 */
+.VPNav,
+.VPNavBar {
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
+
+.VPNav::before,
+.VPNav::after,
+.VPNavBar::before,
+.VPNavBar::after,
+.VPNavBar .divider,
+.VPNavBar .divider-line {
+  background: none !important;
+  display: none !important;
+}
+
+
