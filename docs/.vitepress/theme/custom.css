@@ -227,6 +227,18 @@ html.dark {
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
     box-sizing: border-box;
+    position: relative;
+  }
+
+  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--vp-c-divider);
+    pointer-events: none;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
