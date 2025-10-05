@@ -228,25 +228,6 @@ html.dark {
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
     box-sizing: border-box;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0 48px;
-    border-radius: 0;
-    position: relative;
-    margin: 0;
-  }
-
-  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    inline-size: 1px;
-    inset-inline-end: 0;
-    background: var(--vp-c-brand-1);
-    pointer-events: none;
-    z-index: 3;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
