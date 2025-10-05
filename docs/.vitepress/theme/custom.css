@@ -1,3 +1,7 @@
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
 :root {
   /* 品牌与辅助色 */
   --vp-c-brand-1: #A1745D; /* mocha mousse */
@@ -220,21 +224,17 @@ html.dark {
 @media (min-width: 960px) {
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar {
     --xl-sidebar-fixed-width: calc(var(--vp-sidebar-width) - 64px);
-    --xl-sidebar-overflow-buffer: calc(
-      (var(--vp-sidebar-width) - var(--xl-sidebar-fixed-width)) / 2
-    );
     flex: 0 0 var(--xl-sidebar-fixed-width);
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
+    box-sizing: border-box;
     background: transparent;
     border: none;
     box-shadow: none;
     padding: 0;
     border-radius: 0;
     position: relative;
-    padding-right: 16px;
-    margin-left: 48px;
-    margin-right: calc(var(--xl-sidebar-overflow-buffer) * -1);
+    margin: 0;
   }
 
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
@@ -242,11 +242,11 @@ html.dark {
     position: absolute;
     top: 0;
     bottom: 0;
-    right: var(--xl-sidebar-overflow-buffer);
-    width: 1px;
-    background: var(--vp-c-divider);
+    inline-size: 1px;
+    inset-inline-end: 0;
+    background: var(--vp-c-brand-1);
     pointer-events: none;
-    z-index: 1;
+    z-index: 3;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
