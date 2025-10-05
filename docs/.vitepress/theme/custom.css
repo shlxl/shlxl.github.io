@@ -228,12 +228,6 @@ html.dark {
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
     box-sizing: border-box;
-    background: var(--vp-c-bg);
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-    position: relative;
-    margin: 0;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
