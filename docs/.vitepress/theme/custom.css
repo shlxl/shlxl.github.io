@@ -231,7 +231,6 @@ html.dark {
     background: var(--vp-c-bg);
     border: none;
     box-shadow: none;
-    padding: 0 48px;
     border-radius: 0;
     position: relative;
     margin: 0;
