@@ -224,14 +224,6 @@ html.dark {
 @media (min-width: 960px) {
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar {
     --xl-sidebar-fixed-width: var(--vp-sidebar-width);
-    --xl-sidebar-divider-gap: 16px;
-    --xl-sidebar-divider-width: 2px;
-    --xl-sidebar-divider-color: var(--vp-c-text-2);
-    --xl-sidebar-divider-color: color-mix(
-      in srgb,
-      var(--vp-c-text-2) 80%,
-      var(--vp-c-bg)
-    );
     flex: 0 0 var(--xl-sidebar-fixed-width);
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
@@ -239,8 +231,6 @@ html.dark {
     background: var(--vp-c-bg);
     border: none;
     box-shadow: none;
-    padding: 0 var(--xl-sidebar-divider-gap) 0 48px;
-    border-inline-end: var(--xl-sidebar-divider-width) solid var(--xl-sidebar-divider-color);
     border-radius: 0;
     position: relative;
     margin: 0;
