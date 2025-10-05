@@ -223,7 +223,6 @@ html.dark {
 
 @media (min-width: 960px) {
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar {
-    --xl-sidebar-fixed-width: var(--vp-sidebar-width);
     flex: 0 0 var(--xl-sidebar-fixed-width);
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
