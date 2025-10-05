@@ -27,7 +27,7 @@ function toDisplayDate(value: any): string {
   return raw.replace(/-/g, '/').slice(0, 16)
 }
 
-function shortenTitle(title: string, limit = 10): string {
+function shortenTitle(title: string, limit = 9): string {
   const text = title.trim()
   if (text.length <= limit) return text
   if (limit <= 1) return text.slice(0, limit)
