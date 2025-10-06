@@ -227,6 +227,19 @@ html.dark {
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
     box-sizing: border-box;
+    position: relative;
+  }
+
+  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -32px;
+    width: 1px;
+    height: 100%;
+    background: var(--vp-c-divider);
+    pointer-events: none;
+    z-index: 2;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
@@ -240,10 +253,12 @@ html.dark {
   }
 
   .catalog__text {
+    display: block;
+    width: 100%;
+    max-width: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 168px; /* Limit to the width of catalog__list */
   }
 
   .blog-theme-layout

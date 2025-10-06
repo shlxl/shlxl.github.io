@@ -27,13 +27,6 @@ function toDisplayDate(value: any): string {
   return raw.replace(/-/g, '/').slice(0, 16)
 }
 
-function shortenTitle(title: string, limit = 9): string {
-  const text = title.trim()
-  if (text.length <= limit) return text
-  if (limit <= 1) return text.slice(0, limit)
-  return text.slice(0, limit - 1) + '…'
-}
-
 const hiddenCatalogPaths = ['/portfolio/', '/about/']
 
 const catalogList = computed(() => {
@@ -63,10 +56,6 @@ const catalogList = computed(() => {
       }
     })
     .sort((a, b) => a.sortTime - b.sortTime)
-    .map((item) => ({
-      ...item,
-      shortTitle: shortenTitle(item.title)
-    }))
 })
 
 const heading = computed(() => '文章目录')
@@ -92,7 +81,7 @@ function handleNavigate(target: { href: string }) {
           <span class="catalog__content">
             <span class="catalog__num">{{ index + 1 }}</span>
             <span class="catalog__body">
-              <span class="catalog__text" :title="item.title">{{ item.shortTitle }}</span>
+              <span class="catalog__text" :title="item.title">{{ item.title }}</span>
               <span class="catalog__date" v-if="item.dateText">{{ item.dateText }}</span>
             </span>
           </span>
