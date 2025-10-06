@@ -18,3 +18,6 @@ Use Conventional Commit prefixes such as `feat(admin):` or `chore(docs):` with p
 ## Security & Configuration Tips
 Never commit secrets or generated `docs/.vitepress/dist/` artifacts; rely on `.gitignore`. Store admin credentials in environment variables, and refresh `categories.nav.json` after taxonomy changes to keep navigation accurate.
 - Emergency removals: deleting or unpublishing a post only refreshes navigation; readers with the page already open must refresh manually, so treat urgent takedowns as already exposed content and plan communications accordingly.
+## Performance Optimization
+- **Code-level:** 优先加载首页 hero 背景图（fetchpriority=high 或使用 <link rel=preload as=image>），压缩封面为 WebP/AVIF；延迟加载文章封面与 Pagefind JS；对滚动容器使用 contain/will-change 减少全局回流。
+- **Engineering-level:** 引入前置 CDN 或迁移至延迟更低的平台以降低 GitHub Pages TTFB；在可自定义响应头的平台上为带哈希的静态资产设置长期 Cache-Control。
