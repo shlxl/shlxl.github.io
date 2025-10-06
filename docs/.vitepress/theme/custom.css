@@ -311,24 +311,6 @@ html.dark {
 
 }
 
-@media (min-width: 960px) {
-  .blog-theme-layout .VPContent:not(.is-home) .VPDoc {
-    position: relative;
-  }
-
-  .blog-theme-layout .VPContent:not(.is-home) .VPDoc::before {
-    content: '';
-    position: absolute;
-    left: var(--xl-article-divider-left, 0px);
-    top: var(--xl-article-divider-top, 0px);
-    width: 1px;
-    height: var(--xl-article-divider-height, 0px);
-    background: var(--vp-c-divider);
-    pointer-events: none;
-  }
-}
-
-
 /* 顶部导航统一分隔线 */
 .VPNav,
 .VPNavBar {

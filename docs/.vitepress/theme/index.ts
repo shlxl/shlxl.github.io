@@ -234,7 +234,6 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
   }
 }
 
-
 function setupNavHmrAutoReload(ctx: EnhanceAppContext) {
   const hot = (import.meta as any).hot
   if (!hot) return
