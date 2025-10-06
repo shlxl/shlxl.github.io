@@ -16,6 +16,7 @@ const extendedTheme: VitePressTheme = {
       setupNavHmrAutoReload(ctx)
       setupNavPolling(ctx)
       setupCategoryNavPersistence(ctx)
+      setupArticleDivider(ctx)
     }
   }
 }
@@ -41,6 +42,141 @@ interface CategoryNavState {
 interface CategoryRouteEntry {
   route: string
   time: number
+}
+
+function setupArticleDivider(ctx: EnhanceAppContext) {
+  if (typeof window === 'undefined') return
+
+  let docEl: HTMLElement | null = null
+  let contentEl: HTMLElement | null = null
+  let navEl: HTMLElement | null = null
+  let lastDocEl: HTMLElement | null = null
+  let raf = 0
+
+  const resetStyles = (target: HTMLElement | null) => {
+    if (!target) return
+    target.style.removeProperty('--xl-article-divider-left')
+    target.style.removeProperty('--xl-article-divider-top')
+    target.style.removeProperty('--xl-article-divider-height')
+  }
+
+  const cancelFrame = () => {
+    if (raf) {
+      window.cancelAnimationFrame(raf)
+      raf = 0
+    }
+  }
+
+  const format = (value: number) => `${Math.round(value * 100) / 100}px`
+
+  const applyMetrics = () => {
+    raf = 0
+    if (!docEl || !contentEl || !navEl) return
+
+    if (window.matchMedia('(max-width: 959.98px)').matches) {
+      resetStyles(docEl)
+      return
+    }
+
+    const docRect = docEl.getBoundingClientRect()
+    const contentRect = contentEl.getBoundingClientRect()
+    const navRect = navEl.getBoundingClientRect()
+
+    const desiredLeft = contentRect.left - docRect.left - 32
+    const left = Math.abs(desiredLeft) < 0.5 ? 0 : desiredLeft
+    const top = Math.max(0, contentRect.top - docRect.top)
+    const navBottom = navRect.bottom - docRect.top
+    const height = Math.max(0, navBottom - top)
+
+    if (height <= 0.5) {
+      resetStyles(docEl)
+      return
+    }
+
+    docEl.style.setProperty('--xl-article-divider-left', format(left))
+    docEl.style.setProperty('--xl-article-divider-top', format(top))
+    docEl.style.setProperty('--xl-article-divider-height', format(height))
+  }
+
+  const scheduleUpdate = () => {
+    if (!docEl || !contentEl || !navEl) return
+    cancelFrame()
+    raf = window.requestAnimationFrame(applyMetrics)
+  }
+
+  const observer =
+    typeof window.ResizeObserver === 'function'
+      ? new ResizeObserver(() => scheduleUpdate())
+      : null
+
+  const disconnectObserver = () => observer?.disconnect()
+
+  const collectElements = () => {
+    const nextDoc = document.querySelector<HTMLElement>(
+      '.blog-theme-layout .VPContent:not(.is-home) .VPDoc'
+    )
+
+    if (lastDocEl && lastDocEl !== nextDoc) {
+      resetStyles(lastDocEl)
+    }
+
+    lastDocEl = nextDoc ?? null
+
+    const nextContent =
+      nextDoc?.querySelector<HTMLElement>(':scope > .container > .content') ?? null
+    const nextNav = document.querySelector<HTMLElement>(
+      '.blog-theme-layout #VPSidebarNav'
+    )
+
+    docEl = nextDoc && nextContent && nextNav ? nextDoc : null
+    contentEl = docEl ? nextContent : null
+    navEl = docEl ? nextNav : null
+
+    cancelFrame()
+    disconnectObserver()
+
+    if (docEl && contentEl && navEl) {
+      observer?.observe(docEl)
+      observer?.observe(contentEl)
+      observer?.observe(navEl)
+      scheduleUpdate()
+    } else if (nextDoc) {
+      resetStyles(nextDoc)
+    }
+  }
+
+  const handleRouteChange = () => {
+    window.requestAnimationFrame(() => {
+      collectElements()
+      scheduleUpdate()
+    })
+  }
+
+  const onResize = () => scheduleUpdate()
+  window.addEventListener('resize', onResize, { passive: true })
+
+  const onNavUpdated = (_event: Event) => {
+    collectElements()
+    scheduleUpdate()
+  }
+  window.addEventListener('xl-nav-updated', onNavUpdated)
+
+  const previous = ctx.router.onAfterRouteChange
+  ctx.router.onAfterRouteChange = async (to: string) => {
+    if (typeof previous === 'function') {
+      await previous.call(ctx.router, to)
+    }
+    handleRouteChange()
+  }
+
+  handleRouteChange()
+
+  window.addEventListener('beforeunload', () => {
+    window.removeEventListener('resize', onResize)
+    window.removeEventListener('xl-nav-updated', onNavUpdated)
+    disconnectObserver()
+    cancelFrame()
+  })
 }
 
 function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
