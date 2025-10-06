@@ -269,6 +269,9 @@ export default defineConfig({
       blogUnlinkRestartPlugin(),
       adminNavWatcherPlugin(),
     ],
+    build: {
+      cssTarget: 'chrome105'
+    },
     resolve: {
       alias: {
         '@sugarat/theme/src/styles': path.resolve(process.cwd(), 'node_modules/@sugarat/theme/src/styles'),
