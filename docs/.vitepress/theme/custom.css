@@ -237,7 +237,6 @@ html.dark {
     right: 0;
     bottom: 0;
     width: 1px;
-    background: var(--vp-c-brand-1);
     pointer-events: none;
   }
 
