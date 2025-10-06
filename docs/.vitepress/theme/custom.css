@@ -227,17 +227,6 @@ html.dark {
     width: var(--xl-sidebar-fixed-width);
     min-width: var(--xl-sidebar-fixed-width);
     box-sizing: border-box;
-    position: relative;
-  }
-
-  .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar .sidebar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 1px;
-    pointer-events: none;
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
@@ -320,8 +309,7 @@ html.dark {
     position: relative;
   }
 
-}\r\n
-\n\n\n
+}
 
 /* 顶部导航统一分隔线 */
 .VPNav,
