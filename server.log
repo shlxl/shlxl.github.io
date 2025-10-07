@@ -1,0 +1,1793 @@
+
+> xiaoling-home@0.0.1 docs:dev:no-open
+> vitepress dev docs
+
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T13:57:18.790Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[
+  {
+    "text": "前端",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "测试",
+        "link": "/blog/",
+        "__xlCategoryNav": true,
+        "category": "测试",
+        "fallback": "/blog/",
+        "fallbackLink": "/blog/",
+        "latestLink": "/blog/",
+        "latestTitle": "",
+        "navGroupId": "group-mggj3ki8"
+      }
+    ],
+    "__xlCategoryNav": true,
+    "__xlNavGroupId": "group-mggj3ki8"
+  },
+  {
+    "text": "工程",
+    "link": "/blog/engineering/scaffold-guide",
+    "__xlCategoryNav": true,
+    "category": "工程实践",
+    "fallback": "/blog/",
+    "fallbackLink": "/blog/",
+    "latestLink": "/blog/engineering/blog-nav-offset-postmortem",
+    "latestTitle": "博客导航间距调试复盘",
+    "navGroupId": "primary"
+  },
+  {
+    "text": "杂项",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "宠物",
+        "link": "/blog/",
+        "__xlCategoryNav": true,
+        "category": "宠物",
+        "fallback": "/blog/",
+        "fallbackLink": "/blog/",
+        "latestLink": "/blog/",
+        "latestTitle": "",
+        "navGroupId": "group-mggj45kk"
+      }
+    ],
+    "__xlCategoryNav": true,
+    "__xlNavGroupId": "group-mggj45kk"
+  },
+  {
+    "text": "攻略",
+    "link": "/blog/guides/d2r-barbarian-guide",
+    "__xlCategoryNav": true,
+    "category": "职业攻略",
+    "fallback": "/blog/",
+    "fallbackLink": "/blog/",
+    "latestLink": "/blog/guides/d2r-necromancer-guide",
+    "latestTitle": "死灵法师·掌控生死",
+    "navGroupId": "primary"
+  },
+  {
+    "text": "游戏",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "摄影",
+        "link": "/blog/",
+        "__xlCategoryNav": true,
+        "category": "摄影",
+        "fallback": "/blog/",
+        "fallbackLink": "/blog/",
+        "latestLink": "/blog/",
+        "latestTitle": "",
+        "navGroupId": "group-mggjsrbf"
+      }
+    ],
+    "__xlCategoryNav": true,
+    "__xlNavGroupId": "group-mggjsrbf"
+  },
+  {
+    "text": "生活",
+    "link": "/blog/mylife/8",
+    "__xlCategoryNav": true,
+    "category": "阳光生活",
+    "fallback": "/blog/",
+    "fallbackLink": "/blog/",
+    "latestLink": "/blog/mylife/post-1759571837950",
+    "latestTitle": "游戏还是充电？",
+    "navGroupId": "primary"
+  }
+]
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m21:57:57[22m [36m[1m[vitepress][22m[39m [32mdocs\.vitepress\config.ts changed, restarting server...
+[39m
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T13:57:57.501Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[
+  {
+    "text": "前端",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "测试",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "工程",
+    "link": "/blog/engineering/scaffold-guide"
+  },
+  {
+    "text": "杂项",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "宠物",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "攻略",
+    "link": "/blog/guides/d2r-barbarian-guide"
+  },
+  {
+    "text": "游戏",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "摄影",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "生活",
+    "link": "/blog/mylife/8"
+  }
+]
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T13:57:57.601Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[
+  {
+    "text": "前端",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "测试",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "工程",
+    "link": "/blog/engineering/scaffold-guide"
+  },
+  {
+    "text": "杂项",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "宠物",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "攻略",
+    "link": "/blog/guides/d2r-barbarian-guide"
+  },
+  {
+    "text": "游戏",
+    "link": "/blog/",
+    "items": [
+      {
+        "text": "摄影",
+        "link": "/blog/"
+      }
+    ]
+  },
+  {
+    "text": "生活",
+    "link": "/blog/mylife/8"
+  }
+]
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:00:40[22m [36m[1m[vitepress][22m[39m server restarted.
+[2m22:02:28[22m [36m[1m[vitepress][22m[39m [32mdocs\.vitepress\config.ts changed, restarting server...
+[39m
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:02:28.568Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:02:28.649Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:02:28[22m [36m[1m[vitepress][22m[39m server restarted.
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:02:29[22m [36m[1m[vitepress][22m[39m server restarted.
+[2m22:02:50[22m [36m[1m[vitepress][22m[39m [32mdocs\.vitepress\nav-builder.ts changed, restarting server...
+[39m
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:02:50.680Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:02:50.755Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:02:50[22m [36m[1m[vitepress][22m[39m server restarted.
+[2m22:04:58[22m [36m[1m[vitepress][22m[39m [32mdocs\.vitepress\nav-builder.ts changed, restarting server...
+[39m
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:04:58.142Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:04:58.218Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:04:58[22m [36m[1m[vitepress][22m[39m server restarted.
+[2m22:05:07[22m [36m[1m[vitepress][22m[39m [32mdocs\.vitepress\nav-builder.ts changed, restarting server...
+[39m
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:05:07.438Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+[DEBUG] Attempting category nav sync...
+[DEBUG] Category nav sync successful: {
+  items: [
+    {
+      text: '工程',
+      category: '工程实践',
+      dir: 'engineering',
+      link: '/blog/engineering/scaffold-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 2,
+      latestLink: '/blog/engineering/blog-nav-offset-postmortem',
+      latestUpdatedAt: '2025-09-27T12:00:00.000Z',
+      latestTitle: '博客导航间距调试复盘',
+      postCount: 6,
+      publishedCount: 6
+    },
+    {
+      text: '攻略',
+      category: '职业攻略',
+      dir: 'guides',
+      link: '/blog/guides/d2r-barbarian-guide',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 3,
+      latestLink: '/blog/guides/d2r-necromancer-guide',
+      latestUpdatedAt: '2025-09-14T11:00:00.000Z',
+      latestTitle: '死灵法师·掌控生死',
+      postCount: 7,
+      publishedCount: 7
+    },
+    {
+      text: '生活',
+      category: '阳光生活',
+      dir: 'mylife',
+      link: '/blog/mylife/8',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'primary',
+      menuEnabled: true,
+      menuOrder: 4,
+      latestLink: '/blog/mylife/post-1759571837950',
+      latestUpdatedAt: '2025-10-04T09:57:21.000Z',
+      latestTitle: '游戏还是充电？',
+      postCount: 2,
+      publishedCount: 2
+    },
+    {
+      text: '测试',
+      category: '测试',
+      dir: 'test',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj3ki8',
+      menuEnabled: true,
+      menuOrder: 5,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '宠物',
+      category: '宠物',
+      dir: 'pet',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggj45kk',
+      menuEnabled: true,
+      menuOrder: 7,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    },
+    {
+      text: '摄影',
+      category: '摄影',
+      dir: 'photo',
+      link: '/blog/',
+      fallback: '/blog/',
+      fallbackLink: '/blog/',
+      navGroupId: 'group-mggjsrbf',
+      menuEnabled: true,
+      menuOrder: 8,
+      latestLink: '/blog/',
+      latestUpdatedAt: '',
+      latestTitle: '',
+      postCount: 0,
+      publishedCount: 0
+    }
+  ],
+  groups: [
+    {
+      id: 'primary',
+      label: '主导航',
+      type: 'primary',
+      menuOrder: 1,
+      link: '/blog/'
+    },
+    {
+      id: 'group-mggj3ki8',
+      label: '前端',
+      type: 'dropdown',
+      menuOrder: 2,
+      link: undefined
+    },
+    {
+      id: 'group-mggj45kk',
+      label: '杂项',
+      type: 'dropdown',
+      menuOrder: 3,
+      link: undefined
+    },
+    {
+      id: 'group-mggjsrbf',
+      label: '游戏',
+      type: 'dropdown',
+      menuOrder: 4,
+      link: undefined
+    }
+  ],
+  updatedAt: '2025-10-07T14:05:07.513Z',
+  json: 'docs/.vitepress/categories.nav.json',
+  config: null,
+  patched: { mode: 'json-only' }
+}
+
+  [32m[1mvitepress[22m v1.6.4[39m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:05:07[22m [36m[1m[vitepress][22m[39m server restarted.
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:08:58[22m [36m[1m[vitepress][22m[39m server restarted.
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:09:36[22m [36m[1m[vitepress][22m[39m server restarted.
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:11:18[22m [36m[1m[vitepress][22m[39m server restarted.
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+Deprecation [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+[vite] categories.nav.json changed; restarting dev server to refresh navigation
+[2m22:12:36[22m [36m[1m[vitepress][22m[39m server restarted.
+^C^C

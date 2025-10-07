@@ -1,3 +1,11 @@
+export interface CategoryNavGroup {
+  id: string
+  label: string
+  type: 'primary' | 'dropdown'
+  menuOrder: number
+  link?: string
+}
+
 export interface CategoryNavItem {
   text: string
   category: string
@@ -5,6 +13,9 @@ export interface CategoryNavItem {
   link: string
   fallback: string
   fallbackLink?: string
+  navGroupId?: string
+  navGroup?: string
+  menuEnabled?: boolean
   menuOrder: number
   latestLink?: string
   latestUpdatedAt?: string
@@ -19,7 +30,15 @@ export interface CategoryRegistryItem {
   menuLabel: string
   publish: boolean
   menuEnabled: boolean
+  navGroupId?: string
   menuOrder: number
   createdAt: string
   updatedAt: string
+}
+
+export interface CategoryRegistry {
+  version: number
+  updatedAt: string
+  items: CategoryRegistryItem[]
+  groups: CategoryNavGroup[]
 }

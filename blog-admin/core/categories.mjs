@@ -10,6 +10,10 @@ import {
 } from './config.mjs';
 import { walkMd, parseFM, relOf, isSection, slugOf, updateFrontmatter } from './fs-utils.mjs';
 
+const DEFAULT_NAV_GROUPS = [
+  { id: 'primary', label: '主导航', type: 'primary', menuOrder: 1, link: '/blog/' }
+];
+
 // #region Registry Helpers
 export function normalizeDirKey(dir = '') {
   let s = String(dir || '').replace(/\\/g, '/');
@@ -29,6 +33,87 @@ function coerceIso(value, fallback) {
   return new Date().toISOString();
 }
 
+function normalizeNavGroupEntry(entry, fallbackOrder = 100, seenIds = new Set()) {
+  if (!entry || typeof entry !== 'object') return null;
+  const candidateId = typeof entry.id === 'string' ? entry.id.trim() : '';
+  const fallbackId = typeof entry.slug === 'string' ? entry.slug.trim() : '';
+  let id = candidateId || fallbackId;
+  if (!id) return null;
+  id = id.toLowerCase().replace(/[^a-z0-9\-]+/g, '-').replace(/^-+|-+$/g, '') || 'primary';
+  if (seenIds.has(id)) return null;
+  const labelSource = typeof entry.label === 'string'
+    ? entry.label
+    : (typeof entry.text === 'string' ? entry.text : '');
+  const label = labelSource.trim() || (id === 'primary' ? '主导航' : id);
+  const typeSource = typeof entry.type === 'string' ? entry.type.trim().toLowerCase() : '';
+  const type = typeSource === 'primary' ? 'primary' : 'dropdown';
+  const link = typeof entry.link === 'string' ? entry.link.trim() : '';
+  let menuOrder = Number(entry.menuOrder);
+  if (!Number.isFinite(menuOrder)) menuOrder = fallbackOrder;
+  seenIds.add(id);
+  return { id, label, type, menuOrder, link: link || undefined };
+}
+
+function normalizeRegistryGroups(raw) {
+  const seen = new Set();
+  const groups = [];
+  const candidates = Array.isArray(raw)
+    ? raw
+    : raw && Array.isArray(raw.groups)
+      ? raw.groups
+      : [];
+  for (const [index, entry] of candidates.entries()) {
+    const normalized = normalizeNavGroupEntry(entry, 100 + index, seen);
+    if (normalized) groups.push(normalized);
+  }
+  for (const fallback of DEFAULT_NAV_GROUPS) {
+    if (!seen.has(fallback.id)) {
+      groups.push({ ...fallback });
+      seen.add(fallback.id);
+    }
+  }
+  groups.sort((a, b) => {
+    if (a.menuOrder !== b.menuOrder) return a.menuOrder - b.menuOrder;
+    return a.id.localeCompare(b.id);
+  });
+  return groups;
+}
+
+function slugifyGroupId(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function nextGroupOrder(groups) {
+  let max = 0;
+  for (const group of groups || []) {
+    const n = Number(group?.menuOrder);
+    if (Number.isFinite(n) && n > max) max = n;
+  }
+  return max + 1;
+}
+
+export function normalizeNavGroupId(value, groups) {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  let candidate = raw;
+  if (!candidate) candidate = 'primary';
+  const lowered = candidate.toLowerCase();
+  if (lowered === 'archive' || lowered === 'primary') {
+    candidate = lowered;
+  }
+  if (Array.isArray(groups) && groups.length) {
+    const hit = groups.find((group) => group?.id === candidate);
+    if (hit) return hit.id;
+    const loweredHit = groups.find((group) => group?.id?.toLowerCase?.() === lowered);
+    if (loweredHit) return loweredHit.id;
+    const primary = groups.find((group) => group?.id === 'primary');
+    if (primary) return primary.id;
+  }
+  return candidate || 'primary';
+}
+
 function extractRegistryCandidates(raw) {
   if (Array.isArray(raw)) return raw;
   if (raw && Array.isArray(raw.items)) return raw.items;
@@ -41,7 +126,7 @@ function extractRegistryCandidates(raw) {
   return [];
 }
 
-function normalizeCategoryEntry(entry, index, fallbackDate) {
+function normalizeCategoryEntry(entry, index, fallbackDate, groups) {
   if (!entry || typeof entry !== 'object') return null;
   const dir = normalizeDirKey(entry.dir || entry.path || entry.rel || entry.slug || '');
   let title = '';
@@ -59,6 +144,7 @@ function normalizeCategoryEntry(entry, index, fallbackDate) {
   else if (entry.enabled !== undefined) menuEnabled = !!entry.enabled;
   else if (entry.visible === false || entry.publish === false) menuEnabled = false;
   else menuEnabled = true;
+  const navGroupId = normalizeNavGroupId(entry.navGroupId || entry.navGroup || entry.group || entry.menuGroup, groups);
   let menuOrder = Number(entry.menuOrder);
   if (!Number.isFinite(menuOrder)) menuOrder = index + 1;
   const fallback = coerceIso(fallbackDate, undefined);
@@ -73,13 +159,14 @@ function normalizeCategoryEntry(entry, index, fallbackDate) {
     menuLabel: resolvedLabel,
     publish,
     menuEnabled,
+    navGroupId,
     menuOrder,
     createdAt,
     updatedAt
   };
 }
 
-function dedupeRegistryItems(items, fallbackDate) {
+function dedupeRegistryItems(items, fallbackDate, groups) {
   const map = new Map();
   const fallback = coerceIso(fallbackDate, undefined);
   for (const entry of items) {
@@ -93,6 +180,7 @@ function dedupeRegistryItems(items, fallbackDate) {
       menuLabel: entry.menuLabel || entry.title || key,
       publish: entry.publish !== false,
       menuEnabled: entry.menuEnabled !== false,
+      navGroupId: normalizeNavGroupId(entry.navGroupId || entry.navGroup || entry.group || entry.menuGroup, groups),
       menuOrder: Number(entry.menuOrder),
       createdAt,
       updatedAt
@@ -137,16 +225,21 @@ function normalizeMenuOrder(items) {
 function prepareCategoryRegistry(raw, now = new Date().toISOString()) {
   const baseline = raw && typeof raw === 'object' ? raw : { items: [] };
   const fallback = coerceIso(baseline.updatedAt, now);
+  const groups = normalizeRegistryGroups(baseline.groups || baseline.navGroups || []);
   const candidates = extractRegistryCandidates(baseline);
   const normalized = candidates
-    .map((entry, idx) => normalizeCategoryEntry(entry, idx, fallback))
+    .map((entry, idx) => normalizeCategoryEntry(entry, idx, fallback, groups))
     .filter(Boolean);
-  const deduped = dedupeRegistryItems(normalized, fallback);
+  const deduped = dedupeRegistryItems(normalized, fallback, groups).map((entry) => ({
+    ...entry,
+    navGroupId: normalizeNavGroupId(entry.navGroupId, groups)
+  }));
   const ordered = normalizeMenuOrder(deduped);
   return {
     version: CATEGORY_REGISTRY_VERSION,
     updatedAt: coerceIso(baseline.updatedAt, fallback),
-    items: ordered
+    items: ordered,
+    groups
   };
 }
 
@@ -518,6 +611,7 @@ function resolvePersistedCategoryLink(navItem, category) {
 // #region Nav Sync
 function buildCategoryNavItems() {
   const registry = loadCategoryRegistry();
+  const groups = Array.isArray(registry.groups) ? registry.groups : normalizeRegistryGroups([]);
   const blogRoot = path.resolve(BLOG_DIR);
   const usage = collectCategoryOverview();
   const previousNav = loadExistingCategoryNavSnapshot();
@@ -610,6 +704,8 @@ function buildCategoryNavItems() {
         link,
         fallback: fallbackRoute,
         fallbackLink: fallbackRoute,
+        navGroupId: normalizeNavGroupId(item.navGroupId, groups),
+        menuEnabled: item.menuEnabled !== false,
         menuOrder: Number(item.menuOrder) || 0,
         latestLink,
         latestUpdatedAt,
@@ -647,20 +743,20 @@ function relToRoute(rel = '') {
 }
 
 export function syncCategoryNavArtifacts(){
+  const registry = loadCategoryRegistry();
   const items = buildCategoryNavItems();
+  const groups = Array.isArray(registry.groups) ? registry.groups : normalizeRegistryGroups([]);
   const now = new Date().toISOString();
   fs.mkdirSync(VP_DIR, {recursive:true});
-  const payload = { updatedAt: now, items };
+  const payload = { updatedAt: now, items, groups };
   fs.writeFileSync(CATEGORY_NAV_FILE, JSON.stringify(payload, null, 2), 'utf8');
   const json = path.relative(PROJECT_ROOT, CATEGORY_NAV_FILE).replace(/\\/g,'/');
-  return { items, updatedAt: now, json, config: null, patched: { mode:'json-only' } };
+  return { items, groups, updatedAt: now, json, config: null, patched: { mode:'json-only' } };
 }
 
 export function safeSyncCategoryNav() {
   try {
-    console.log('[DEBUG] Attempting category nav sync...');
     const result = syncCategoryNavArtifacts();
-    console.log('[DEBUG] Category nav sync successful:', result);
     return { ok: true, ...result };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -672,3 +768,118 @@ export function safeSyncCategoryNav() {
 
 
 // #endregion
+
+export function listNavGroups() {
+  const registry = loadCategoryRegistry();
+  return Array.isArray(registry.groups) ? registry.groups : [];
+}
+
+export function createNavGroup(input) {
+  const registry = loadCategoryRegistry();
+  const groups = Array.isArray(registry.groups) ? registry.groups.slice() : [];
+  const labelRaw = typeof input?.label === 'string' ? input.label.trim() : '';
+  let id = slugifyGroupId(input?.id);
+  if (!id) id = slugifyGroupId(labelRaw);
+  if (!id) id = `group-${Date.now().toString(36)}`;
+  if (id === 'primary') {
+    throw new Error('主导航分组无法重复创建');
+  }
+  if (groups.some(group => group.id === id)) {
+    throw new Error(`分组标识「${id}」已存在`);
+  }
+  const type = input?.type === 'primary' ? 'primary' : 'dropdown';
+  const menuOrderInput = Number(input?.menuOrder);
+  const menuOrder = Number.isFinite(menuOrderInput) ? menuOrderInput : nextGroupOrder(groups);
+  const linkRaw = typeof input?.link === 'string' ? input.link.trim() : '';
+  groups.push({
+    id,
+    label: labelRaw || id,
+    type,
+    menuOrder,
+    link: linkRaw || undefined
+  });
+  registry.groups = groups;
+  const written = writeCategoryRegistry(registry);
+  const navSync = safeSyncCategoryNav();
+  const group = written.groups.find(item => item.id === id) || null;
+  return { group, registry: written, navSync };
+}
+
+export function updateNavGroup(params) {
+  const registry = loadCategoryRegistry();
+  const groups = Array.isArray(registry.groups) ? registry.groups : [];
+  const currentId = slugifyGroupId(params?.id);
+  if (!currentId) {
+    throw new Error('缺少分组标识');
+  }
+  const entry = groups.find(group => group.id === currentId);
+  if (!entry) {
+    throw new Error(`未找到分组「${currentId}」`);
+  }
+  if (entry.id === 'primary' && params?.type === 'dropdown') {
+    throw new Error('主导航分组无法改为下拉类型');
+  }
+  let targetId = entry.id;
+  if (params?.nextId !== undefined) {
+    const normalized = slugifyGroupId(params.nextId);
+    if (!normalized) {
+      throw new Error('新的分组标识不合法');
+    }
+    if (normalized === 'primary') {
+      throw new Error('无法将其他分组改名为 primary');
+    }
+    if (groups.some(group => group.id === normalized && group !== entry)) {
+      throw new Error(`分组标识「${normalized}」已存在`);
+    }
+    const previousId = entry.id;
+    entry.id = normalized;
+    targetId = normalized;
+    for (const item of registry.items) {
+      if (normalizeNavGroupId(item.navGroupId, groups) === previousId) {
+        item.navGroupId = normalized;
+      }
+    }
+  }
+  if (params?.label !== undefined) {
+    const trimmed = String(params.label || '').trim();
+    if (trimmed) entry.label = trimmed;
+  }
+  if (params?.type && entry.id !== 'primary') {
+    entry.type = params.type === 'primary' ? 'primary' : 'dropdown';
+  }
+  if (params?.menuOrder !== undefined) {
+    const orderNum = Number(params.menuOrder);
+    if (Number.isFinite(orderNum)) entry.menuOrder = orderNum;
+  }
+  if (params?.link !== undefined) {
+    const trimmed = String(params.link || '').trim();
+    entry.link = trimmed || undefined;
+  }
+  registry.groups = groups;
+  const written = writeCategoryRegistry(registry);
+  const navSync = safeSyncCategoryNav();
+  const group = written.groups.find(item => item.id === targetId) || null;
+  return { group, registry: written, navSync };
+}
+
+export function deleteNavGroup(id) {
+  const registry = loadCategoryRegistry();
+  const groups = Array.isArray(registry.groups) ? registry.groups : [];
+  const targetId = slugifyGroupId(id);
+  if (!targetId || targetId === 'primary') {
+    throw new Error('无法删除主导航分组');
+  }
+  const index = groups.findIndex(group => group.id === targetId);
+  if (index === -1) {
+    throw new Error(`未找到分组「${targetId}」`);
+  }
+  const inUse = registry.items.some(item => normalizeNavGroupId(item.navGroupId, groups) === targetId);
+  if (inUse) {
+    throw new Error(`分组「${targetId}」仍有关联分类，无法删除`);
+  }
+  groups.splice(index, 1);
+  registry.groups = groups;
+  const written = writeCategoryRegistry(registry);
+  const navSync = safeSyncCategoryNav();
+  return { removed: targetId, registry: written, navSync };
+}

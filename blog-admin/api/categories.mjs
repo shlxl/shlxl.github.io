@@ -9,7 +9,12 @@ import {
   syncCategoryNavArtifacts,
   safeSyncCategoryNav,
   removeRegistryByDir,
-  collectCategoryUsage
+  collectCategoryUsage,
+  normalizeNavGroupId,
+  listNavGroups,
+  createNavGroup,
+  updateNavGroup,
+  deleteNavGroup
 } from '../core/categories.mjs';
 import { readBody, send } from '../lib/http-utils.mjs';
 import { BLOG_DIR } from '../core/config.mjs';
@@ -55,6 +60,7 @@ async function getCategories(req, res) {
         dir: dirKey,
         publish: entry.publish !== false,
         menuEnabled: entry.menuEnabled !== false,
+        navGroupId: normalizeNavGroupId(entry.navGroupId, registry.groups),
         menuOrder: entry.menuOrder,
         createdAt: entry.createdAt,
         updatedAt: entry.updatedAt,
@@ -95,7 +101,14 @@ async function getCategories(req, res) {
       });
     }
     orphans.sort((a, b) => (b.latestPostAt || '').localeCompare(a.latestPostAt || ''));
-    send(res, 200, { ok: true, registry: { version: registry.version, updatedAt: registry.updatedAt }, items, orphans });
+    const groups = Array.isArray(registry.groups) ? registry.groups : [];
+    send(res, 200, {
+      ok: true,
+      registry: { version: registry.version, updatedAt: registry.updatedAt },
+      items,
+      orphans,
+      groups
+    });
   } catch (e) {
     send(res, 500, { ok: false, error: e.message });
   }
@@ -117,6 +130,7 @@ async function createCategory(req, res) {
     }
     const publish = body.publish === undefined ? true : !!body.publish;
     const menuEnabled = body.menuEnabled === undefined ? publish : !!body.menuEnabled;
+    const navGroupId = normalizeNavGroupId(body.navGroup || body.group || body.menuGroup, registry.groups);
     const now = new Date().toISOString();
     const menuOrder = Number.isFinite(Number(body.menuOrder)) ? Number(body.menuOrder) : nextMenuOrder(registry.items);
     registry.items.push({
@@ -125,6 +139,7 @@ async function createCategory(req, res) {
       menuLabel: String(body.menuLabel || '').trim() || title,
       publish,
       menuEnabled,
+      navGroupId,
       menuOrder,
       createdAt: now,
       updatedAt: now
@@ -164,6 +179,9 @@ async function updateCategory(req, res) {
     }
     const publish = body.publish === undefined ? entry.publish : !!body.publish;
     const menuEnabled = body.menuEnabled === undefined ? entry.menuEnabled : !!body.menuEnabled;
+    const navGroupId = body.navGroup === undefined && body.group === undefined && body.menuGroup === undefined
+      ? entry.navGroupId
+      : normalizeNavGroupId(body.navGroup || body.group || body.menuGroup, registry.groups);
     const menuOrder = body.menuOrder !== undefined && Number.isFinite(Number(body.menuOrder))
       ? Number(body.menuOrder)
       : entry.menuOrder;
@@ -194,6 +212,7 @@ async function updateCategory(req, res) {
     }
     entry.publish = publish;
     entry.menuEnabled = menuEnabled;
+    entry.navGroupId = normalizeNavGroupId(navGroupId, registry.groups);
     entry.menuOrder = menuOrder;
     entry.updatedAt = now;
     let rewrite = null;
@@ -289,6 +308,62 @@ async function deleteCategory(req, res) {
   }
 }
 
+async function getNavGroupsHandler(req, res) {
+  try {
+    const groups = listNavGroups();
+    send(res, 200, { ok: true, groups });
+  } catch (e) {
+    send(res, 500, { ok: false, error: e.message });
+  }
+}
+
+async function createNavGroupHandler(req, res) {
+  try {
+    const body = await readBody(req);
+    const result = createNavGroup({
+      id: body.id,
+      label: body.label,
+      type: body.type,
+      menuOrder: body.menuOrder,
+      link: body.link
+    });
+    send(res, 200, { ok: true, ...result });
+  } catch (e) {
+    send(res, 400, { ok: false, error: e.message });
+  }
+}
+
+async function updateNavGroupHandler(req, res) {
+  try {
+    const body = await readBody(req);
+    const id = body.id || body.currentId || body.slug;
+    if (!id) return send(res, 400, { ok: false, error: '缺少分组标识' });
+    const result = updateNavGroup({
+      id,
+      nextId: body.nextId,
+      label: body.label,
+      type: body.type,
+      menuOrder: body.menuOrder,
+      link: body.link
+    });
+    send(res, 200, { ok: true, ...result });
+  } catch (e) {
+    send(res, 400, { ok: false, error: e.message });
+  }
+}
+
+async function deleteNavGroupHandler(req, res) {
+  try {
+    const body = await readBody(req);
+    const id = body.id || body.groupId;
+    if (!id) return send(res, 400, { ok: false, error: '缺少分组标识' });
+    const result = deleteNavGroup(id);
+    send(res, 200, { ok: true, ...result });
+  } catch (e) {
+    send(res, 400, { ok: false, error: e.message });
+  }
+}
+
 async function rewriteCategory(req, res) {
   try {
     const body = await readBody(req);
@@ -332,5 +407,9 @@ export {
   toggleCategory as apiCategoriesToggle,
   deleteCategory as apiCategoriesDelete,
   rewriteCategory as apiCategoryRewrite,
-  syncNav as apiCategoriesNavSync
+  syncNav as apiCategoriesNavSync,
+  getNavGroupsHandler as apiCategoryGroups,
+  createNavGroupHandler as apiCategoryGroupCreate,
+  updateNavGroupHandler as apiCategoryGroupUpdate,
+  deleteNavGroupHandler as apiCategoryGroupDelete
 };

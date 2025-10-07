@@ -18,14 +18,18 @@ import {
     apiTrashRestore, 
     apiTrashDelete 
 } from './api/posts.mjs';
-import { 
-    apiCategories, 
-    apiCategoriesCreate, 
-    apiCategoriesUpdate, 
-    apiCategoriesToggle, 
-    apiCategoriesDelete, 
-    apiCategoryRewrite, 
-    apiCategoriesNavSync 
+import {
+    apiCategories,
+    apiCategoriesCreate,
+    apiCategoriesUpdate,
+    apiCategoriesToggle,
+    apiCategoriesDelete,
+    apiCategoryRewrite,
+    apiCategoriesNavSync,
+    apiCategoryGroups,
+    apiCategoryGroupCreate,
+    apiCategoryGroupUpdate,
+    apiCategoryGroupDelete
 } from './api/categories.mjs';
 import { apiBuild, apiPreview, apiDeploy, apiAliases } from './api/system.mjs';
 import { PUBLIC_DIR, PROJECT_ROOT } from './core/config.mjs';
@@ -72,7 +76,7 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method === 'POST' && pathname === '/api/login') return apiLogin(req, res);
 
-    const protectedApi = pathname?.startsWith('/api/') && pathname !== '/api/login';
+    const protectedApi = pathname?.startsWith('/api/') && pathname !== '/api/login' && pathname !== '/api/logout';
     if (protectedApi) {
       const session = ensureAuth(req, res);
       if (!session) return;
@@ -99,6 +103,10 @@ const server = createServer(async (req, res) => {
     if (req.method === 'POST' && pathname === '/api/categories/delete') return apiCategoriesDelete(req, res);
     if (req.method === 'POST' && pathname === '/api/categories/rewrite') return apiCategoryRewrite(req, res);
     if (req.method === 'POST' && pathname === '/api/categories/nav-sync') return apiCategoriesNavSync(req, res);
+    if (req.method === 'GET' && pathname === '/api/categories/groups') return apiCategoryGroups(req, res);
+    if (req.method === 'POST' && pathname === '/api/categories/groups/create') return apiCategoryGroupCreate(req, res);
+    if (req.method === 'POST' && pathname === '/api/categories/groups/update') return apiCategoryGroupUpdate(req, res);
+    if (req.method === 'POST' && pathname === '/api/categories/groups/delete') return apiCategoryGroupDelete(req, res);
 
     if (req.method === 'POST' && pathname === '/api/build') return apiBuild(req, res);
     if (req.method === 'POST' && pathname === '/api/preview') return apiPreview(req, res);

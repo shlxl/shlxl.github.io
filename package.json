@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "docs:dev": "vitepress dev docs --open",
+    "docs:dev:no-open": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "new:post": "node scripts/new-post.mjs",
@@ -21,11 +22,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "@sugarat/theme": "^0.5.6",
+    "@sugarat/theme": "^0.5.7",
     "@types/node": "^20.12.7",
-    "sass-embedded": "^1.92.1",
+    "sass-embedded": "^1.93.2",
     "typescript": "^5.4.5",
-    "vitepress": "^1.3.4"
+    "vitepress": "^1.6.4"
   },
   "dependencies": {
     "commander": "^14.0.1"

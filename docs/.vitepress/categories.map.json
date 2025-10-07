@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2025-10-04T09:43:23.103Z",
+  "updatedAt": "2025-10-07T14:38:15.820Z",
   "items": [
     {
       "dir": "engineering",
@@ -8,9 +8,10 @@
       "menuLabel": "工程",
       "publish": true,
       "menuEnabled": true,
+      "navGroupId": "group-mggj3ki8",
       "menuOrder": 2,
       "createdAt": "2025-09-18T00:00:00.000Z",
-      "updatedAt": "2025-09-24T09:53:03.061Z"
+      "updatedAt": "2025-10-07T14:08:58.797Z"
     },
     {
       "dir": "guides",
@@ -18,9 +19,10 @@
       "menuLabel": "攻略",
       "publish": true,
       "menuEnabled": true,
+      "navGroupId": "group-mggjsrbf",
       "menuOrder": 3,
       "createdAt": "2025-09-18T00:00:00.000Z",
-      "updatedAt": "2025-09-24T09:53:14.750Z"
+      "updatedAt": "2025-10-07T14:38:11.930Z"
     },
     {
       "dir": "mylife",
@@ -28,9 +30,70 @@
       "menuLabel": "生活",
       "publish": true,
       "menuEnabled": true,
+      "navGroupId": "group-mggj45kk",
       "menuOrder": 4,
       "createdAt": "2025-09-25T10:43:19.649Z",
-      "updatedAt": "2025-09-28T12:45:23.173Z"
+      "updatedAt": "2025-10-07T14:38:15.820Z"
+    },
+    {
+      "dir": "test",
+      "title": "测试",
+      "menuLabel": "测试",
+      "publish": true,
+      "menuEnabled": true,
+      "navGroupId": "group-mggj3ki8",
+      "menuOrder": 5,
+      "createdAt": "2025-10-07T07:35:29.706Z",
+      "updatedAt": "2025-10-07T13:17:57.846Z"
+    },
+    {
+      "dir": "pet",
+      "title": "宠物",
+      "menuLabel": "宠物",
+      "publish": true,
+      "menuEnabled": true,
+      "navGroupId": "group-mggj45kk",
+      "menuOrder": 7,
+      "createdAt": "2025-10-07T08:47:32.877Z",
+      "updatedAt": "2025-10-07T13:18:00.569Z"
+    },
+    {
+      "dir": "photo",
+      "title": "摄影",
+      "menuLabel": "摄影",
+      "publish": true,
+      "menuEnabled": true,
+      "navGroupId": "group-mggjsrbf",
+      "menuOrder": 8,
+      "createdAt": "2025-10-07T09:36:35.582Z",
+      "updatedAt": "2025-10-07T13:18:03.844Z"
+    }
+  ],
+  "groups": [
+    {
+      "id": "primary",
+      "label": "主导航",
+      "type": "primary",
+      "menuOrder": 1,
+      "link": "/blog/"
+    },
+    {
+      "id": "group-mggj3ki8",
+      "label": "前端",
+      "type": "dropdown",
+      "menuOrder": 2
+    },
+    {
+      "id": "group-mggj45kk",
+      "label": "杂项",
+      "type": "dropdown",
+      "menuOrder": 3
+    },
+    {
+      "id": "group-mggjsrbf",
+      "label": "游戏",
+      "type": "dropdown",
+      "menuOrder": 4
     }
   ]
 }
