@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-06T17:00:32.377Z",
+  "updatedAt": "2025-10-07T15:32:25.110Z",
   "items": [
     {
       "text": "工程",
@@ -8,6 +8,8 @@
       "link": "/blog/engineering/scaffold-guide",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
+      "navGroupId": "group-mggj3ki8",
+      "menuEnabled": true,
       "menuOrder": 2,
       "latestLink": "/blog/engineering/blog-nav-offset-postmortem",
       "latestUpdatedAt": "2025-09-27T12:00:00.000Z",
@@ -22,6 +24,8 @@
       "link": "/blog/guides/d2r-barbarian-guide",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
+      "navGroupId": "group-mggjsrbf",
+      "menuEnabled": true,
       "menuOrder": 3,
       "latestLink": "/blog/guides/d2r-necromancer-guide",
       "latestUpdatedAt": "2025-09-14T11:00:00.000Z",
@@ -36,12 +40,89 @@
       "link": "/blog/mylife/8",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
+      "navGroupId": "group-mggj45kk",
+      "menuEnabled": true,
       "menuOrder": 4,
-      "latestLink": "/blog/mylife/8",
-      "latestUpdatedAt": "2025-10-04T09:44:46.000Z",
-      "latestTitle": "国庆8天乐哈哈哈哈哈哈哈哈哈哈哈哈只见",
+      "latestLink": "/blog/mylife/post-1759571837950",
+      "latestUpdatedAt": "2025-10-04T09:57:21.000Z",
+      "latestTitle": "游戏还是充电？",
       "postCount": 2,
-      "publishedCount": 1
+      "publishedCount": 2
+    },
+    {
+      "text": "测试",
+      "category": "测试",
+      "dir": "test",
+      "link": "/blog/",
+      "fallback": "/blog/",
+      "fallbackLink": "/blog/",
+      "navGroupId": "group-mggj3ki8",
+      "menuEnabled": true,
+      "menuOrder": 5,
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
+    },
+    {
+      "text": "宠物",
+      "category": "宠物",
+      "dir": "pet",
+      "link": "/blog/",
+      "fallback": "/blog/",
+      "fallbackLink": "/blog/",
+      "navGroupId": "group-mggj45kk",
+      "menuEnabled": true,
+      "menuOrder": 7,
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
+    },
+    {
+      "text": "摄影",
+      "category": "摄影",
+      "dir": "photo",
+      "link": "/blog/",
+      "fallback": "/blog/",
+      "fallbackLink": "/blog/",
+      "navGroupId": "group-mggjsrbf",
+      "menuEnabled": true,
+      "menuOrder": 8,
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
+    }
+  ],
+  "groups": [
+    {
+      "id": "primary",
+      "label": "主导航",
+      "type": "primary",
+      "menuOrder": 1,
+      "link": "/blog/"
+    },
+    {
+      "id": "group-mggj3ki8",
+      "label": "前端",
+      "type": "dropdown",
+      "menuOrder": 2
+    },
+    {
+      "id": "group-mggj45kk",
+      "label": "杂项",
+      "type": "dropdown",
+      "menuOrder": 3
+    },
+    {
+      "id": "group-mggjsrbf",
+      "label": "游戏",
+      "type": "dropdown",
+      "menuOrder": 4
     }
   ]
 }

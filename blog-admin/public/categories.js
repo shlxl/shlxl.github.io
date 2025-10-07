@@ -7,7 +7,7 @@ const ISSUE_LABELS={
   'menu-disabled':'菜单未上架',
   'unused':'未被引用'
 };
-const STATE={ items:[], orphans:[] };
+const STATE={ items:[], orphans:[], groups:[] };
 function toastWithNavSync(message, navSync, ok=true){
   const base=String(message||'').trim()||'操作完成';
   if(!navSync){ toast(base.slice(0,400), ok); return; }
@@ -44,6 +44,32 @@ async function api(path, method='GET', data){
 function describeIssues(list){ if(!Array.isArray(list)||!list.length) return '—'; return list.map(code=>ISSUE_LABELS[code]||code).join('、'); }
 function formatCount(item){ const total=Number(item.postCount||0); const published=Number(item.publishedCount||0); if(!total) return '0'; if(total===published) return String(total); return `${published}/${total}`; }
 function latestText(item){ const title=item.latestPublishedTitle||item.latestPostTitle||''; const when=item.latestPublishedAt||item.latestPostAt||''; if(!title) return '—'; const ts=fmtTime(when); return ts?`${title}（${ts}）`:title; }
+function normalizeNavGroupInput(value){ const raw=(value||'').trim(); if(!raw) return 'primary'; const lower=raw.toLowerCase(); if(lower==='archive') return 'archive'; if(lower==='primary') return 'primary'; return raw; }
+function formatNavGroupDisplay(value){
+  const normalized=normalizeNavGroupInput(value);
+  if(!STATE.groups?.length){ return normalized==='primary'?'主导航':normalized; }
+  const match=STATE.groups.find(group=>group.id===normalized);
+  if(match) return match.label||match.id;
+  return normalized==='primary'?'主导航':normalized;
+}
+function populateNavGroupSelect(select, selected){
+  if(!select) return;
+  const current = selected || 'primary';
+  let html='';
+  for(const group of STATE.groups||[]){
+    const value=group.id;
+    const label=group.label||group.id;
+    const badge=group.type==='dropdown'?'（下拉）':'';
+    html += `<option value="${value}"${value===current?' selected':''}>${label}${badge}</option>`;
+  }
+  if(!html){
+    html = `<option value="primary"${current==='primary'?' selected':''}>主导航</option>`;
+  }
+  select.innerHTML = html;
+  if(!select.value && select.options.length){
+    select.value = select.options[0].value;
+  }
+}
 
 async function runCategoryRewrite(name){ const source=String(name||'').trim(); if(!source) return false; const promptHint='输入新的分类名称以批量重命名。\n输入 “-” 或 “remove” 可仅移除该分类引用。'; const input=prompt(`${promptHint}\n留空或取消则退出。`, source); if(input===null) return false; const trimmed=input.trim(); if(!trimmed){ toast('已取消批处理',false); return false; } let payload,label; if(trimmed==='-'||trimmed.toLowerCase()==='remove'){ payload={ from:source, mode:'remove' }; label='移除分类引用'; }else{ payload={ from:source, to:trimmed, mode:'rename' }; label=`重命名为 ${trimmed}`; }
   try{ const r=await api('/api/categories/rewrite','POST',payload); toast(r.summary || `分类批处理完成：${label}`); await refresh(); return true; }
@@ -100,6 +126,11 @@ function renderCategories(list){
     const countTitle=item.postCount===item.publishedCount
       ? `${item.postCount} 篇文章（全部已发布）`
       : `${item.publishedCount} 篇已发布 / 总计 ${item.postCount}`;
+    const currentGroupId=normalizeNavGroupInput(item.navGroupId||item.navGroup||'primary');
+    const navGroupDisplay=formatNavGroupDisplay(currentGroupId);
+    const navGroupCell=(STATE.groups&&STATE.groups.length)
+      ? `<select data-act="group-select" data-dir="${dir}" data-current="${currentGroupId}"></select>`
+      : navGroupDisplay;
     return `<tr>
       <td>${title}</td>
       <td>${menuLabel || '—'}</td>
@@ -107,6 +138,7 @@ function renderCategories(list){
       <td title="${countTitle}">${count}</td>
       <td>${item.publish?'✅':'❌'}</td>
       <td>${item.menuEnabled?'✅':'❌'}</td>
+      <td>${navGroupCell}</td>
       <td title="${latestHover}">${latest}</td>
       <td>${issues}</td>
       <td class="row-actions">
@@ -120,6 +152,26 @@ function renderCategories(list){
       </td>
     </tr>`;
   }).join('');
+
+  tbody.querySelectorAll('select[data-act="group-select"]').forEach(select=>{
+    const dir=select.dataset.dir||'';
+    populateNavGroupSelect(select, select.dataset.current || 'primary');
+    select.addEventListener('change', async ()=>{
+      if(!dir) return;
+      try{
+        const navGroup=select.value;
+        const res = await api('/api/categories/update','POST',{ dir, navGroup });
+        select.dataset.current = navGroup;
+        toastWithNavSync('已更新分类分组', res.navSync, true);
+        await refresh();
+      }catch(e){
+        toast((e.detail?.err||e.detail?.out||e.message||'更新分组失败').slice(0,400), false);
+        if(select && select.dataset.current){
+          select.value = select.dataset.current;
+        }
+      }
+    });
+  });
 
   $$('#tbl-categories [data-act]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
@@ -164,6 +216,83 @@ function renderCategories(list){
   });
 }
 
+function renderNavGroups(list){
+  const tbody=$('#tbl-nav-groups tbody');
+  if(!tbody) return;
+  if(!Array.isArray(list) || !list.length){
+    tbody.innerHTML='<tr><td colspan="6"><em>暂无自定义分组，默认使用主导航与归档</em></td></tr>';
+    return;
+  }
+  tbody.innerHTML=list.map(group=>{
+    const typeLabel=group.type==='dropdown'?'下拉菜单':'主导航';
+    const linkDisplay=group.link?`<code>${group.link}</code>`:'—';
+    const deleteDisabled=group.id==='primary'?' disabled':'';
+    const editDisabled=group.id==='primary'?' data-primary="true"':'';
+    return `<tr>
+      <td>${group.label||group.id}</td>
+      <td><code>${group.id}</code></td>
+      <td>${typeLabel}</td>
+      <td>${Number(group.menuOrder||0)}</td>
+      <td>${linkDisplay}</td>
+      <td class="row-actions">
+        <button data-gact="edit" data-id="${group.id}"${editDisabled}>编辑</button>
+        <button data-gact="delete" data-id="${group.id}"${deleteDisabled}>删除</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $$('#tbl-nav-groups [data-gact]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id=btn.dataset.id||'';
+      try {
+        if(btn.dataset.gact==='edit'){
+          await handleGroupEdit(id);
+        }else if(btn.dataset.gact==='delete'){
+          if(!confirm('确认删除该分组？仅当无分类使用时才可删除。')) return;
+          const res = await api('/api/categories/groups/delete','POST',{ id });
+          toastWithNavSync(`已删除分组 ${res.removed}`, res.navSync, true);
+          await refresh();
+        }
+      } catch(e){
+        toast((e.detail?.err||e.detail?.out||e.message||'分组操作失败').slice(0,400), false);
+      }
+    });
+  });
+}
+
+async function handleGroupEdit(id){
+  const normalized=String(id||'').trim();
+  if(!normalized){ toast('缺少分组标识', false); return; }
+  const group=STATE.groups.find(entry=>entry.id===normalized);
+  if(!group){ toast('未找到目标分组', false); return; }
+  const nextIdPrompt=group.id==='primary' ? group.id : prompt('分组标识（留空保留当前）', group.id);
+  if(nextIdPrompt===null) return;
+  const nextLabel=prompt('分组名称', group.label||group.id);
+  if(nextLabel===null) return;
+  const typePrompt=prompt('分组类型（primary=主导航，dropdown=下拉菜单）', group.type||'dropdown');
+  if(typePrompt===null) return;
+  const orderPrompt=prompt('排序（数字，越小越靠前）', String(group.menuOrder ?? ''));
+  if(orderPrompt===null) return;
+  const linkPrompt=prompt('默认链接（可选，例如 /blog/）', group.link || '');
+  if(linkPrompt===null) return;
+  try{
+    const nextIdValue = group.id==='primary' ? group.id : (nextIdPrompt || group.id);
+    const payload={
+      id: group.id,
+      nextId: nextIdValue,
+      label: nextLabel,
+      type: typePrompt?.trim()?.toLowerCase?.() === 'primary' ? 'primary' : 'dropdown',
+      menuOrder: orderPrompt,
+      link: linkPrompt
+    };
+    const res = await api('/api/categories/groups/update','POST', payload);
+    toastWithNavSync('分组已更新', res.navSync, true);
+    await refresh();
+  }catch(e){
+    toast((e.detail?.err||e.detail?.out||e.message||'更新分组失败').slice(0,400), false);
+  }
+}
+
 function renderIssues(list){
   const tbody=$('#tbl-issues tbody');
   if(!tbody) return;
@@ -202,8 +331,11 @@ async function refresh(){
     const res = await api('/api/categories');
     STATE.items = res.items || [];
     STATE.orphans = res.orphans || [];
+    STATE.groups = res.groups || [];
     renderCategories(STATE.items);
     renderIssues(STATE.orphans);
+    renderNavGroups(STATE.groups);
+    populateNavGroupSelect($('#new-nav-group'), 'primary');
   }catch(e){ toast((e.detail?.err||e.detail?.out||e.message||'刷新失败').slice(0,400), false); }
 }
 
@@ -228,11 +360,27 @@ function readCreateForm(){
   const menuLabel=($('#new-menu')?.value||'').trim();
   const publish=$('#new-publish')?.value!=='false';
   const menuEnabled=$('#new-menu-enabled')?.value!=='false';
+  const navGroup=normalizeNavGroupInput($('#new-nav-group')?.value||'primary');
   const orderRaw=($('#new-order')?.value||'').trim();
   const orderNum=orderRaw?Number(orderRaw):NaN;
   const createDir=$('#new-create-dir')?.checked!==false;
-  const payload={ title, dir, menuLabel, publish, menuEnabled, createDir };
+  const payload={ title, dir, menuLabel, publish, menuEnabled, navGroup, createDir };
   if(Number.isFinite(orderNum)) payload.menuOrder=orderNum;
+  return payload;
+}
+
+function readGroupCreateForm(){
+  const id=($('#new-group-id')?.value||'').trim();
+  const label=($('#new-group-label')?.value||'').trim();
+  const type=($('#new-group-type')?.value||'dropdown').trim();
+  const orderRaw=($('#new-group-order')?.value||'').trim();
+  const link=($('#new-group-link')?.value||'').trim();
+  const payload={ id, label, type };
+  if(orderRaw){
+    const orderNum=Number(orderRaw);
+    if(Number.isFinite(orderNum)) payload.menuOrder=orderNum;
+  }
+  if(link) payload.link=link;
   return payload;
 }
 
@@ -243,7 +391,16 @@ function resetCreateForm(){
   const order=$('#new-order'); if(order) order.value='';
   const publish=$('#new-publish'); if(publish) publish.value='true';
   const menuEnabled=$('#new-menu-enabled'); if(menuEnabled) menuEnabled.value='true';
+  const navGroup=$('#new-nav-group'); if(navGroup) navGroup.value='primary';
   const createDir=$('#new-create-dir'); if(createDir) createDir.checked=true;
+}
+
+function resetGroupCreateForm(){
+  const id=$('#new-group-id'); if(id) id.value='';
+  const label=$('#new-group-label'); if(label) label.value='';
+  const type=$('#new-group-type'); if(type) type.value='dropdown';
+  const order=$('#new-group-order'); if(order) order.value='';
+  const link=$('#new-group-link'); if(link) link.value='';
 }
 
 async function main(){
@@ -261,11 +418,28 @@ async function main(){
     }catch(e){ toast((e.detail?.err||e.detail?.out||e.message||'创建失败').slice(0,400), false); }
   });
 
+  $('#btn-group-create')?.addEventListener('click', async ()=>{
+    const payload = readGroupCreateForm();
+    if(!payload.label && !payload.id){ toast('请填写分组名称或标识', false); return; }
+    try{
+      const res = await api('/api/categories/groups/create','POST', payload);
+      toastWithNavSync('分组已创建', res.navSync, true);
+      resetGroupCreateForm();
+      await refresh();
+    }catch(e){
+      toast((e.detail?.err||e.detail?.out||e.message||'创建分组失败').slice(0,400), false);
+    }
+  });
+
   document.addEventListener('admin-auth-changed', async e=>{
     if(e.detail?.authed){ await refresh(); }
     else{
       const catBody=$('#tbl-categories tbody'); if(catBody) catBody.innerHTML='';
       const issueBody=$('#tbl-issues tbody'); if(issueBody) issueBody.innerHTML='';
+      const groupBody=$('#tbl-nav-groups tbody'); if(groupBody) groupBody.innerHTML='';
+      STATE.items=[];
+      STATE.orphans=[];
+      STATE.groups=[];
     }
   });
 

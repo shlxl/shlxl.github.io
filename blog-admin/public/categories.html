@@ -49,6 +49,12 @@
       </select>
       <small class="muted">仅决定导航是否显示，该选项与“内容上架”已解耦。</small>
     </label>
+    <label>导航分组
+      <select id="new-nav-group">
+        <option value="primary" selected>主导航</option>
+      </select>
+      <small class="muted">可在下方新建分组；未选择时默认显示在主导航。</small>
+    </label>
     <label>菜单排序（数字，越小越靠前）
       <input id="new-order" type="number" min="0" placeholder="自动追加">
     </label>
@@ -60,9 +66,40 @@
 </section>
 
 <section class="card">
+  <h2>导航分组</h2>
+  <div class="grid">
+    <label>分组名称
+      <input id="new-group-label" placeholder="例如：归档">
+    </label>
+    <label>分组标识（可选）
+      <input id="new-group-id" placeholder="例如：archive">
+      <small class="muted">只允许字母、数字、连字符；留空则自动生成。</small>
+    </label>
+    <label>分组类型
+      <select id="new-group-type">
+        <option value="dropdown" selected>下拉菜单</option>
+        <option value="primary">主导航</option>
+      </select>
+      <small class="muted">主导航：分类直接出现在顶部；下拉菜单：作为二级分组显示。</small>
+    </label>
+    <label>排序（数字）
+      <input id="new-group-order" type="number" min="0" placeholder="自动追加">
+    </label>
+    <label>默认链接（可选）
+      <input id="new-group-link" placeholder="例如：/blog/">
+    </label>
+  </div>
+  <button id="btn-group-create">创建分组</button>
+
+  <table id="tbl-nav-groups"><thead>
+    <tr><th>名称</th><th>标识</th><th>类型</th><th>排序</th><th>默认链接</th><th>操作</th></tr>
+  </thead><tbody><tr><td colspan="6"><em>加载中...</em></td></tr></tbody></table>
+</section>
+
+<section class="card">
   <h2>分类列表</h2>
   <table id="tbl-categories"><thead>
-    <tr><th>分类</th><th>导航</th><th>目录</th><th>文章数</th><th>内容</th><th>菜单</th><th>最新文章</th><th>异常</th><th>操作</th></tr>
+    <tr><th>分类</th><th>导航</th><th>目录</th><th>文章数</th><th>内容</th><th>菜单</th><th>分组</th><th>最新文章</th><th>异常</th><th>操作</th></tr>
   </thead><tbody></tbody></table>
 </section>
 

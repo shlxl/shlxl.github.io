@@ -4,6 +4,8 @@ import type { EnhanceAppContext, PageData, Theme as VitePressTheme } from 'vitep
 import { inBrowser } from 'vitepress'
 import './custom.css'
 
+const ENABLE_DYNAMIC_NAV = false
+
 const extendedTheme: VitePressTheme = {
   ...Theme,
   enhanceApp(ctx) {
@@ -13,9 +15,11 @@ const extendedTheme: VitePressTheme = {
         '--blog-bg-texture',
         `url(${textureUrl})`
       )
-      setupNavHmrAutoReload(ctx)
-      setupNavPolling(ctx)
-      setupCategoryNavPersistence(ctx)
+      if (ENABLE_DYNAMIC_NAV) {
+        setupNavHmrAutoReload(ctx)
+        setupNavPolling(ctx)
+        setupCategoryNavPersistence(ctx)
+      }
       setupArticleDivider(ctx)
     }
   }
@@ -180,6 +184,8 @@ function setupArticleDivider(ctx: EnhanceAppContext) {
 }
 
 function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
+  if (!ENABLE_DYNAMIC_NAV) return
+
   const siteData = ctx.siteData
 
   const resolveNavSource = () => {
@@ -235,6 +241,8 @@ function setupCategoryNavPersistence(ctx: EnhanceAppContext) {
 }
 
 function setupNavHmrAutoReload(ctx: EnhanceAppContext) {
+  if (!ENABLE_DYNAMIC_NAV) return
+
   const hot = (import.meta as any).hot
   if (!hot) return
   const siteData = ctx.siteData
@@ -260,6 +268,8 @@ let navPollingTimer = 0
 let navUpdateHandler: EventListener | null = null
 
 function setupNavPolling(ctx: EnhanceAppContext) {
+  if (!ENABLE_DYNAMIC_NAV) return
+
   if (typeof window === 'undefined') return
   const env = (import.meta as any).env
   if (!(env && env.DEV)) return

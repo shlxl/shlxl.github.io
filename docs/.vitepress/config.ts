@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitepress'
+import type { DefaultTheme } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { CategoryNavItem } from '../../scripts/lib/category-types'
+import type { CategoryNavGroup, CategoryNavItem } from '../../scripts/lib/category-types'
 import { safeSyncCategoryNav } from '../../blog-admin/core/categories.mjs'
+import { buildCategoryNavStructure } from './nav-builder'
 import {
   extractFrontmatterBlockFile,
   parseFrontmatterArray,
@@ -18,6 +20,24 @@ type PluginOption = {
   resolveId?: (source: string, importer?: string) => string | null | undefined
   configureServer?: (server: any) => void
   [key: string]: any
+}
+
+type AdminNavConfig = {
+  items: CategoryNavItem[]
+  groups: CategoryNavGroup[]
+}
+
+type ThemeNavItem = DefaultTheme.NavItem
+
+type CategoryNavMenuItem = ThemeNavItem & {
+  __xlCategoryNav?: true
+  __xlNavGroupId?: string
+  category?: string
+  fallback?: string
+  fallbackLink?: string
+  latestLink?: string
+  latestTitle?: string
+  navGroupId?: string
 }
 
 const deployBase = process.env.DEPLOY_BASE || '/'
@@ -35,99 +55,53 @@ const sugaratTheme = await import('@sugarat/theme/node')
 patchLocalDraftFsGuard()
 primeCategoryNavSync()
 
-const adminNavSource = resolveAdminNavItems()
+const adminNavSource = resolveAdminNavConfig()
 
 type CategoryLatestArticle = { time: number; link: string }
 
 const categoryLatestArticleIndex: Map<string, CategoryLatestArticle> = new Map()
 let categoryLatestArticleIndexPrimed = false
 
-function resolveAdminNavItems() {
+function resolveAdminNavConfig(): AdminNavConfig {
   const fileNav = loadAdminNavFromFile()
-  if (fileNav.length) return fileNav
-  return []
+  if (fileNav.items.length || fileNav.groups.length) return fileNav
+  return { items: [], groups: [] }
 }
 
-function loadAdminNavFromFile(): CategoryNavItem[] {
+function loadAdminNavFromFile(): AdminNavConfig {
   try {
     const navPath = path.resolve(process.cwd(), 'docs/.vitepress/categories.nav.json')
-    if (!fs.existsSync(navPath)) return []
+    if (!fs.existsSync(navPath)) return { items: [], groups: [] }
     const raw = fs.readFileSync(navPath, 'utf8')
-    if (!raw.trim()) return []
+    if (!raw.trim()) return { items: [], groups: [] }
     const parsed = JSON.parse(raw)
     const items = Array.isArray(parsed?.items)
-      ? parsed.items
+      ? (parsed.items as CategoryNavItem[])
       : Array.isArray(parsed)
-        ? parsed
+        ? (parsed as CategoryNavItem[])
         : []
-    if (!Array.isArray(items)) return []
-    return items as CategoryNavItem[]
+    const groups = Array.isArray(parsed?.groups)
+      ? (parsed.groups as CategoryNavGroup[])
+      : []
+    return { items, groups }
   } catch (err) {
     console.warn('[vitepress] failed to load categories.nav.json; using embedded nav fallback', err)
-    return []
+    return { items: [], groups: [] }
   }
 }
 
-function buildCategoryNavItems(navConfig: CategoryNavItem[]) {
-  categoryLatestArticleIndexPrimed = false
-  categoryLatestArticleIndex.clear()
-  return (navConfig || [])
-    .slice()
-    .sort((a, b) => {
-      const ao = Number(a?.menuOrder ?? 0)
-      const bo = Number(b?.menuOrder ?? 0)
-      if (ao !== bo) return ao - bo
-      return String(a?.text || a?.category || '').localeCompare(String(b?.text || b?.category || ''))
-    })
-    .map((item) => {
-      const {
-        text: rawText,
-        category: rawCategory,
-        dir: rawDir,
-        link: rawLink,
-        fallback: rawFallback,
-        menuOrder: rawMenuOrder,
-        latestLink: rawLatestLink,
-        latestUpdatedAt: rawLatestUpdatedAt,
-        latestTitle: rawLatestTitle,
-        postCount: rawPostCount,
-        publishedCount: rawPublishedCount
-      } = item || ({} as CategoryNavItem)
 
-      const displayText = String(rawText || '').trim()
-      const normalizedCategory = String(rawCategory || '').trim() || displayText
-      const navText = displayText || normalizedCategory
-      const resolvedCategoryLatest = normalizedCategory
-        ? resolveLatestCategoryArticle(normalizedCategory)
-        : ''
-      const fallbackLink = ensureExistingRoute(rawFallback, rawLink)
-      const latestLink = ensureExistingRoute(
-        resolvedCategoryLatest,
-        rawLatestLink,
-        fallbackLink
-      )
-      const link = ensureExistingRoute(rawLink, latestLink, fallbackLink)
 
-      const normalizedNavItem: CategoryNavItem = {
-        text: navText,
-        category: normalizedCategory,
-        dir: rawDir || '',
-        link,
-        fallback: fallbackLink,
-        fallbackLink,
-        menuOrder: Number(rawMenuOrder ?? 0),
-        latestLink,
-        latestUpdatedAt: rawLatestUpdatedAt,
-        latestTitle: rawLatestTitle,
-        postCount: rawPostCount,
-        publishedCount: rawPublishedCount
-      }
 
-      return normalizedNavItem
-    })
-}
+const {
+  menu: categoryNavMenu,
+  items: categoryNavItems,
+  groups: categoryNavGroups
+} = buildCategoryNavStructure(adminNavSource.items, adminNavSource.groups, {
+  ensureRoute: ensureExistingRoute
+})
 
-const categoryNavItems = buildCategoryNavItems(adminNavSource)
+
 
 const pagefindExcludeSelectors = ['div.aside', 'a.header-anchor']
 const pagefindForceLanguage = (process.env.PAGEFIND_FORCE_LANGUAGE || '').trim()
@@ -256,7 +230,7 @@ export default defineConfig({
     ],
     nav: [
       { text: '博客', link: '/blog/' },
-      ...categoryNavItems,
+      ...categoryNavMenu,
       { text: '作品', link: '/portfolio/' },
       { text: '关于', link: '/about/' }
     ],
@@ -285,6 +259,13 @@ export default defineConfig({
           '**/.vitepress/config.*.timestamp-*',
           '**/*.timestamp-*.mjs'
         ]
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
+        }
       }
     }
   }
