@@ -18,30 +18,13 @@ publish: false
     </div>
   </div>
 
-  <div class="xl-card">
-    <h3>Indigo UI</h3>
-    <p>基于 Vite/Vue 的轻量组件库，强调简洁设计与深色模式适配。</p>
-    <div class="xl-links">
-      <a class="xl-chip" href="https://github.com/shlxl" target="_blank" rel="noreferrer">GitHub</a>
-      <a class="xl-chip" href="#" target="_blank" rel="noreferrer">Demo</a>
-    </div>
-  </div>
-
-  <div class="xl-card">
-    <h3>Portfolio Starter</h3>
-    <p>个人作品集模板，内置卡片网格、标签筛选与响应式布局。</p>
-    <div class="xl-links">
-      <a class="xl-chip" href="https://github.com/lxlcool3000" target="_blank" rel="noreferrer">GitHub</a>
-      <a class="xl-chip" href="#" target="_blank" rel="noreferrer">Demo</a>
-    </div>
-  </div>
-
-  <div class="xl-card">
-    <h3>Blog Kit</h3>
+   <div class="xl-card">
+    <h3>个人博客</h3>
     <p>基于 VitePress 的博客脚手架，支持标签、主题化与搜索。</p>
     <div class="xl-links">
-      <a class="xl-chip" href="https://github.com/lxlcool3000" target="_blank" rel="noreferrer">GitHub</a>
-      <a class="xl-chip" href="#" target="_blank" rel="noreferrer">Demo</a>
+      <a class="xl-chip" href="https://github.com/shlxl/shlxl.github.io" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="xl-chip" href="https://shlxl.github.io/" 
+      target="_blank" rel="noreferrer">Demo</a>
     </div>
   </div>
 </div>
