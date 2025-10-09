@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-07T18:37:11.623Z",
+  "updatedAt": "2025-10-09T03:20:35.856Z",
   "items": [
     {
       "text": "工程",
@@ -50,22 +50,6 @@
       "publishedCount": 2
     },
     {
-      "text": "测试",
-      "category": "测试",
-      "dir": "test",
-      "link": "/blog/",
-      "fallback": "/blog/",
-      "fallbackLink": "/blog/",
-      "navGroupId": "group-mggj3ki8",
-      "menuEnabled": true,
-      "menuOrder": 5,
-      "latestLink": "/blog/",
-      "latestUpdatedAt": "",
-      "latestTitle": "",
-      "postCount": 0,
-      "publishedCount": 0
-    },
-    {
       "text": "宠物",
       "category": "宠物",
       "dir": "pet",
@@ -80,22 +64,6 @@
       "latestTitle": "cat",
       "postCount": 1,
       "publishedCount": 1
-    },
-    {
-      "text": "摄影",
-      "category": "摄影",
-      "dir": "photo",
-      "link": "/blog/",
-      "fallback": "/blog/",
-      "fallbackLink": "/blog/",
-      "navGroupId": "group-mggjsrbf",
-      "menuEnabled": true,
-      "menuOrder": 8,
-      "latestLink": "/blog/",
-      "latestUpdatedAt": "",
-      "latestTitle": "",
-      "postCount": 0,
-      "publishedCount": 0
     }
   ],
   "groups": [

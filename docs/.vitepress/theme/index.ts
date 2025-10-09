@@ -20,7 +20,7 @@ const extendedTheme: VitePressTheme = {
         setupNavPolling(ctx)
         setupCategoryNavPersistence(ctx)
       }
-      setupArticleDivider(ctx)
+      // setupArticleDivider(ctx)
     }
   }
 }

@@ -197,7 +197,7 @@ html.dark {
     width: 100%;
   }
 
-  .blog-theme-layout .VPSidebar .sidebar .card-header,
+  .blog-theme-layout .VPSide-bar .sidebar .card-header,
   .blog-theme-layout .VPSidebar .sidebar .recommend {
     padding-left: 0;
   }
@@ -326,6 +326,7 @@ html.dark {
 
 }
 
+
 /* 顶部导航统一分隔线 */
 .VPNav,
 .VPNavBar {
@@ -346,7 +347,7 @@ html.dark {
 .VPNav {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
   background: var(--vp-c-bg);
 }
 
@@ -359,7 +360,13 @@ html.dark {
   height: 1px;
   transform: translateX(-50%);
   background: var(--vp-c-divider);
-  pointer-events: none;
-  z-index: 1;
+  z-index: -1;
 }
 
+.VPFlyout {
+  z-index: 101;
+}
+
+.VPFlyout .VPMenu a {
+  text-align: right;
+}

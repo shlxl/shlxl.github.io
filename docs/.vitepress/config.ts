@@ -141,7 +141,7 @@ const blogTheme = patchSugaratProvidePageData(
         pageSize: 6
       },
       socialLinks: [
-        { icon: 'github', link: 'https://github.com/lxlcool3000' },
+        { icon: 'github', link: 'https://github.com/shlxl' },
         { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
       ],
       search: pagefindSearch,
@@ -225,7 +225,7 @@ export default defineConfig({
   themeConfig: {
     logo: '/avatar-avatar.png',
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/lxlcool3000' },
+      { icon: 'github', link: 'https://github.com/shlxl' },
       { icon: mailIcon, link: 'mailto:coollxl92@gmail.com' }
     ],
     nav: [
