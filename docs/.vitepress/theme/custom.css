@@ -240,6 +240,7 @@ html.dark {
     background: var(--vp-c-divider);
     pointer-events: none;
     z-index: 2;
+    transform: translateZ(0);
   }
 
   .blog-theme-layout .VPSidebar .sidebar .card-header {
