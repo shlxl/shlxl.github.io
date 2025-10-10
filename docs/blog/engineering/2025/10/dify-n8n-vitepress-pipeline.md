@@ -1,55 +1,41 @@
 ---
 title: "用 Dify + n8n 半自动发布 VitePress 博文"
-date: 2025-10-10T05:50:39.449Z
-description: "从零搭建到开 PR：通过 Dify 生成结构化草稿，结合 n8n 自动化分支创建与 Pull Request 提交，实现 VitePress 博客内容的半自动发布流程。"
+date: 2025-10-10T07:36:40.658Z
+description: "从零搭建到开 PR：通过 Dify 生成结构化草稿，n8n 自动化分支创建与 Pull Request 提交，实现个人技术博客的稳定内容流水线，支持人审介入。"
 slug: dify-n8n-vitepress-pipeline
-category: engineering
-tags: ["dify", "n8n", "vitepress", "github pages", "automation"]
+categories: engineering
+tags: ["dify", "n8n", "vitepress", "github pages", "ci/cd", "automation"]
 series: "AI 写作流水线"
 draft: true
 ---## 目标
-本文介绍如何使用 Dify 生成标准化博客草稿，再由 n8n 流程自动提交至 VitePress 博客仓库。适合希望固定输出格式、减少重复操作的技术写作者。
+本文介绍如何将 Dify 工作流与 n8n 节点编排结合，实现技术博文从主题输入到 GitHub PR 的半自动化发布流程。
 
-### 核心优势
-该流程确保每篇博文结构一致，且可通过 GitHub Actions 自动预览。人工仅需审查内容与标题即可合并 PR，降低发布成本。
+适用于使用 VitePress 搭建的静态博客，部署于 GitHub Pages。
 
-## 步骤 1：在 Dify 中配置 Blog Writer 工作流
-进入 Dify 工作流编辑器，新建应用并设置输入参数（如 topic, angle, keywords）。使用本模板作为系统提示词，确保输出为指定 JSON 结构。
+### 关键组件说明
+Dify（https://shlxl.github.io/）作为 AI 应用平台，负责解析输入并生成结构化 JSON 输出。n8n 接收该输出，执行后续 Git 操作。
 
-```json
-{
-  "topic": "用 Dify + n8n 半自动发布 VitePress 博文",
-  "angle": "从零搭建到开 PR",
-  "keywords": ["Dify", "n8n", "VitePress", "GitHub Pages"]
-}
+RAG（检索增强生成）可用于补充写作规范或模板知识。
+
+### 步骤 1：定义 Dify 工作流输入
+接收字段：topic、angle、keywords、tone、references。根据这些生成符合 VitePress 要求的 Markdown 内容与元数据。
+
+确保输出为标准 JSON，不含额外文本或格式。
+
+### 步骤 2：配置 n8n 工作流
+在 n8n 中设置 webhook 触发器接收 Dify 输出。使用 Function 节点处理 JSON，生成文件路径与 slug（如：`/posts/${slug}.md`）。
+
+```javascript
+// 示例 slugify
+const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 ```
 
-## 步骤 2：n8n 接收并处理 Dify 输出
-在 n8n 中创建 webhook 触发器接收 Dify 的 JSON 输出。使用 Function 节点提取字段，并拼接成包含 Frontmatter 的 Markdown 文件。
+### 步骤 3：Git 自动化集成
+n8n 使用 GitHub 节点创建新分支（如 `auto-post/${slug}`），提交 Markdown 文件，发起 Pull Request 至主仓库。
 
-```js
-// n8n function node 示例
-const { title, description, tags, category, content_markdown } = items[0].json;
-const frontmatter = `---
-title: ${title}
-description: ${description}
-tags: [${tags.map(t => `"${t}"`)}]
-category: ${category}
-draft: true
----\n\n`;
-return [{ json: { markdown: frontmatter + content_markdown } }];
-```
+PR 标题可设为 "[Auto] 新文章: {title}"，便于识别。
 
-## 步骤 3：自动推送到 GitHub 分支并创建 PR
-使用 n8n 的 GitHub 节点执行以下操作：
-1. 创建新分支（如 `post/dify-n8n-vitepress-pipeline`）
-2. 提交生成的 `.md` 文件到 `/src/posts/`
-3. 发起 Pull Request 至 main 分支，触发 VitePress 部署预览
+### 审核与发布策略
+设置 draft: true 默认阻止直接上线。PR 需人工审查内容质量与格式。
 
-## 注意事项
-- 确保 n8n 拥有 GitHub 仓库的写权限（推荐使用 Personal Access Token）
-- 若内容敏感，可在流程中加入人工审批节点
-- 可扩展为定时批量发布模式，配合内容队列管理
-
-## 总结
-该方案将 AI 写作与 CI/CD 流程结合，适用于个人知识库持续更新。未来可集成 SEO 检查、自动 slug 生成等优化环节。
+合并后由 GitHub Actions 构建并部署至 VitePress 站点。
