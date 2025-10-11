@@ -8,7 +8,9 @@ tags: dify,n8n,vitepress,automation,github,blogging
 series: "AI 写作流水线"
 draft: true
 publish: true
----## 概述
+---
+
+## 概述
 在技术写作中，保持内容更新频率和质量是一项挑战。本文介绍如何结合 Dify（AI 工作流平台）和 n8n（开源自动化工具）构建半自动发布系统，用于 VitePress 博客的内容生成和发布。
 
 ## 核心组件

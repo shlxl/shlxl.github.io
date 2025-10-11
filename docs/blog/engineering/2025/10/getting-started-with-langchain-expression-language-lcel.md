@@ -3,16 +3,18 @@ title: "LangChain 表达式语言 (LCEL) 入门指南：构建自定义 AI 链"
 date: 2025-10-10T18:40:07.712Z
 description: "本文旨在为初学者介绍 LangChain 表达式语言 (LCEL) 的核心概念、关键优势以及基本用法。通过具体的 Python 代码示例，你将学会如何利用 LCEL 的管道操作符来灵活地组合和调用大语言模型（LLM）应用链。"
 slug: getting-started-with-langchain-expression-language-lcel
-category: engineering
 tags: langchain,lcel,python,llm,ai,prompt engineering
 draft: false
 publish: true
 categories: 工程实践
----## 前言
+---
 
-在使用 LangChain 构建大语言模型（LLM）应用时，开发者常常需要将多个组件（如 Prompt、模型、输出解析器）串联起来。LangChain 表达式语言（LangChain Expression Language, LCEL）为此提供了一种声明式、可组合的方式，让构建复杂的链（Chain）变得前所未有的简单和直观。
+##
+ 前言
 
-本文将带你了解 LCEL 是什么，它为何重要，并通过代码示例展示如何上手使用。
+>在使用 LangChain 构建大语言模型（LLM）应用时，开发者常常需要将多个组件（如 Prompt、模型、输出解析器）串联起来。LangChain 表达式语言（LangChain Expression Language, LCEL）为此提供了一种声明式、可组合的方式，让构建复杂的链（Chain）变得前所未有的简单和直观。
+
+>本文将带你了解 LCEL 是什么，它为何重要，并通过代码示例展示如何上手使用。
 
 ## 什么是 LCEL？
 
