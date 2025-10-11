@@ -1,13 +1,16 @@
-=---
+---
 title: 使用 Dify 与 n8n 实现 VitePress 博客半自动化发布
 date: 2025-10-09T06:03:18.442Z
 description: 本指南将带你从零开始，搭建一个基于 Dify、n8n 和 VitePress 的自动化博客发布流水线。通过 Dify 生成结构化内容，利用 n8n 自动处理 Git 操作（如创建分支、提交文件、发起 PR），最终实现高效的内容创作与发布，同时保留人工审核环节以确保质量。
 slug: dify-n8n-vitepress-automation-pipeline
-category: engineering
+categories: 工程实践
 tags: ["dify", "n8n", "vitepress", "automation", "github", "llm"]
 series: "AI 写作流水线"
+publish: false
 draft: true
----## 为什么选择 Dify + n8n + VitePress？
+---
+
+## 为什么选择 Dify + n8n + VitePress？
 
 这套组合拳的核心优势在于“各司其职”。Dify 负责高质量、结构化的内容生成，n8n（一个开源的工作流自动化工具）作为强大的“胶水”，连接各个服务，而 VitePress 则提供了一个轻快、强大的静态博客框架。整个流程部署在 GitHub Pages 上，成本几乎为零。
 

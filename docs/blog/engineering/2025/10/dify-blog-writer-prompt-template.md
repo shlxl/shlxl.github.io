@@ -1,13 +1,16 @@
-=---
+---
 title: 设计 Dify 博客写作器：一个强大的系统提示词模板
 date: 2025-10-09T06:19:08.835Z
 description: 本文详细拆解一个为 Dify 设计的博客写作（Blog Writer）应用系统提示词。通过设定明确目标、严格的 JSON 输出格式和清晰的生成策略，你可以创建一个能稳定生成结构化博文内容的 AI 工作流，并与 n8n 等自动化工具无缝集成，实现内容创作的半自动化。
 slug: dify-blog-writer-prompt-template
-category: engineering
+categories: 工程实践
 tags: ["dify", "prompt engineering", "llm", "automation", "n8n", "vitepress"]
 series: "AI 写作流水线"
+publish: false
 draft: true
----## 为什么需要系统提示词模板？
+---
+
+## 为什么需要系统提示词模板？
 
 在构建基于大语言模型（LLM，Large Language Model）的应用时，一个稳定、明确的系统提示词是成功的关键。它为 AI 设定了角色、目标、约束和输出格式，确保每次生成的内容都符合预期。对于博客写作这类需要结构化输出的场景，一个精心设计的模板能极大提升效率和内容质量。
 
