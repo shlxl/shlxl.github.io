@@ -152,12 +152,52 @@ html.dark {
   }
 }
 
-/* 文档页侧栏与正文卡片一致 */
+/* --- SCROLLBAR FIX START --- */
+
+/* 1. The outer container scrolls */
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  overflow-y: auto;
 }
+
+/* 2. The inner container (.sidebar) is not clipped, allowing the ::after pseudo-element to be visible */
+
+/* 3. The component inside the inner container (.catalog) does not scroll */
+.VPSidebar .sidebar .catalog {
+  overflow-y: visible;
+  max-height: none;
+}
+
+/* 4. Hide the scrollbar on the article TOC */
+.blog-theme-layout .VPContent:not(.is-home) .VPDoc .aside {
+  overflow-y: hidden !important;
+}
+
+/* 5. Style the outer scrollbar to be more subtle */
+.blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vp-c-divider) transparent;
+}
+
+.blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar::-webkit-scrollbar-thumb {
+  background-color: var(--vp-c-divider);
+  border-radius: 4px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* --- SCROLLBAR FIX END --- */
+
 
 @media (min-width: 960px) {
   .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar {
@@ -193,7 +233,6 @@ html.dark {
     box-shadow: var(--vp-shadow-3);
     z-index: 1;
     max-height: calc(100vh - 120px);
-    overflow-y: auto;
     width: 100%;
   }
 
@@ -234,7 +273,7 @@ html.dark {
     content: '';
     position: absolute;
     top: 0;
-    right: -32px;
+    right: -32px; /* Original position */
     width: 1px;
     height: 100%;
     background: var(--vp-c-divider);
