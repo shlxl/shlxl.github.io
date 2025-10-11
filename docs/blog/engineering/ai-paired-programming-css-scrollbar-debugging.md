@@ -3,7 +3,7 @@ title: 记一次与 AI 结对编程的奇妙经历：CSS 滚动条的“地狱�
 date: 2025-10-11
 description: 一次看似简单的 CSS 滚动条 bug，却带我与 AI 助手经历了一场长达数小时、曲折离奇的调试之旅。本文复盘了整个过程，从错误的假设到柳暗花明，最终揭示了问题的本质，并对 CSS、组件化和 AI 协作的边界进行了思考。
 tags: ["CSS", "VitePress", "AI", "结对编程", "调试", "Debug"]
-category: engineering
+categories: ["工程实践"]
 publish: true
 draft: false
 ---
