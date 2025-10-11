@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-11T11:14:06.931Z",
+  "updatedAt": "2025-10-11T11:51:31.020Z",
   "items": [
     {
       "text": "工程",
@@ -11,11 +11,11 @@
       "navGroupId": "group-mggj3ki8",
       "menuEnabled": true,
       "menuOrder": 2,
-      "latestLink": "/blog/engineering/当前主流的MCP工具综述",
-      "latestUpdatedAt": "2025-10-08T08:30:00.000Z",
-      "latestTitle": "主流MCP工具综述",
-      "postCount": 9,
-      "publishedCount": 7
+      "latestLink": "/blog/engineering/2025/10/dify-n8n-vitepress-pipeline",
+      "latestUpdatedAt": "2025-10-11T02:46:28.008Z",
+      "latestTitle": "用 Dify + n8n 半自动发布 VitePress 博文",
+      "postCount": 11,
+      "publishedCount": 10
     },
     {
       "text": "攻略",
@@ -37,33 +37,33 @@
       "text": "生活",
       "category": "阳光生活",
       "dir": "mylife",
-      "link": "/blog/mylife/8",
+      "link": "/blog/",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
       "navGroupId": "group-mggj45kk",
       "menuEnabled": true,
       "menuOrder": 4,
-      "latestLink": "/blog/mylife/post-1759571837950",
-      "latestUpdatedAt": "2025-10-04T09:57:21.000Z",
-      "latestTitle": "游戏还是充电？",
-      "postCount": 2,
-      "publishedCount": 2
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
     },
     {
       "text": "宠物",
       "category": "宠物",
       "dir": "pet",
-      "link": "/blog/pet/cat",
+      "link": "/blog/",
       "fallback": "/blog/",
       "fallbackLink": "/blog/",
       "navGroupId": "group-mggj45kk",
       "menuEnabled": true,
       "menuOrder": 7,
-      "latestLink": "/blog/pet/cat",
-      "latestUpdatedAt": "2025-10-07T15:57:36.000Z",
-      "latestTitle": "cat",
-      "postCount": 1,
-      "publishedCount": 1
+      "latestLink": "/blog/",
+      "latestUpdatedAt": "",
+      "latestTitle": "",
+      "postCount": 0,
+      "publishedCount": 0
     }
   ],
   "groups": [

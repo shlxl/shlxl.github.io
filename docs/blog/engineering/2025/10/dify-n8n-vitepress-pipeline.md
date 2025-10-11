@@ -6,7 +6,8 @@ slug: dify-n8n-vitepress-pipeline
 categories: 工程实践
 tags: ["dify", "n8n", "vitepress", "github pages", "ci/cd"]
 series: "AI 写作流水线"
-draft: true
+draft: false
+publish: true
 ---## 目标
 本文介绍如何使用 Dify 生成符合规范的博文草稿，并通过 n8n 自动化工作流推送至 VitePress 博客仓库，最终创建 Pull Request 等待人工审核合并。
 

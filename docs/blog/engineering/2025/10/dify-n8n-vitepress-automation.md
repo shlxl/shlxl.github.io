@@ -4,9 +4,10 @@ date: 2025-10-11T04:04:22.453Z
 description: "本文介绍如何利用 Dify 生成结构化内容，通过 n8n 自动化工作流实现 VitePress 博客的半自动发布，涵盖从内容生成到 GitHub PR 的完整流程，提高技术博客的发布效率。"
 slug: dify-n8n-vitepress-automation
 categories: 工程实践
-tags: ["dify", "n8n", "vitepress", "automation", "github", "blogging"]
+tags: dify,n8n,vitepress,automation,github,blogging
 series: "AI 写作流水线"
 draft: true
+publish: true
 ---## 概述
 在技术写作中，保持内容更新频率和质量是一项挑战。本文介绍如何结合 Dify（AI 工作流平台）和 n8n（开源自动化工具）构建半自动发布系统，用于 VitePress 博客的内容生成和发布。
 
