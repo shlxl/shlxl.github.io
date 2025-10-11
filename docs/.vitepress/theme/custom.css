@@ -192,8 +192,6 @@ html.dark {
 .blog-theme-layout:has(.VPContent:not(.is-home)) .VPSidebar::-webkit-scrollbar-thumb {
   background-color: var(--vp-c-divider);
   border-radius: 4px;
-  border: 3px solid transparent;
-  background-clip: content-box;
 }
 
 /* --- SCROLLBAR FIX END --- */

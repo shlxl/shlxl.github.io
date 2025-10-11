@@ -75,3 +75,20 @@ The project is structured as follows:
     *   `publish`: A boolean indicating whether the post is published.
     *   `draft`: A boolean indicating whether the post is a draft.
 *   **Commit Messages:** Commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+## Theme Customization Notes
+
+### Sidebar Scrolling Behavior
+
+*   **Structure:** The article page sidebar is composed of three main elements: `.VPSidebar` (the outer container), `.sidebar` (the inner container), and `.catalog` (a custom Vue component, `BlogRecommendArticle.vue`, that lists related posts).
+*   **Default Behavior:** The `.catalog` component has its own scoped styles that make it scrollable (`overflow-y: auto`). This can lead to a "double scrollbar" issue where both the inner `.catalog` and the outer `.VPSidebar` have scrollbars.
+*   **The Fix ("Inner No, Outer Yes"):** To ensure only the main, outer sidebar scrolls, a specific set of CSS overrides is required in `docs/.vitepress/theme/custom.css`:
+    1.  The outer `.VPSidebar` must have `overflow-y: auto;`.
+    2.  The inner `.catalog` component must be overridden with `overflow-y: visible;` and `max-height: none;` to disable its scrolling and allow it to expand to its full height.
+    3.  The intermediate `.sidebar` container should have `overflow: visible;` (or no `overflow` property) to prevent it from clipping its children (specifically the decorative `::after` pseudo-element).
+
+### "On This Page" Slider Effect
+
+*   The "slider" or "thumb" in the right-hand "On this page" navigation (`.VPDocAside`) is not a CSS scrollbar. 
+*   It is a `<div>` with the class `.outline-marker` whose `top` and `opacity` properties are dynamically updated by the theme's JavaScript in response to page scroll events.
+*   Replicating this effect is not possible with pure CSS, as it requires JavaScript to get the positional data of the active heading and update the marker's style. This would require modifying the core theme files.
