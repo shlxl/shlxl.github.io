@@ -6,7 +6,8 @@ slug: digital-minimalism-reclaim-focus
 categories: 工程实践
 tags: ["数字极简", "专注力", "信息过载", "生活平衡", "效率", "digital minimalism", "mindfulness"]
 series: "我的生活哲学"
-draft: true
+draft: false
+publish: true
 ---你是否也曾有过这样的感觉？手机从不离手，却感觉和世界越来越远；每天接收海量信息，大脑却一片空白。曾经的我，就被困在这样的**信息过载**里，焦虑又疲惫。
 
 直到我开始尝试“数字极简主义”，生活才豁然开朗。它不是要我们逃离网络，而是重新成为科技的主人，有选择、有意识地使用它。

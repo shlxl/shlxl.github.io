@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-11T12:23:22.455Z",
+  "updatedAt": "2025-10-12T08:57:40.760Z",
   "items": [
     {
       "text": "工程",
@@ -11,11 +11,11 @@
       "navGroupId": "group-mggj3ki8",
       "menuEnabled": true,
       "menuOrder": 2,
-      "latestLink": "/blog/engineering/2025/10/dify-n8n-vitepress-pipeline",
-      "latestUpdatedAt": "2025-10-11T02:46:28.008Z",
-      "latestTitle": "用 Dify + n8n 半自动发布 VitePress 博文",
-      "postCount": 11,
-      "publishedCount": 10
+      "latestLink": "/blog/engineering/2025/10/javascript-arrow-function-common-pitfalls",
+      "latestUpdatedAt": "2025-10-12T06:00:23.666Z",
+      "latestTitle": "深入解析：JavaScript 箭头函数的三个常见误区",
+      "postCount": 17,
+      "publishedCount": 16
     },
     {
       "text": "攻略",
@@ -32,6 +32,22 @@
       "latestTitle": "死灵法师·掌控生死",
       "postCount": 7,
       "publishedCount": 7
+    },
+    {
+      "text": "生活",
+      "category": "阳光生活",
+      "dir": "mylife",
+      "link": "/blog/mylife/2025/10/digital-minimalism-find-focus-and-peace",
+      "fallback": "/blog/",
+      "fallbackLink": "/blog/",
+      "navGroupId": "group-mggj45kk",
+      "menuEnabled": true,
+      "menuOrder": 4,
+      "latestLink": "/blog/mylife/2025/10/declutter-your-desk-find-your-peace",
+      "latestUpdatedAt": "2025-10-11T15:20:01.701Z",
+      "latestTitle": "断舍离，从一张清爽的书桌开始找回自己",
+      "postCount": 4,
+      "publishedCount": 4
     }
   ],
   "groups": [

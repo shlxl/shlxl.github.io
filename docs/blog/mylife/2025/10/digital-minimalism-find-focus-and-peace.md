@@ -6,7 +6,8 @@ slug: digital-minimalism-find-focus-and-peace
 categories: 阳光生活
 tags: ["数字极简主义", "专注力", "信息过载", "内心平静", "生活方式", "digital minimalism", "focus"]
 series: "我的极简生活提案"
-draft: true
+draft: false
+publish: true
 ---你是不是也和我一样，曾经在无数个夜晚，指尖无意识地划过屏幕，直到眼睛干涩，才发现时间已悄然溜走？信息像潮水般涌来，我们以为拥抱了全世界，却离真实的自己越来越远。
 
 ## 告别信息焦虑，我的“数字断舍离”之旅

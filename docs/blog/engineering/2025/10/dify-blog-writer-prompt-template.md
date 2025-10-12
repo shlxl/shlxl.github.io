@@ -6,8 +6,8 @@ slug: dify-blog-writer-prompt-template
 categories: 工程实践
 tags: ["dify", "prompt engineering", "llm", "automation", "n8n", "vitepress"]
 series: "AI 写作流水线"
-publish: false
-draft: true
+publish: true
+draft: false
 ---
 
 ## 为什么需要系统提示词模板？

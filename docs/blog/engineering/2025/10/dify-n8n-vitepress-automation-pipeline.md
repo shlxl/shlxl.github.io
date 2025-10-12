@@ -6,8 +6,8 @@ slug: dify-n8n-vitepress-automation-pipeline
 categories: 工程实践
 tags: ["dify", "n8n", "vitepress", "automation", "github", "llm"]
 series: "AI 写作流水线"
-publish: false
-draft: true
+publish: true
+draft: false
 ---
 
 ## 为什么选择 Dify + n8n + VitePress？

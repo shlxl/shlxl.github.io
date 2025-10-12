@@ -6,7 +6,8 @@ slug: declutter-your-desk-find-your-peace
 categories: 阳光生活
 tags: ["断舍离", "极简主义", "整理收纳", "桌面美学", "内心秩序", "minimalism", "desksetup"]
 series: "我的极简生活练习"
-draft: true
+draft: false
+publish: true
 ---你是否也曾有过这样的时刻：坐在书桌前，本想高效工作，目光却被四处散落的杂物牵绊，心情也跟着烦躁起来？
 
 我曾经就是这样。我的书桌，是我混乱生活的缩影。直到我下定决心，从整理这张小小的一平米天地开始，我才发现，**断舍离**带来的，远不止是整洁。

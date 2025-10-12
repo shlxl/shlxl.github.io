@@ -5,7 +5,8 @@ description: "生活中总有突如其来的低落和压力，你是否也渴望
 slug: my-emotional-first-aid-kit
 categories: 阳光生活
 tags: ["情绪管理", "心理健康", "自我关怀", "生活小确幸", "治愈", "self-care", "mental-health"]
-draft: true
+draft: false
+publish: true
 ---嘿，亲爱的你，
 
 有没有那么一些时刻，感觉被乌云笼罩，做什么都提不起劲？我也有过。在那些日子里，我学会了一个温柔的自我疗愈方法——为自己创建一个“情绪急救箱”。

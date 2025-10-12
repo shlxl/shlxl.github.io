@@ -3,10 +3,11 @@ title: "深入解析：JavaScript 箭头函数的三个常见误区"
 date: 2025-10-12T06:00:23.666Z
 description: "本文深入探讨了 JavaScript ES6 箭头函数在使用中最常见的三个误区：`this` 指向的词法作用域、不能作为构造函数使用，以及 `arguments` 对象的缺失。通过代码示例，帮助开发者避免这些常见陷阱。"
 slug: javascript-arrow-function-common-pitfalls
-categories: engineering
-tags: ["javascript", "es6", "arrow function", "this", "function", "frontend"]
+categories: 工程实践
+tags: javascript,es6,arrow function,this,function,frontend
 series: "JavaScript 核心概念"
-draft: true
+draft: false
+publish: true
 ---## 前言
 
 自 ES6（ECMAScript 2015）推出以来，箭头函数（Arrow Function）以其简洁的语法和对 `this` 的特殊处理方式，迅速成为 JavaScript 开发者的常用工具。然而，如果不深入理解其工作原理，很容易在特定场景下误用，导致难以排查的 Bug。本文将剖析三个最常见的箭头函数误区。
