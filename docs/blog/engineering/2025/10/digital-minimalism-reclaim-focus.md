@@ -3,8 +3,8 @@ title: "我的数字极简生活：从信息过载到内心丰盈"
 date: 2025-10-11T14:57:31.212Z
 description: "你是否也感到被无尽的信息和通知淹没，失去了专注的能力？在这篇文章里，我将真诚分享自己实践数字极简主义的心路历程，从信息焦虑中找回生活平衡。文内包含三个可立即上手的步骤，希望能帮助你也开启一段更清爽、更专注的生活旅程，重新拥抱内心的丰盈与平静。"
 slug: digital-minimalism-reclaim-focus
-categories: 工程实践
-tags: ["数字极简", "专注力", "信息过载", "生活平衡", "效率", "digital minimalism", "mindfulness"]
+categories: 阳光生活
+tags: 数字极简,专注力,信息过载,生活平衡,效率,digital minimalism,mindfulness
 series: "我的生活哲学"
 draft: false
 publish: true
