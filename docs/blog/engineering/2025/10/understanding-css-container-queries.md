@@ -3,7 +3,7 @@ title: "深入理解 CSS 容器查询：实现真正的组件级响应式设计"
 date: 2025-10-12T10:28:03.645Z
 description: "本文深入探讨了现代 CSS 的新特性——容器查询（Container Queries）。我们将详细对比它与传统媒体查询的区别，并学习如何使用 @container 规则，让你的 Web 组件能根据其自身容器的大小而非视口来调整样式，实现前所未有的灵活性。"
 slug: understanding-css-container-queries
-categories: engineering
+categories: 工程实践
 tags: ["css", "container queries", "responsive design", "web development", "frontend"]
 draft: true
 ---
