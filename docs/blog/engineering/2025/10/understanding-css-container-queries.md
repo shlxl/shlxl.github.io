@@ -6,7 +6,9 @@ slug: understanding-css-container-queries
 categories: engineering
 tags: ["css", "container queries", "responsive design", "web development", "frontend"]
 draft: true
----## 前言：响应式设计的进化
+---
+
+## 前言：响应式设计的进化
 
 多年来，媒体查询（Media Queries）一直是响应式网页设计的基石，它允许我们根据视口（viewport）尺寸来调整页面布局。然而，随着组件化开发的普及，开发者们越来越需要一种能够让组件自身响应其“生存环境”的机制。CSS 容器查询（Container Queries）正是为此而生，它标志着响应式设计从页面级迈向了组件级。
 
