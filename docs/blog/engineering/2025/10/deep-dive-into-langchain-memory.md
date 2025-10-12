@@ -6,7 +6,8 @@ slug: deep-dive-into-langchain-memory
 categories: ai
 tags: ["langchain", "llm", "memory", "python", "ai"]
 draft: true
----## 引言：为什么需要 Memory？
+---
+## 引言：为什么需要 Memory？
 
 在构建基于大型语言模型（Large Language Model, LLM）的应用时，一个核心挑战是如何让模型记住之前的交互历史。默认情况下，LLM 是无状态的，每次调用都是一次独立的交互。LangChain 中的“记忆”（Memory）组件正是为了解决这个问题而设计的，它为链（Chain）或代理（Agent）提供了一种存储和检索过去对话的机制，从而实现具有上下文感知能力的多轮对话。
 
