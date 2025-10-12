@@ -6,7 +6,9 @@ slug: effective-code-review-best-practices
 categories: 工程实践
 tags: ["code review", "engineering practice", "teamwork", "code quality", "best practice"]
 draft: true
----## 前言
+---
+
+## 前言
 
 代码审查（Code Review）是软件开发流程中不可或缺的一环。它不仅是保证代码质量、发现潜在缺陷的关键手段，更是团队成员间知识传递、技术共识达成的重要途径。一个高效、积极的代码审查文化，能够显著提升整个团队的工程能力。本文旨在总结一套适用于现代软件团队的代码审查最佳实践。
 
