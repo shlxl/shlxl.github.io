@@ -21,3 +21,7 @@ Never commit secrets or generated `docs/.vitepress/dist/` artifacts; rely on `.g
 ## Performance Optimization
 - **Code-level:** 优先加载首页 hero 背景图（fetchpriority=high 或使用 <link rel=preload as=image>），压缩封面为 WebP/AVIF；延迟加载文章封面与 Pagefind JS；对滚动容器使用 contain/will-change 减少全局回流。
 - **Engineering-level:** 引入前置 CDN 或迁移至延迟更低的平台以降低 GitHub Pages TTFB；在可自定义响应头的平台上为带哈希的静态资产设置长期 Cache-Control。
+
+## Progress
+
+- Pagegen orchestrator refactor：██████████ 100%（Stage 1 契约巩固与守门补全已完成，详见 `docs/zh/plans/pagegen-refactor-roadmap.md`）。
